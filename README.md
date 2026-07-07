@@ -33,7 +33,8 @@ export, not on disk):
 - Submagic Testing
 - Heygen - AI Video Production, the main build (a sibling to the demo version that is
   built)
-- Hi-Tec Scripting Agent Automation, a client-named automation
+- A client-named scripting/agent automation (name withheld here, consistent with the
+  anonymization policy below)
 
 To complete any of these later, enable MCP access on that specific workflow in n8n's
 settings, the same way the others above were unblocked.
