@@ -1,0 +1,130 @@
+{
+  "createdAt": "2025-06-15T00:41:57.329Z",
+  "updatedAt": "2025-06-15T01:26:20.000Z",
+  "id": "ZdSTE3Uw0D3aznDw",
+  "name": "YT Transcript",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "29d300e1-7502-4dae-9ebb-42bc0d08d048",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c068c6cb-2d4d-4519-bcc6-d61820b1ef8f",
+      "name": "Webhook",
+      "webhookId": "29d300e1-7502-4dae-9ebb-42bc0d08d048"
+    },
+    {
+      "parameters": {
+        "url": "https://api.supadata.ai/v1/youtube/transcript",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "https://www.youtube.com/watch?v=3Ju1I37jWUM"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "536e9971-30e2-4506-9e0e-9d8a6a76418f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        440,
+        0
+      ],
+      "id": "dfb78e39-82f1-40ab-81ab-85100f0821e5",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "219b3121-9301-47b6-a827-bc6632a7a63a",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:43.136Z",
+      "updatedAt": "2025-08-30T07:55:43.136Z",
+      "role": "workflow:owner",
+      "workflowId": "ZdSTE3Uw0D3aznDw",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "REDACTED_USER <redacted@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

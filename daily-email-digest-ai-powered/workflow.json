@@ -1,0 +1,597 @@
+{
+  "name": "Daily Email Digest - AI Powered",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "3a376c7b-d209-47a3-b586-202a6c99c760",
+      "name": "Every Day at Midnight",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "simple": false,
+        "filters": {
+          "readStatus": "both",
+          "receivedAfter": "={{ $now.minus({ days: 1 }).toISO() }}"
+        },
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_",
+          "downloadAttachments": true
+        }
+      },
+      "id": "7429c60d-df45-45ea-9a7a-0a7bdb85ea4e",
+      "name": "Get Emails",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        112
+      ],
+      "webhookId": "a86d94f2-da5b-47be-9ac4-9bbe8274d1df"
+    },
+    {
+      "parameters": {
+        "jsCode": "var items = $input.all();\nvar BATCH_SIZE = 4;\nvar output = [];\nfor (var start = 0; start < items.length; start += BATCH_SIZE) {\n  var batch = items.slice(start, start + BATCH_SIZE);\n  var batchNum = Math.floor(start / BATCH_SIZE) + 1;\n  var emails = batch.map(function(item, idx) {\n    var j = item.json;\n    var n = start + idx + 1;\n    var fromObj = j.from || {};\n    var from = fromObj.text || (fromObj.value && fromObj.value[0] && fromObj.value[0].address) || (typeof j.from === \"string\" ? j.from : \"\") || \"Unknown Sender\";\n    var toObj = j.to || {};\n    var to = toObj.text || (typeof j.to === \"string\" ? j.to : \"\") || \"\";\n    var subject = j.subject || \"(no subject)\";\n    var date = j.date || j.internalDate || \"\";\n    var body = (j.text || j.textPlain || j.snippet || \"\").toString().slice(0, 6000);\n    var binKeys = Object.keys(item.binary || {});\n    var attNameParts = [];\n    for (var ai = 0; ai < binKeys.length; ai++) {\n      var bk = binKeys[ai];\n      var bval = (item.binary || {})[bk];\n      attNameParts.push(bval ? (bval.fileName || bk) : bk);\n    }\n    return { n: n, from: from, to: to, subject: subject, date: date, body: body, attCount: binKeys.length, attNames: attNameParts };\n  });\n  var NL = \"\\n\";\n  var emailParts = [];\n  for (var ei = 0; ei < emails.length; ei++) {\n    var e = emails[ei];\n    var t = \"===== EMAIL [#\" + e.n + \"] =====\" + NL;\n    t += \"From: \" + e.from + NL + \"To: \" + e.to + NL + \"Date: \" + e.date + NL + \"Subject: \" + e.subject + NL;\n    if (e.attCount > 0) {\n      var attStr = \"\";\n      for (var ai2 = 0; ai2 < e.attNames.length; ai2++) { if (ai2 > 0) attStr += \", \"; attStr += e.attNames[ai2]; }\n      t += \"Attachments (\" + e.attCount + \"): \" + attStr + NL;\n    }\n    t += NL + \"Body:\" + NL + e.body + NL;\n    emailParts.push(t);\n  }\n  var emailsText = \"\";\n  for (var pi = 0; pi < emailParts.length; pi++) { if (pi > 0) emailsText += NL + NL; emailsText += emailParts[pi]; }\n  output.push({ json: { batchNum: batchNum, batchCount: batch.length, emails: emails, emailsText: emailsText, totalEmails: items.length } });\n}\nreturn output;"
+      },
+      "id": "74396da9-ffea-4d37-a777-5b6a66344729",
+      "name": "Cluster into Batches of 4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize BATCH {{ $json.batchNum }} ({{ $json.batchCount }} emails).\n\n--- EMAILS TO SUMMARIZE ---\n{{ $json.emailsText }}\n",
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "*Role:*\nYou are a meticulous executive assistant specializing in extracting and organizing information from email threads.\n\n*Context:*\nThe user will provide a set of numbered emails (e.g., email #1, #2, #3...). Your job is to comb through every email and extract every action item, deadline, decision, financial figure, name, date, link, open question, and attachment mentioned \u2014 leaving nothing out.\n\n*Tools:*\nNone.\n\n*Rules:*\n1. Extract EVERY action item, deadline, decision, financial figure, name, date, link, open question, and attachment mentioned across all emails \u2014 no exceptions.\n2. Cite every extracted point with [#N], where N is the corresponding email's number.\n3. Do NOT invent, assume, or infer any information not explicitly stated in the emails. If a detail is absent, omit it rather than guessing.\n4. Structure the output using these exact section headers, each prefixed with \"##\" (literal characters, not markdown rendering) and spelled exactly as follows:\n   - ## ACTION ITEMS AND DEADLINES\n   - ## KEY INFORMATION\n   - ## OPEN QUESTIONS\n   - ## EMAIL SUMMARIES\n   Additional \"## HEADER NAME\" sections may be added if a category of extracted information doesn't fit cleanly into the four above (e.g., ## ATTACHMENTS, ## FINANCIAL FIGURES).\n5. Bold/italic formatting is permitted within sections for readability; do not add extra heading levels, code blocks, or horizontal rules.\n6. Before producing output, internally reason step-by-step through all emails to ensure every item is captured and correctly cited. Do NOT display this reasoning \u2014 output only the final structured extraction.\n7. Return ONLY the structured extraction. No preamble, no closing remarks, no clarifying questions, no meta-commentary.\n\n*Examples:*\n\n*User Input:*\nEmail #1: From Sarah to Team \u2014 \"Please send the Q3 budget report by Friday, July 10th. Also, John owes us the vendor contract link: drive.google.com/vendorcontract.\"\nEmail #2: From John to Sarah \u2014 \"Approved the $15,000 marketing spend. Attaching the signed vendor contract. Not sure yet if we need legal review \u2014 thoughts?\"\n\n*AI Output:*\n## ACTION ITEMS AND DEADLINES\n- Send Q3 budget report by Friday, July 10th [#1]\n\n## KEY INFORMATION\n- Names: Sarah [#1], John [#1][#2]\n- Financial figure: $15,000 marketing spend approved [#2]\n- Link: drive.google.com/vendorcontract [#1]\n- Decision: $15,000 marketing spend approved [#2]\n- Attachment: Signed vendor contract [#2]\n\n## OPEN QUESTIONS\n- Whether legal review is needed for the vendor contract [#2]\n\n## EMAIL SUMMARIES\n- Email #1: Sarah requests the Q3 budget report by July 10th and the vendor contract link.\n- Email #2: John approves the $15,000 marketing spend, attaches the signed contract, and asks whether legal review is needed.\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "d989d174-46dd-4256-b0a1-304abcdece1d",
+      "name": "Summarize Batch (AI)",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        672,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "project-29adcc21-a5b5-4f91-895",
+          "cachedResultName": "Main Project"
+        },
+        "modelName": "gemini-2.5-pro",
+        "options": {}
+      },
+      "id": "897eae39-f10e-456d-a033-adc321b65954",
+      "name": "Google Vertex Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        752,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "var batchItems = $input.all();\nvar originalEmails = $(\"Get Emails\").all();\nvar allBatchSummaries = [];\nfor (var bi = 0; bi < batchItems.length; bi++) {\n  allBatchSummaries.push({ batchNum: bi + 1, summary: batchItems[bi].json.text || \"\" });\n}\nvar allEmails = [];\nfor (var ei = 0; ei < originalEmails.length; ei++) {\n  var item = originalEmails[ei];\n  var j = item.json;\n  var emailNum = ei + 1;\n  var fromObj = j.from || {};\n  var from = fromObj.text || (fromObj.value && fromObj.value[0] && fromObj.value[0].address) || (typeof j.from === \"string\" ? j.from : \"\") || \"Unknown Sender\";\n  var toObj = j.to || {};\n  var to = toObj.text || (typeof j.to === \"string\" ? j.to : \"\") || \"\";\n  var subject = j.subject || \"(no subject)\";\n  var date = j.date || j.internalDate || \"\";\n  var plainBody = (j.text || j.textPlain || j.snippet || \"\").toString();\n  var binKeys = Object.keys(item.binary || {});\n  var attachments = [];\n  for (var ai = 0; ai < binKeys.length; ai++) {\n    var bk = binKeys[ai];\n    var bval = (item.binary || {})[bk];\n    attachments.push({ name: bval ? (bval.fileName || bk) : bk, mimeType: bval ? (bval.mimeType || \"application/octet-stream\") : \"application/octet-stream\" });\n  }\n  allEmails.push({ emailNum: emailNum, from: from, to: to, subject: subject, date: date, plainBody: plainBody, attachments: attachments });\n}\nvar summariesText = \"\";\nfor (var si = 0; si < allBatchSummaries.length; si++) {\n  if (si > 0) summariesText += \"\\n\\n\";\n  summariesText += \"=== BATCH \" + allBatchSummaries[si].batchNum + \" SUMMARY ===\" + \"\\n\" + allBatchSummaries[si].summary;\n}\nreturn [{ json: { totalEmails: originalEmails.length, totalBatches: allBatchSummaries.length, allEmails: allEmails, allBatchSummaries: allBatchSummaries, summariesText: summariesText } }];"
+      },
+      "id": "bfcd7440-ca4d-4f1e-95b5-5b62f3a7a302",
+      "name": "Compile All",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Synthesize {{ $json.totalBatches }} batch summaries covering {{ $json.totalEmails }} emails from the past 24 hours into one master briefing.\n\n--- BATCH SUMMARIES ---\n{{ $json.summariesText }}\n",
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "*Role:*\nYou are a senior executive assistant responsible for synthesizing multiple batch email summaries into one exhaustive master briefing.\n\n*Context:*\nYou will receive a set of batch summaries, each covering a subset of emails processed within the past 24 hours, with information already extracted and cited using [#N] tags referring to specific emails. Your task is to consolidate all batch summaries into one complete master briefing that gives an executive full situational awareness without needing to review individual batches.\n\n*Tools:*\nNone.\n\n*Rules:*\n1. Synthesize ALL batch summaries into ONE master briefing. Do not omit any piece of information, no matter how minor.\n2. Retain every [#N] citation exactly as it appears in the source batch summaries; do not alter, renumber, merge, or remove them.\n3. Do NOT invent, assume, or infer any information not explicitly present in the batch summaries.\n4. If the same item (action item, decision, name, figure, etc.) appears across multiple batches, consolidate it into one entry while retaining all associated [#N] citations, rather than repeating it in full.\n5. Structure the output using these exact section headers, each prefixed with \"##\" (literal characters, not markdown rendering) and spelled exactly as follows:\n   - ## CRITICAL ACTION ITEMS AND DEADLINES\n   - ## KEY INFORMATION AND DECISIONS\n   - ## OPEN QUESTIONS AWAITING REPLY\n   - ## ALL ATTACHMENTS\n   - ## EMAIL BY EMAIL DIGEST\n6. Bold/italic formatting is permitted within sections for readability; do not add extra heading levels, code blocks, or horizontal rules.\n7. Before producing output, internally reason step-by-step through all batch summaries to identify overlaps, resolve duplicate citations, and confirm completeness. Do NOT display this reasoning \u2014 output only the final structured briefing.\n8. Return ONLY the structured master briefing. No preamble, no closing remarks, no clarifying questions, no meta-commentary.\n\n*Examples:*\n\n*Input (batch summaries, condensed):*\nBatch 1: Sarah requests Q3 budget report by July 10th [#1]. John approves $15,000 marketing spend, attaches signed vendor contract [#2].\nBatch 2: Legal team flags open question on contract review timeline [#7]. Finance confirms budget report deadline moved to July 12th [#9].\n\n*Output:*\n## CRITICAL ACTION ITEMS AND DEADLINES\n- Send Q3 budget report by July 12th (moved from July 10th) [#1][#9]\n\n## KEY INFORMATION AND DECISIONS\n- $15,000 marketing spend approved [#2]\n\n## OPEN QUESTIONS AWAITING REPLY\n- Timeline for legal review of vendor contract [#7]\n\n## ALL ATTACHMENTS\n- Signed vendor contract [#2]\n\n## EMAIL BY EMAIL DIGEST\n- Sarah requests Q3 budget report, later rescheduled to July 12th [#1][#9]\n- John approves marketing spend and attaches signed contract [#2]\n- Legal raises open question on contract review timeline [#7]\n\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "7b2bcda3-eb50-4c22-84bd-780eeb91b240",
+      "name": "Master Summary (AI)",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1248,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n\n\n// var masterText = $input.first().json.text || \"\";\n// var compiled = $(\"Compile All\").first().json;\n// var originalEmails = $(\"Get Emails\").all();\n\n// var allBinary = {};\n// var attachmentIndex = [];\n// var globalAttIdx = 0;\n// for (var emailIdx = 0; emailIdx < compiled.allEmails.length; emailIdx++) {\n//   var email = compiled.allEmails[emailIdx];\n//   var origItem = originalEmails[emailIdx];\n//   if (!origItem) continue;\n//   var binData = origItem.binary || {};\n//   var binKeys = Object.keys(binData);\n//   for (var bki = 0; bki < binKeys.length; bki++) {\n//     if (globalAttIdx >= 50) break;\n//     var key = binKeys[bki];\n//     var b = binData[key];\n//     var paddedIdx = globalAttIdx < 10 ? \"0\" + globalAttIdx : \"\" + globalAttIdx;\n//     var newKey = \"att_\" + paddedIdx;\n//     allBinary[newKey] = b;\n//     attachmentIndex.push({ key: newKey, name: b ? (b.fileName || key) : key, mimeType: b ? (b.mimeType || \"\") : \"\", emailNum: email.emailNum, emailSubject: email.subject, emailFrom: email.from });\n//     globalAttIdx++;\n//   }\n// }\n\n// function escHtml(str) {\n//   return (str || \"\").replace(/&/g, \"&amp;\").replace(/</g, \"&lt;\").replace(/>/g, \"&gt;\");\n// }\n\n// function citationLink(n) {\n//   return '<a href=\"#email-' + n + '\" class=\"cite\" title=\"Jump to Email #' + n + '\" style=\"display:inline-block;background:#ebf8ff;color:#2b6cb0;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700;margin:0 1px;text-decoration:none;cursor:pointer\">[#' + n + ']</a>';\n// }\n\n// function summaryToHtml(text) {\n//   if (!text) return \"<em>No summary available.</em>\";\n//   var out = escHtml(text);\n//   out = out.replace(/^## .*(?:ACTION.*DEAD|DEAD[A-Z]*INES?|CRITICAL.*ITEM).*/gim, '<h3 style=\"color:#c53030;border-left:4px solid #c53030;padding-left:10px;margin:20px 0 8px\">Action Items &amp; Deadlines</h3>');\n//   out = out.replace(/^## .*KEY.*(?:INFO|DECISION).*/gim, '<h3 style=\"color:#2b6cb0;border-left:4px solid #2b6cb0;padding-left:10px;margin:20px 0 8px\">Key Information &amp; Decisions</h3>');\n//   out = out.replace(/^## .*(?:OPEN.*QUEST|QUEST.*AWAIT).*/gim, '<h3 style=\"color:#d97706;border-left:4px solid #d97706;padding-left:10px;margin:20px 0 8px\">Open Questions</h3>');\n//   out = out.replace(/^## .*ATTACHMENT.*/gim, '<h3 style=\"color:#276749;border-left:4px solid #276749;padding-left:10px;margin:20px 0 8px\">All Attachments</h3>');\n//   out = out.replace(/^## .*(?:DIGEST|EMAIL.*SUMMAR|EMAIL.*BY.*EMAIL).*/gim, '<h3 style=\"color:#553c9a;border-left:4px solid #553c9a;padding-left:10px;margin:20px 0 8px\">Email-by-Email Digest</h3>');\n//   out = out.replace(/^### (.+)$/gm, '<h4 style=\"color:#2d3748;margin:12px 0 4px;font-weight:600;font-size:14px\">$1</h4>');\n//   out = out.replace(/^## (.+)$/gm, '<h3 style=\"color:#1a365d;border-left:4px solid #3182ce;padding-left:10px;margin:16px 0 6px\">$1</h3>');\n//   out = out.replace(/\\[#(\\d+)\\]/g, function(m, n) { return citationLink(n); });\n//   out = out.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');\n//   out = out.replace(/\\*([^ \\*][^\\*]*?)\\*/g, '<em>$1</em>');\n//   out = out.replace(/\\^\\^([^\\^]+)\\^\\^/g, '$1');\n//   out = out.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#3182ce\" target=\"_blank\">$1</a>');\n//   out = out.replace(/\\n[-\\*] /g, '\\n\\u2022 ');\n//   if (out.indexOf(\"- \") === 0) out = \"\\u2022 \" + out.slice(2);\n//   if (out.indexOf(\"* \") === 0) out = \"\\u2022 \" + out.slice(2);\n//   out = out.replace(/\\n\\n/g, '</p><p style=\"margin:8px 0;line-height:1.7\">');\n//   out = out.replace(/\\n/g, '<br>');\n//   return '<p style=\"margin:8px 0;line-height:1.7\">' + out + '</p>';\n// }\n\n// function batchSummaryToHtml(text) {\n//   if (!text) return \"<em>No batch summary.</em>\";\n//   var out = escHtml(text);\n//   out = out.replace(/^## .*(?:ACTION|DEAD[A-Z]*INES?).*/gim, '<h4 style=\"color:#c53030;border-left:3px solid #c53030;padding-left:8px;margin:14px 0 5px;font-size:13px\">Action Items &amp; Deadlines</h4>');\n//   out = out.replace(/^## .*KEY.*/gim, '<h4 style=\"color:#2b6cb0;border-left:3px solid #2b6cb0;padding-left:8px;margin:14px 0 5px;font-size:13px\">Key Information</h4>');\n//   out = out.replace(/^## .*QUEST.*/gim, '<h4 style=\"color:#d97706;border-left:3px solid #d97706;padding-left:8px;margin:14px 0 5px;font-size:13px\">Open Questions</h4>');\n//   out = out.replace(/^## .*ATTACHMENT.*/gim, '<h4 style=\"color:#276749;border-left:3px solid #276749;padding-left:8px;margin:14px 0 5px;font-size:13px\">Attachments</h4>');\n//   out = out.replace(/^## .*(?:EMAIL.*SUMMAR|EMAIL.*DIGEST).*/gim, '<h4 style=\"color:#553c9a;border-left:3px solid #553c9a;padding-left:8px;margin:14px 0 5px;font-size:13px\">Email Summaries</h4>');\n//   out = out.replace(/^## (.+)$/gm, '<h4 style=\"color:#2d3748;border-left:3px solid #a0aec0;padding-left:8px;margin:12px 0 5px;font-size:13px\">$1</h4>');\n//   out = out.replace(/\\[#(\\d+)\\]/g, function(m, n) { return citationLink(n); });\n//   out = out.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');\n//   out = out.replace(/\\n[-\\*] /g, '\\n\\u2022 ');\n//   if (out.indexOf(\"- \") === 0) out = \"\\u2022 \" + out.slice(2);\n//   out = out.replace(/\\n\\n/g, '</p><p style=\"margin:4px 0;line-height:1.6;font-size:13px;color:#4a5568\">');\n//   out = out.replace(/\\n/g, '<br>');\n//   return '<p style=\"margin:4px 0;line-height:1.6;font-size:13px;color:#4a5568\">' + out + '</p>';\n// }\n\n// function bodyToHtml(text) {\n//   if (!text) return \"\";\n//   var out = escHtml(text);\n//   var viewAndFollow = /View image: \\(([^)]+)\\)\\nFollow image link: \\(([^)]+)\\)/g;\n//   out = out.replace(viewAndFollow, function(m, img, link) {\n//     return '<div style=\"text-align:center;margin:10px 0\"><a href=\"' + link + '\" target=\"_blank\"><img src=\"' + img + '\" style=\"max-width:100%;max-height:220px;border-radius:6px;display:block;margin:0 auto\" alt=\"Image\"></a></div>';\n//   });\n//   var viewOnly = /View image: \\(([^)]+)\\)/g;\n//   out = out.replace(viewOnly, function(m, img) {\n//     return '<div style=\"text-align:center;margin:10px 0\"><a href=\"' + img + '\" target=\"_blank\"><img src=\"' + img + '\" style=\"max-width:100%;max-height:220px;border-radius:6px;display:block;margin:0 auto\" alt=\"Image\"></a></div>';\n//   });\n//   out = out.replace(/Follow image link: \\(([^)]+)\\)/g, '');\n//   var captionPat = /Caption: ?([^\\n]*)/g;\n//   out = out.replace(captionPat, function(m, txt) {\n//     var t = txt.trim();\n//     return t ? '<em style=\"font-size:11px;color:#a0aec0;display:block;text-align:center;margin:2px 0 8px\">' + t + '</em>' : '';\n//   });\n//   out = out.replace(/---+/g, '<hr style=\"border:none;border-top:1px solid #e2e8f0;margin:10px 0\">');\n//   out = out.replace(/^###### (.+)$/gm, '<h6 style=\"color:#718096;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:14px 0 2px\">$1</h6>');\n//   out = out.replace(/^##### (.+)$/gm, '<h5 style=\"color:#4a5568;font-size:12px;font-weight:700;margin:10px 0 3px\">$1</h5>');\n//   out = out.replace(/^#### (.+)$/gm, '<h4 style=\"color:#1a365d;font-size:15px;font-weight:700;margin:10px 0 4px\">$1</h4>');\n//   out = out.replace(/^### (.+)$/gm, '<h4 style=\"color:#2d3748;font-size:14px;font-weight:600;margin:10px 0 4px\">$1</h4>');\n//   out = out.replace(/^## (.+)$/gm, '<h4 style=\"color:#1a365d;font-size:14px;font-weight:600;margin:10px 0 4px\">$1</h4>');\n//   out = out.replace(/^# (.+)$/gm, '<h3 style=\"color:#1a365d;font-size:16px;font-weight:700;margin:12px 0 6px\">$1</h3>');\n//   out = out.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');\n//   out = out.replace(/_([^_\\n]+)_/g, '<em>$1</em>');\n//   out = out.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#3182ce\" target=\"_blank\">$1</a>');\n//   out = out.replace(/\\n\\n/g, '</p><p style=\"margin:6px 0;line-height:1.65;color:#4a5568\">');\n//   out = out.replace(/\\n/g, '<br>');\n//   return '<p style=\"margin:6px 0;line-height:1.65;color:#4a5568;font-size:13px\">' + out + '</p>';\n// }\n\n// var now = new Date();\n// var dateStr = now.toLocaleDateString(\"en-US\", { weekday: \"long\", year: \"numeric\", month: \"long\", day: \"numeric\" });\n\n// var batchSummariesHtml = \"\";\n// for (var bsi = 0; bsi < compiled.allBatchSummaries.length; bsi++) {\n//   var bs = compiled.allBatchSummaries[bsi];\n//   var batchStart = (bs.batchNum - 1) * 4 + 1;\n//   var batchEnd = Math.min(bs.batchNum * 4, compiled.totalEmails);\n//   var emailRangeLinks = \"\";\n//   for (var bce = batchStart; bce <= batchEnd; bce++) {\n//     emailRangeLinks += citationLink(bce);\n//   }\n//   batchSummariesHtml += '<div style=\"margin-bottom:12px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden\">';\n//   batchSummariesHtml += '<div style=\"background:#f7fafc;padding:8px 14px;border-bottom:1px solid #e2e8f0\">';\n//   batchSummariesHtml += '<strong style=\"color:#2d3748;font-size:13px\">Batch ' + bs.batchNum + '</strong>';\n//   batchSummariesHtml += '<span style=\"margin-left:8px;font-size:12px;color:#718096\">Emails ' + emailRangeLinks + '</span>';\n//   batchSummariesHtml += '</div>';\n//   batchSummariesHtml += '<div style=\"padding:12px 14px\">' + batchSummaryToHtml(bs.summary) + '</div>';\n//   batchSummariesHtml += '</div>';\n// }\n\n// var emailsHtml = \"\";\n// for (var ei = 0; ei < compiled.allEmails.length; ei++) {\n//   var em = compiled.allEmails[ei];\n//   var emailAtts = [];\n//   for (var ai = 0; ai < attachmentIndex.length; ai++) {\n//     if (attachmentIndex[ai].emailNum === em.emailNum) emailAtts.push(attachmentIndex[ai]);\n//   }\n//   var attBadges = \"\";\n//   for (var abi = 0; abi < emailAtts.length; abi++) {\n//     attBadges += '<span style=\"display:inline-block;background:#f0fff4;border:1px solid #9ae6b4;color:#276749;padding:2px 8px;border-radius:10px;font-size:11px;margin:2px 2px 0 0\">Attachment: ' + escHtml(emailAtts[abi].name) + '</span>';\n//   }\n//   var bodyRendered = bodyToHtml(em.plainBody || \"\");\n//   var bodyHtml = em.plainBody ? '<div style=\"border-top:1px solid #e2e8f0;padding:12px 0 4px\">' + bodyRendered + '</div>' : \"\";\n//   var attSec = emailAtts.length > 0 ? '<div style=\"margin-top:8px\">' + attBadges + '</div>' : \"\";\n//   emailsHtml += '<div id=\"email-' + em.emailNum + '\" style=\"margin-bottom:10px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;scroll-margin-top:8px\">';\n//   emailsHtml += '<a name=\"email-' + em.emailNum + '\" style=\"display:block;height:0;overflow:hidden;font-size:0;line-height:0\"></a>';\n//   emailsHtml += '<div style=\"background:#edf2f7;padding:10px 14px\">';\n//   emailsHtml += '<strong style=\"color:#1a365d;font-size:14px\">[#' + em.emailNum + '] ' + escHtml(em.subject) + '</strong><br>';\n//   emailsHtml += '<span style=\"font-size:12px;color:#718096\">From: ' + escHtml(em.from) + ' | ' + escHtml(em.date) + '</span>';\n//   if (em.to) emailsHtml += '<br><span style=\"font-size:12px;color:#718096\">To: ' + escHtml(em.to) + '</span>';\n//   emailsHtml += '</div><div style=\"padding:12px 14px\">' + bodyHtml + attSec + '</div></div>';\n// }\n\n// var attRows = \"\";\n// if (attachmentIndex.length > 0) {\n//   for (var ari = 0; ari < attachmentIndex.length; ari++) {\n//     var att = attachmentIndex[ari];\n//     attRows += '<tr><td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px\"><strong>' + escHtml(att.name) + '</strong></td>';\n//     attRows += '<td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;text-align:center\">' + citationLink(att.emailNum) + '</td>';\n//     attRows += '<td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px;color:#4a5568\">' + escHtml(att.emailSubject) + '</td>';\n//     attRows += '<td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px;color:#718096\">' + escHtml(att.emailFrom) + '</td></tr>';\n//   }\n// }\n\n// var attSectionHtml = attachmentIndex.length > 0 ? '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px 24px;margin-bottom:16px\"><div style=\"font-size:16px;font-weight:700;color:#276749;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #9ae6b4\">Attachment Citation Index <span style=\"font-size:12px;font-weight:400;color:#718096\">(' + attachmentIndex.length + ' files)</span></div><table style=\"width:100%;border-collapse:collapse\"><thead><tr><th style=\"background:#f0fff4;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">File</th><th style=\"background:#f0fff4;padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">Email</th><th style=\"background:#f0fff4;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">Subject</th><th style=\"background:#f0fff4;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">From</th></tr></thead><tbody>' + attRows + '</tbody></table></div>' : \"\";\n\n// var hoverCss = '<style>a.cite{transition:background 0.15s ease,box-shadow 0.15s ease,transform 0.1s ease}a.cite:hover{background:#bee3f8!important;color:#1a365d!important;box-shadow:0 2px 8px rgba(43,108,176,0.4)!important;transform:scale(1.08)}</style>';\n\n// var html = '<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">' + hoverCss + '</head>';\n// html += '<body style=\"font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;background:#f0f4f8;margin:0;padding:20px;color:#2d3748\">';\n// html += '<div style=\"max-width:900px;margin:0 auto\">';\n// html += '<div style=\"background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);color:#fff;padding:24px 28px;border-radius:10px 10px 0 0\">';\n// html += '<h1 style=\"margin:0 0 6px;font-size:22px;letter-spacing:-.3px\">Daily Email Digest</h1>';\n// html += '<p style=\"margin:0;opacity:.85;font-size:13px\">' + dateStr + ' | ' + compiled.totalEmails + ' emails | ' + compiled.totalBatches + ' batches | ' + attachmentIndex.length + ' attachments</p>';\n// html += '</div>';\n// html += '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:0 0 8px 8px;padding:20px 24px;margin-bottom:16px\">';\n// html += '<div style=\"font-size:16px;font-weight:700;color:#1a365d;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #3182ce\">Master Summary</div>';\n// html += '<div style=\"line-height:1.7\">' + summaryToHtml(masterText) + '</div></div>';\n// if (compiled.allBatchSummaries.length > 0) {\n//   html += '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px 24px;margin-bottom:16px\">';\n//   html += '<div style=\"font-size:16px;font-weight:700;color:#2d3748;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #cbd5e0\">Detailed Batch Summaries <span style=\"font-size:12px;font-weight:400;color:#718096\">(' + compiled.allBatchSummaries.length + ' batches from AI Agent)</span></div>';\n//   html += batchSummariesHtml + '</div>';\n// }\n// html += '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px 24px;margin-bottom:16px\">';\n// html += '<div style=\"font-size:16px;font-weight:700;color:#1a365d;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #3182ce\">All Emails (' + compiled.totalEmails + ' \u2014 full content)</div>';\n// html += emailsHtml + '</div>';\n// html += attSectionHtml;\n// html += '</div></body></html>';\n\n// var subject = \"Daily Email Digest - \" + dateStr + \" (\" + compiled.totalEmails + \" emails)\";\n// Master summary now pulled explicitly from the \"Master Summary (AI)\" node,\n// rather than assuming it's this node's immediate input.\nvar masterText = $(\"Master Summary (AI)\").first().json.text || \"\";\n\nvar compiled = $(\"Compile All\").first().json;\nvar originalEmails = $(\"Get Emails\").all();\n\nvar allBinary = {};\nvar attachmentIndex = [];\nvar globalAttIdx = 0;\nfor (var emailIdx = 0; emailIdx < compiled.allEmails.length; emailIdx++) {\n  var email = compiled.allEmails[emailIdx];\n  var origItem = originalEmails[emailIdx];\n  if (!origItem) continue;\n  var binData = origItem.binary || {};\n  var binKeys = Object.keys(binData);\n  for (var bki = 0; bki < binKeys.length; bki++) {\n    if (globalAttIdx >= 50) break;\n    var key = binKeys[bki];\n    var b = binData[key];\n    var paddedIdx = globalAttIdx < 10 ? \"0\" + globalAttIdx : \"\" + globalAttIdx;\n    var newKey = \"att_\" + paddedIdx;\n    allBinary[newKey] = b;\n    attachmentIndex.push({ key: newKey, name: b ? (b.fileName || key) : key, mimeType: b ? (b.mimeType || \"\") : \"\", emailNum: email.emailNum, emailSubject: email.subject, emailFrom: email.from });\n    globalAttIdx++;\n  }\n}\n\nfunction escHtml(str) {\n  return (str || \"\").replace(/&/g, \"&amp;\").replace(/</g, \"&lt;\").replace(/>/g, \"&gt;\");\n}\n\nfunction citationLink(n) {\n  return '<a href=\"#email-' + n + '\" class=\"cite\" title=\"Jump to Email #' + n + '\" style=\"display:inline-block;background:#ebf8ff;color:#2b6cb0;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700;margin:0 1px;text-decoration:none;cursor:pointer\">[#' + n + ']</a>';\n}\n\nfunction summaryToHtml(text) {\n  if (!text) return \"<em>No summary available.</em>\";\n  var out = escHtml(text);\n  out = out.replace(/^## .*(?:ACTION.*DEAD|DEAD[A-Z]*INES?|CRITICAL.*ITEM).*/gim, '<h3 style=\"color:#c53030;border-left:4px solid #c53030;padding-left:10px;margin:20px 0 8px\">Action Items &amp; Deadlines</h3>');\n  out = out.replace(/^## .*KEY.*(?:INFO|DECISION).*/gim, '<h3 style=\"color:#2b6cb0;border-left:4px solid #2b6cb0;padding-left:10px;margin:20px 0 8px\">Key Information &amp; Decisions</h3>');\n  out = out.replace(/^## .*(?:OPEN.*QUEST|QUEST.*AWAIT).*/gim, '<h3 style=\"color:#d97706;border-left:4px solid #d97706;padding-left:10px;margin:20px 0 8px\">Open Questions</h3>');\n  out = out.replace(/^## .*ATTACHMENT.*/gim, '<h3 style=\"color:#276749;border-left:4px solid #276749;padding-left:10px;margin:20px 0 8px\">All Attachments</h3>');\n  out = out.replace(/^## .*(?:DIGEST|EMAIL.*SUMMAR|EMAIL.*BY.*EMAIL).*/gim, '<h3 style=\"color:#553c9a;border-left:4px solid #553c9a;padding-left:10px;margin:20px 0 8px\">Email-by-Email Digest</h3>');\n  out = out.replace(/^### (.+)$/gm, '<h4 style=\"color:#2d3748;margin:12px 0 4px;font-weight:600;font-size:14px\">$1</h4>');\n  out = out.replace(/^## (.+)$/gm, '<h3 style=\"color:#1a365d;border-left:4px solid #3182ce;padding-left:10px;margin:16px 0 6px\">$1</h3>');\n  out = out.replace(/\\[#(\\d+)\\]/g, function(m, n) { return citationLink(n); });\n  out = out.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');\n  out = out.replace(/\\*([^ \\*][^\\*]*?)\\*/g, '<em>$1</em>');\n  out = out.replace(/\\^\\^([^\\^]+)\\^\\^/g, '$1');\n  out = out.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#3182ce\" target=\"_blank\">$1</a>');\n  out = out.replace(/\\n[-\\*] /g, '\\n\\u2022 ');\n  if (out.indexOf(\"- \") === 0) out = \"\\u2022 \" + out.slice(2);\n  if (out.indexOf(\"* \") === 0) out = \"\\u2022 \" + out.slice(2);\n  out = out.replace(/\\n\\n/g, '</p><p style=\"margin:8px 0;line-height:1.7\">');\n  out = out.replace(/\\n/g, '<br>');\n  return '<p style=\"margin:8px 0;line-height:1.7\">' + out + '</p>';\n}\n\n// Renders the single combined \"Extensive Summary\" text block (compiled.summariesText).\n// Reuses the same section-heading detection as summaryToHtml (Action Items, Key Info,\n// Open Questions, Attachments, Email-by-Email Digest) since this text still likely\n// contains those markers, just consolidated into one field instead of per-batch objects.\nfunction extensiveSummaryToHtml(text) {\n  if (!text) return \"<em>No extensive summary available.</em>\";\n  var out = escHtml(text);\n  out = out.replace(/^## .*(?:ACTION.*DEAD|DEAD[A-Z]*INES?|CRITICAL.*ITEM).*/gim, '<h4 style=\"color:#c53030;border-left:3px solid #c53030;padding-left:8px;margin:14px 0 5px;font-size:13px\">Action Items &amp; Deadlines</h4>');\n  out = out.replace(/^## .*KEY.*(?:INFO|DECISION).*/gim, '<h4 style=\"color:#2b6cb0;border-left:3px solid #2b6cb0;padding-left:8px;margin:14px 0 5px;font-size:13px\">Key Information &amp; Decisions</h4>');\n  out = out.replace(/^## .*(?:OPEN.*QUEST|QUEST.*AWAIT).*/gim, '<h4 style=\"color:#d97706;border-left:3px solid #d97706;padding-left:8px;margin:14px 0 5px;font-size:13px\">Open Questions</h4>');\n  out = out.replace(/^## .*ATTACHMENT.*/gim, '<h4 style=\"color:#276749;border-left:3px solid #276749;padding-left:8px;margin:14px 0 5px;font-size:13px\">Attachments</h4>');\n  out = out.replace(/^## .*(?:DIGEST|EMAIL.*SUMMAR|EMAIL.*BY.*EMAIL).*/gim, '<h4 style=\"color:#553c9a;border-left:3px solid #553c9a;padding-left:8px;margin:14px 0 5px;font-size:13px\">Email-by-Email Digest</h4>');\n  out = out.replace(/^## (.+)$/gm, '<h4 style=\"color:#2d3748;border-left:3px solid #a0aec0;padding-left:8px;margin:12px 0 5px;font-size:13px\">$1</h4>');\n  out = out.replace(/^### (.+)$/gm, '<h5 style=\"color:#2d3748;margin:10px 0 3px;font-weight:600;font-size:12px\">$1</h5>');\n  out = out.replace(/\\[#(\\d+)\\]/g, function(m, n) { return citationLink(n); });\n  out = out.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');\n  out = out.replace(/\\*([^ \\*][^\\*]*?)\\*/g, '<em>$1</em>');\n  out = out.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#3182ce\" target=\"_blank\">$1</a>');\n  out = out.replace(/\\n[-\\*] /g, '\\n\\u2022 ');\n  if (out.indexOf(\"- \") === 0) out = \"\\u2022 \" + out.slice(2);\n  if (out.indexOf(\"* \") === 0) out = \"\\u2022 \" + out.slice(2);\n  out = out.replace(/\\n\\n/g, '</p><p style=\"margin:8px 0;line-height:1.7\">');\n  out = out.replace(/\\n/g, '<br>');\n  return '<p style=\"margin:8px 0;line-height:1.7\">' + out + '</p>';\n}\n\nfunction bodyToHtml(text) {\n  if (!text) return \"\";\n  var out = escHtml(text);\n  var viewAndFollow = /View image: \\(([^)]+)\\)\\nFollow image link: \\(([^)]+)\\)/g;\n  out = out.replace(viewAndFollow, function(m, img, link) {\n    return '<div style=\"text-align:center;margin:10px 0\"><a href=\"' + link + '\" target=\"_blank\"><img src=\"' + img + '\" style=\"max-width:100%;max-height:220px;border-radius:6px;display:block;margin:0 auto\" alt=\"Image\"></a></div>';\n  });\n  var viewOnly = /View image: \\(([^)]+)\\)/g;\n  out = out.replace(viewOnly, function(m, img) {\n    return '<div style=\"text-align:center;margin:10px 0\"><a href=\"' + img + '\" target=\"_blank\"><img src=\"' + img + '\" style=\"max-width:100%;max-height:220px;border-radius:6px;display:block;margin:0 auto\" alt=\"Image\"></a></div>';\n  });\n  out = out.replace(/Follow image link: \\(([^)]+)\\)/g, '');\n  var captionPat = /Caption: ?([^\\n]*)/g;\n  out = out.replace(captionPat, function(m, txt) {\n    var t = txt.trim();\n    return t ? '<em style=\"font-size:11px;color:#a0aec0;display:block;text-align:center;margin:2px 0 8px\">' + t + '</em>' : '';\n  });\n  out = out.replace(/---+/g, '<hr style=\"border:none;border-top:1px solid #e2e8f0;margin:10px 0\">');\n  out = out.replace(/^###### (.+)$/gm, '<h6 style=\"color:#718096;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:14px 0 2px\">$1</h6>');\n  out = out.replace(/^##### (.+)$/gm, '<h5 style=\"color:#4a5568;font-size:12px;font-weight:700;margin:10px 0 3px\">$1</h5>');\n  out = out.replace(/^#### (.+)$/gm, '<h4 style=\"color:#1a365d;font-size:15px;font-weight:700;margin:10px 0 4px\">$1</h4>');\n  out = out.replace(/^### (.+)$/gm, '<h4 style=\"color:#2d3748;font-size:14px;font-weight:600;margin:10px 0 4px\">$1</h4>');\n  out = out.replace(/^## (.+)$/gm, '<h4 style=\"color:#1a365d;font-size:14px;font-weight:600;margin:10px 0 4px\">$1</h4>');\n  out = out.replace(/^# (.+)$/gm, '<h3 style=\"color:#1a365d;font-size:16px;font-weight:700;margin:12px 0 6px\">$1</h3>');\n  out = out.replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>');\n  out = out.replace(/_([^_\\n]+)_/g, '<em>$1</em>');\n  out = out.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href=\"$2\" style=\"color:#3182ce\" target=\"_blank\">$1</a>');\n  out = out.replace(/\\n\\n/g, '</p><p style=\"margin:6px 0;line-height:1.65;color:#4a5568\">');\n  out = out.replace(/\\n/g, '<br>');\n  return '<p style=\"margin:6px 0;line-height:1.65;color:#4a5568;font-size:13px\">' + out + '</p>';\n}\n\nvar now = new Date();\nvar dateStr = now.toLocaleDateString(\"en-US\", { weekday: \"long\", year: \"numeric\", month: \"long\", day: \"numeric\" });\n\n// Extensive Summary section (was: per-batch \"Detailed Batch Summaries\" loop).\n// Now rendered from the single compiled.summariesText field.\nvar extensiveSummaryHtml = extensiveSummaryToHtml(compiled.summariesText);\n\nvar emailsHtml = \"\";\nfor (var ei = 0; ei < compiled.allEmails.length; ei++) {\n  var em = compiled.allEmails[ei];\n  var emailAtts = [];\n  for (var ai = 0; ai < attachmentIndex.length; ai++) {\n    if (attachmentIndex[ai].emailNum === em.emailNum) emailAtts.push(attachmentIndex[ai]);\n  }\n  var attBadges = \"\";\n  for (var abi = 0; abi < emailAtts.length; abi++) {\n    attBadges += '<span style=\"display:inline-block;background:#f0fff4;border:1px solid #9ae6b4;color:#276749;padding:2px 8px;border-radius:10px;font-size:11px;margin:2px 2px 0 0\">Attachment: ' + escHtml(emailAtts[abi].name) + '</span>';\n  }\n  var bodyRendered = bodyToHtml(em.plainBody || \"\");\n  var bodyHtml = em.plainBody ? '<div style=\"border-top:1px solid #e2e8f0;padding:12px 0 4px\">' + bodyRendered + '</div>' : \"\";\n  var attSec = emailAtts.length > 0 ? '<div style=\"margin-top:8px\">' + attBadges + '</div>' : \"\";\n  emailsHtml += '<div id=\"email-' + em.emailNum + '\" style=\"margin-bottom:10px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;scroll-margin-top:8px\">';\n  emailsHtml += '<a name=\"email-' + em.emailNum + '\" style=\"display:block;height:0;overflow:hidden;font-size:0;line-height:0\"></a>';\n  emailsHtml += '<div style=\"background:#edf2f7;padding:10px 14px\">';\n  emailsHtml += '<strong style=\"color:#1a365d;font-size:14px\">[#' + em.emailNum + '] ' + escHtml(em.subject) + '</strong><br>';\n  emailsHtml += '<span style=\"font-size:12px;color:#718096\">From: ' + escHtml(em.from) + ' | ' + escHtml(em.date) + '</span>';\n  if (em.to) emailsHtml += '<br><span style=\"font-size:12px;color:#718096\">To: ' + escHtml(em.to) + '</span>';\n  emailsHtml += '</div><div style=\"padding:12px 14px\">' + bodyHtml + attSec + '</div></div>';\n}\n\nvar attRows = \"\";\nif (attachmentIndex.length > 0) {\n  for (var ari = 0; ari < attachmentIndex.length; ari++) {\n    var att = attachmentIndex[ari];\n    attRows += '<tr><td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px\"><strong>' + escHtml(att.name) + '</strong></td>';\n    attRows += '<td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;text-align:center\">' + citationLink(att.emailNum) + '</td>';\n    attRows += '<td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px;color:#4a5568\">' + escHtml(att.emailSubject) + '</td>';\n    attRows += '<td style=\"padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px;color:#718096\">' + escHtml(att.emailFrom) + '</td></tr>';\n  }\n}\n\nvar attSectionHtml = attachmentIndex.length > 0 ? '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px 24px;margin-bottom:16px\"><div style=\"font-size:16px;font-weight:700;color:#276749;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #9ae6b4\">Attachment Citation Index <span style=\"font-size:12px;font-weight:400;color:#718096\">(' + attachmentIndex.length + ' files)</span></div><table style=\"width:100%;border-collapse:collapse\"><thead><tr><th style=\"background:#f0fff4;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">File</th><th style=\"background:#f0fff4;padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">Email</th><th style=\"background:#f0fff4;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">Subject</th><th style=\"background:#f0fff4;padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#276749;text-transform:uppercase\">From</th></tr></thead><tbody>' + attRows + '</tbody></table></div>' : \"\";\n\nvar hoverCss = '<style>a.cite{transition:background 0.15s ease,box-shadow 0.15s ease,transform 0.1s ease}a.cite:hover{background:#bee3f8!important;color:#1a365d!important;box-shadow:0 2px 8px rgba(43,108,176,0.4)!important;transform:scale(1.08)}</style>';\n\n// Header stats: totalBatches only shown if compiled still provides it.\nvar batchStatSegment = (compiled.totalBatches !== undefined && compiled.totalBatches !== null)\n  ? (' | ' + compiled.totalBatches + ' batches')\n  : '';\n\nvar html = '<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">' + hoverCss + '</head>';\nhtml += '<body style=\"font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;background:#f0f4f8;margin:0;padding:20px;color:#2d3748\">';\nhtml += '<div style=\"max-width:900px;margin:0 auto\">';\nhtml += '<div style=\"background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);color:#fff;padding:24px 28px;border-radius:10px 10px 0 0\">';\nhtml += '<h1 style=\"margin:0 0 6px;font-size:22px;letter-spacing:-.3px\">Daily Email Digest</h1>';\nhtml += '<p style=\"margin:0;opacity:.85;font-size:13px\">' + dateStr + ' | ' + compiled.totalEmails + ' emails' + batchStatSegment + ' | ' + attachmentIndex.length + ' attachments</p>';\nhtml += '</div>';\n\n// 1) Master Summary\nhtml += '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:0 0 8px 8px;padding:20px 24px;margin-bottom:16px\">';\nhtml += '<div style=\"font-size:16px;font-weight:700;color:#1a365d;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #3182ce\">Master Summary</div>';\nhtml += '<div style=\"line-height:1.7\">' + summaryToHtml(masterText) + '</div></div>';\n\n// 2) Extensive Summary\nif (compiled.summariesText) {\n  html += '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px 24px;margin-bottom:16px\">';\n  html += '<div style=\"font-size:16px;font-weight:700;color:#2d3748;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #cbd5e0\">Extensive Summary</div>';\n  html += '<div style=\"line-height:1.7\">' + extensiveSummaryHtml + '</div></div>';\n}\n\n// 3) All Emails\nhtml += '<div style=\"background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px 24px;margin-bottom:16px\">';\nhtml += '<div style=\"font-size:16px;font-weight:700;color:#1a365d;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #3182ce\">All Emails (' + compiled.totalEmails + ' \u2014 full content)</div>';\nhtml += emailsHtml + '</div>';\n\n// 4) Attachment index (unchanged position, after all emails)\nhtml += attSectionHtml;\nhtml += '</div></body></html>';\n\nvar subject = \"Daily Email Digest - \" + dateStr + \" (\" + compiled.totalEmails + \" emails)\";\nreturn [{ json: { html: html, subject: subject, attachmentCount: attachmentIndex.length }, binary: allBinary }];// return [{ json: { html: html, subject: subject, attachmentCount: attachmentIndex.length }, binary: allBinary }];"
+      },
+      "id": "58e7fe36-08bf-4c12-9ac4-4de20ca244e4",
+      "name": "Format HTML Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "att-check",
+              "leftValue": "={{ $json.attachmentCount }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5014b718-41c4-41fe-a173-cf06570f0640",
+      "name": "Has Attachments?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1824,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL_ADDRESS_HERE",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "={{ $json.attachmentCount >= 1 ? \"att_00\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 2 ? \"att_01\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 3 ? \"att_02\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 4 ? \"att_03\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 5 ? \"att_04\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 6 ? \"att_05\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 7 ? \"att_06\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 8 ? \"att_07\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 9 ? \"att_08\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 10 ? \"att_09\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 11 ? \"att_10\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 12 ? \"att_11\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 13 ? \"att_12\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 14 ? \"att_13\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 15 ? \"att_14\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 16 ? \"att_15\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 17 ? \"att_16\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 18 ? \"att_17\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 19 ? \"att_18\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 20 ? \"att_19\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 21 ? \"att_20\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 22 ? \"att_21\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 23 ? \"att_22\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 24 ? \"att_23\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 25 ? \"att_24\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 26 ? \"att_25\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 27 ? \"att_26\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 28 ? \"att_27\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 29 ? \"att_28\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 30 ? \"att_29\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 31 ? \"att_30\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 32 ? \"att_31\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 33 ? \"att_32\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 34 ? \"att_33\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 35 ? \"att_34\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 36 ? \"att_35\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 37 ? \"att_36\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 38 ? \"att_37\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 39 ? \"att_38\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 40 ? \"att_39\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 41 ? \"att_40\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 42 ? \"att_41\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 43 ? \"att_42\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 44 ? \"att_43\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 45 ? \"att_44\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 46 ? \"att_45\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 47 ? \"att_46\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 48 ? \"att_47\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 49 ? \"att_48\" : \"\" }}"
+              },
+              {
+                "property": "={{ $json.attachmentCount >= 50 ? \"att_49\" : \"\" }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "0448805b-960a-4911-a7f3-92995f748b61",
+      "name": "Send Digest (With Attachments)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2048,
+        16
+      ],
+      "webhookId": "9544b920-bacb-41f2-a982-0f353c46b720"
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL_ADDRESS_HERE",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "cb062165-6429-4049-87a0-cf3bfa8ad096",
+      "name": "Send Digest (No Attachments)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2048,
+        208
+      ],
+      "webhookId": "b89475df-783e-406b-b3af-87b1e06d9398"
+    },
+    {
+      "parameters": {},
+      "id": "71e2422f-399e-41b7-b057-b0e03f32ef20",
+      "name": "When clicking 'Execute workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Attachment slots (1-50)\nEach slot uses a conditional expression: att_N only fires when attachmentCount >= N+1.\nSlots beyond the actual count evaluate to \"\" \u2014 n8n skips them, no error.\nZero attachments route to the No-Attachments node (no binary involved at all).\n\n## Section headers\nKeyword-based regex (gim flags) catches AI spelling variants:\nDEAD[A-Z]*INES? matches DEADLINES, DEADELINES, etc.",
+        "height": 448,
+        "color": 4
+      },
+      "id": "5a118bbe-0a6b-4774-bb17-da8402bac946",
+      "name": "Sticky Note 348ef66c",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -48
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2272,
+        112
+      ],
+      "id": "b921f211-59a8-4ede-8ce9-0b71c7c091fb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        352
+      ],
+      "id": "f0231667-cb38-4a1d-9067-346af1559666",
+      "name": "Google Gemini Chat Model"
+    }
+  ],
+  "connections": {
+    "Every Day at Midnight": {
+      "main": [
+        [
+          {
+            "node": "Get Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Emails": {
+      "main": [
+        [
+          {
+            "node": "Cluster into Batches of 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cluster into Batches of 4": {
+      "main": [
+        [
+          {
+            "node": "Summarize Batch (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Batch (AI)": {
+      "main": [
+        [
+          {
+            "node": "Compile All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize Batch (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Master Summary (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compile All": {
+      "main": [
+        [
+          {
+            "node": "Master Summary (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Summary (AI)": {
+      "main": [
+        [
+          {
+            "node": "Format HTML Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format HTML Email": {
+      "main": [
+        [
+          {
+            "node": "Has Attachments?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Attachments?": {
+      "main": [
+        [
+          {
+            "node": "Send Digest (With Attachments)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Digest (No Attachments)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Get Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Digest (With Attachments)": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Digest (No Attachments)": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize Batch (AI)",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "Master Summary (AI)",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Karachi",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  }
+}

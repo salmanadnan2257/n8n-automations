@@ -1,0 +1,1347 @@
+{
+  "name": "NEW - Generate Subject Line",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw",
+          "mode": "list",
+          "cachedResultName": "Ultimate Real Estate Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Real Estate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "=1:{{ $('new_subject_line').item.json.start }}"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1100,
+        385
+      ],
+      "id": "66f35d86-3e62-4027-9919-f6d25ce9c153",
+      "name": "leads_data",
+      "alwaysOutputData": true,
+      "notesInFlow": false,
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "41acfcf8-10aa-4288-abd5-72c9349d3e0a",
+              "leftValue": "={{ $('leads_data').item.json.row_number }}",
+              "rightValue": "={{ $('new_subject_line').item.json.filter }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        385
+      ],
+      "id": "19a62d3b-c55c-4e45-8fb6-69254600f671",
+      "name": "filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "072f6df3-874c-4a18-8f91-bcee02ceac37",
+              "name": "name",
+              "value": "={{ $('leads_data').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "fab19b52-cbf1-468f-b69c-a0707d0b42ff",
+              "name": "company_name",
+              "value": "={{ $('leads_data').item.json.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "55b9c802-9038-41a0-ae00-33b31b2d26ff",
+              "name": "headline",
+              "value": "={{ $('leads_data').item.json.headline }}",
+              "type": "string"
+            },
+            {
+              "id": "d5d1098b-3f4c-4cf3-bb2b-c4a9c00b5784",
+              "name": "title",
+              "value": "={{ $('leads_data').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "695abffd-ef86-4282-804a-9698ad0748b5",
+              "name": "general_search",
+              "value": "={{ $('leads_data').item.json.general_search }}",
+              "type": "string"
+            },
+            {
+              "id": "68543b39-6fa9-45c8-aeaa-83678a0c7c86",
+              "name": "news_search",
+              "value": "={{ $('leads_data').item.json.news_search }}",
+              "type": "string"
+            },
+            {
+              "id": "d1dc58e2-ee5d-4468-9c96-db37a6d23779",
+              "name": "person_linkedin_scrape",
+              "value": "={{ $('leads_data').item.json.person_linkedin_scrape }}",
+              "type": "string"
+            },
+            {
+              "id": "b7dce3f3-ea90-420e-9742-1ec681fcb336",
+              "name": "company_linkedin_scrape",
+              "value": "={{ $('leads_data').item.json.company_linkedin_scrape }}",
+              "type": "string"
+            },
+            {
+              "id": "cb221bbd-6c09-42c9-9ec9-c07d1dd93b53",
+              "name": "first_email",
+              "value": "={{ $('leads_data').item.json.first_email }}",
+              "type": "string"
+            },
+            {
+              "id": "1e0a28f1-ba30-4031-8e3f-acbff021456a",
+              "name": "first_follow_up",
+              "value": "={{ $('leads_data').item.json.first_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "f87c6d42-127d-4d1b-9bf9-a2dac3af9920",
+              "name": "second_follow_up",
+              "value": "={{ $('leads_data').item.json.second_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "9698f51c-ae9a-47f3-b27b-e4f4a1f8829a",
+              "name": "third_follow_up",
+              "value": "={{ $('leads_data').item.json.third_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "7fb12635-c188-42bc-8734-c673a136b779",
+              "name": "fourth_follow_up",
+              "value": "={{ $('leads_data').item.json.fourth_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "f0a93035-8bf5-4e12-b145-f86f80458e1b",
+              "name": "fifth_follow_up",
+              "value": "={{ $('leads_data').item.json.fifth_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "a2ed4536-746e-4389-af07-6f7546ca0268",
+              "name": "row_number",
+              "value": "={{ $('leads_data').item.json.row_number }}",
+              "type": "string"
+            },
+            {
+              "id": "75f9a156-3d66-4664-853e-1f201a7a0826",
+              "name": "subject_line",
+              "value": "={{ $('leads_data').item.json.subject_line }}",
+              "type": "string"
+            },
+            {
+              "id": "658f7a5b-792b-4fa0-9875-c73c238c2342",
+              "name": "type",
+              "value": "={{ $('leads_data').item.json.type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -660,
+        380
+      ],
+      "id": "12d27d22-3b22-43b2-b882-6d1b578d6bfa",
+      "name": "essential"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "71d538d0-5fe9-4cd3-9fd0-c2c84e420d2d",
+              "leftValue": "={{ $('essential').item.json.subject_line }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "2e079203-aee7-410c-b03e-83d4d6049811",
+              "leftValue": "={{ $('essential').item.json.first_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -440,
+        385
+      ],
+      "id": "686fe7fd-5af5-4c9f-9277-535f233da6de",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        510
+      ],
+      "id": "eb09a02b-a225-4e3b-855f-ed40642d419a",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "59d5b90f-863e-4224-929b-a7dbf56f1853",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        -40
+      ],
+      "id": "de560238-6c97-46b1-bd88-387d532d2720",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1256,
+        110
+      ],
+      "id": "82a5e914-9e11-4fc2-a6c1-9168d117439f",
+      "name": "noop"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw",
+          "mode": "list",
+          "cachedResultName": "Ultimate Real Estate Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Real Estate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('essential').item.json.row_number }}",
+            "subject_line": "={{ $('clean_subject_line').item.json.subject_line }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "headline",
+              "displayName": "headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_website_url",
+              "displayName": "company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_fb",
+              "displayName": "company_fb",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_linkedin",
+              "displayName": "company_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_twitter",
+              "displayName": "company_twitter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_phone_no",
+              "displayName": "company_phone_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_primary_phone_no",
+              "displayName": "company_primary_phone_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_city",
+              "displayName": "company_city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_country",
+              "displayName": "company_country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "general_search",
+              "displayName": "general_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "news_search",
+              "displayName": "news_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "person_linkedin_scrape",
+              "displayName": "person_linkedin_scrape",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_linkedin_scrape",
+              "displayName": "company_linkedin_scrape",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "first_email",
+              "displayName": "first_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "first_follow_up",
+              "displayName": "first_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "second_follow_up",
+              "displayName": "second_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "third_follow_up",
+              "displayName": "third_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fourth_follow_up",
+              "displayName": "fourth_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fifth_follow_up",
+              "displayName": "fifth_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "subject_line",
+              "displayName": "subject_line",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1256,
+        -140
+      ],
+      "id": "da54e440-c52d-41d0-b9de-0a51b4cf47aa",
+      "name": "add_subject_line",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 50,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -220,
+        260
+      ],
+      "id": "fd50a91f-4fd4-4760-a154-b5ae776de015",
+      "name": "loop"
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        135
+      ],
+      "id": "943cc09a-e544-45bf-bd37-2bd9e5d40f01",
+      "name": "Wait",
+      "webhookId": "712c052b-6850-4e5a-84ac-2670319cb10b"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        820,
+        740
+      ],
+      "id": "c4f0a07d-efc2-499e-b7a2-d0c48b8263a5",
+      "name": "no_pass_data",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const email1 = $(\"Final\").item.json.output;\n\nconst text1 = email1\n  .replace(/\\*\\*\\*(.*?)\\*\\*\\*/g, '$1')  // bold-italic\n  .replace(/\\*\\*(.*?)\\*\\*/g, '$1')               // bold\n  .replace(/\\*(.*?)\\*/g, '$1')                           // italic\n  .replace(/\\n/g, '')                                         // newline to <br>\n  .replace(/\"/g, '&quot;');                                       // escape double\n\nreturn {\n  json: {\n    subject_line: text1\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -140
+      ],
+      "id": "22f2a4ec-1b85-4691-a4a2-ccd7f4737b41",
+      "name": "clean_subject_line"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1476,
+        -40
+      ],
+      "id": "c9272d85-1208-456e-bd64-cd4ced725b7f",
+      "name": "merge"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        520,
+        740
+      ],
+      "id": "5afc781e-f94a-4728-9d8a-2b71f9e87112",
+      "name": "merge1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=1st email:\n\"\"\"\n{{ $('essential').item.json.first_email }}\n\"\"\"\n\nName: {{ $('essential').item.json.name }}\nCompany Name: {{ $('essential').item.json.company_name }}\nHeadline: {{ $('essential').item.json.headline }}\nTitle: {{ $('essential').item.json.title }}\nGoogle Research on person + company (could be inaccurate, so you must compare it with the person's info provided above i.e. name, company, title, etc.):\n\"\"\"\n{{ $('essential').item.json.general_search }}\n\n{{ $('essential').item.json.news_search }}\n\n{{ $('essential').item.json.person_linkedin_scrape }}\n\n{{ $('essential').item.json.company_linkedin_scrape }}\n\"\"\"",
+        "options": {
+          "systemMessage": "**Role:**\nYou are an Expert Subject Line Crafter.\n\n**Context:**\nYour mission is to generate a single, hyper-personalized subject line for an outreach email. The primary goal is to spark intense curiosity in the prospect, making the email feel like it was crafted uniquely for them. You will use the prospect's details ([Full Name], [Company Name], etc.) and the email's content (1st Email) to find your inspiration.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Execution Steps for Flawless Output:**\n    *   **Step 1: Analyze.** Scrutinize all provided information to identify the most unique and compelling keywords or concepts directly related to the prospect. Look for things like a university, a recent company initiative, a personal achievement, or a specific interest mentioned in the email body.\n    *   **Step 2: Synthesize.** Select 2 to 4 of the most impactful concepts you found.\n    *   **Step 3: Construct.** Forge these concepts into a powerful subject line. Use `+` to link distinct ideas or to form a concise phrase. Focus on strong, attention-grabbing words.\n    *   **Step 4: Final Check.** Before outputting, you must verify that your response strictly adheres to the format and length constraints below.\n\n2.  **Constraint: Output Format (Absolute Rule):**\n    *   Your entire response MUST BE the raw subject line text and nothing else.\n    *   NO labels, JSON, quotes, or explanatory text (e.g., \"Here is the subject line:\").\n    *   NO new lines (`\\n`), HTML breaks (`<br>`), or any text wrapping.\n\n3.  **Constraint: Length and Style:**\n    *   The subject line **MUST** be at least 6 words and a maximum of 12 words.\n    *   The `+` symbol does not count towards the word limit and can be used to link multiple concepts.\n    *   Grammar and complete sentences are not necessary. Impact is the only priority.\n\n**Examples:**\n*   Input implies prospect is Bob Bollia, likes Starbucks, and had a notable achievement in 2011.\n    *   AI Output: Bob Bollia + Starbucks Coffee + 2011 Achievement\n\n*   Input implies prospect went to Stanford, is interested in AI, and works at Apollo.io.\n    *   AI Output: Your Stanford AI research + leadership at Apollo.io\n\n*   Input implies prospect recently won an award at TechCrunch.\n    *   AI Output: That recent TechCrunch award was truly impressive\n\n*   Input implies prospect gave a keynote and is interested in growth.\n    *   AI Output: Your keynote on growth + a quick question\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        100,
+        -500
+      ],
+      "id": "a73807d3-627e-4b93-b7d6-15a7afbb2bac",
+      "name": "generate_subject_v1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {
+          "temperature": 0.6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -300
+      ],
+      "id": "84e36d75-bdca-47e9-94f5-9dd7fbdd90cc",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "bvv0AI3YzUgw8H73",
+          "name": "newhunain1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "start",
+              "type": "number"
+            },
+            {
+              "name": "filter",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1320,
+        385
+      ],
+      "id": "ef518a36-b205-4a81-bb2a-53c191a53e93",
+      "name": "new_subject_line"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {
+          "temperature": 0.6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        220,
+        420
+      ],
+      "id": "1543dd85-3fa0-469f-b12f-6d056e14d35f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Name: \"{{ $('essential').item.json.name }}\"\nCompany Name: \"{{ $('essential').item.json.company_name }}\"\nHeadline: \"{{ $('essential').item.json.headline }}\"\nTitle: \"{{ $('essential').item.json.title }}\"\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a Subject Line Selector. Your function is to randomly choose and correctly format one subject line from a predefined list based on the provided rules.\n\n**Context:**\nYou will be given prospect details, including a `Company Name`. Your task is to randomly select one of five possible subject lines. If the selected subject line contains a placeholder, you must personalize it with the provided company name.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Step 1: Random Selection.** You MUST first choose a random number from 1 to 5. This selection must be truly random each time you are run.\n2.  **Step 2: Choose Subject Line.** Based on your random number, select the corresponding subject line from this exact list:\n    1.  `An invitation for {{company_name}}`\n    2.  `The Q4 Advantage`\n    3.  `A quick, confidential note`\n    4.  `Your next unfair advantage`\n    5.  `Re: Your 2025 growth ceiling`\n3.  **Step 3: Personalize (If Applicable).**\n    *   If you selected subject line #1, you MUST replace `{{company_name}}` with the value from the `Company Name` input field.\n    *   If the `Company Name` is long (e.g., more than 3 words or contains suffixes like LLC, Inc., Group), shorten it to a concise, professional version that is clearly recognizable (e.g., \"Compass Real Estate Group\" becomes \"Compass Real Estate\"). Do not use any irregular symbols.\n    *   If you selected subject lines #2, #3, #4, or #5, you must use them exactly as written with no changes.\n4.  **Output Constraints (Absolute Rule):**\n    *   Your response must be ONLY the final subject line text.\n    *   Do NOT include the number prefix (e.g., \"1. \").\n    *   Do NOT include any new lines (`\\n`), HTML breaks (`<br>`), quotes, or any explanatory text.\n\n**Examples:**\n*   **Input Data:** `Company Name: \"The Premier Realty Group LLC\"`\n*   **Random Selection:** 1\n*   **Expected Output:** `An invitation for Premier Realty`\n\n*   **Input Data:** `Company Name: \"Any Company Inc.\"`\n*   **Random Selection:** 3\n*   **Expected Output:** `A quick, confidential note`\n\n*   **Input Data:** `Company Name: \"International Business Machines\"`\n*   **Random Selection:** 1\n*   **Expected Output:** `An invitation for IBM`"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        120,
+        220
+      ],
+      "id": "412aabdb-7d4c-4409-889a-5e0e84090bc7",
+      "name": "generate_subject_v2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6209bb03-0efb-4bfa-94ca-3351e9b99d00",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        540,
+        160
+      ],
+      "id": "39bb1d8d-1bae-44cc-bbdd-ff13edd111c9",
+      "name": "Final"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e7627508-bd76-45dc-9a29-f03d8057cb98"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ca94f755-8117-468c-a2d8-eb6c3d871ec1",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ee32ab5f-7179-4e31-b340-210fe1d4f7c8",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b4c5622c-4f36-4d84-8bb3-c4164f7261fb",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "4",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7b7e9919-07b9-43e1-8762-5855c72d9ca6",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "5",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -100,
+        -20
+      ],
+      "id": "67e349f2-1751-4330-b878-f796e84068c1",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {
+          "temperature": 0.6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        220,
+        80
+      ],
+      "id": "9af955b5-6bcb-431a-851c-5e58d22324a2",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Name: \"{{ $('essential').item.json.name }}\"\nCompany Name: \"{{ $('essential').item.json.company_name }}\"\nHeadline: \"{{ $('essential').item.json.headline }}\"\nTitle: \"{{ $('essential').item.json.title }}\"\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a Subject Line Selector. Your function is to randomly choose one subject line from a predefined list.\n\n**Context:**\nYou will be given prospect details, but your sole task is to randomly select one of four possible subject lines and return it verbatim. The goal is to provide variety in outreach communications.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Step 1: Random Selection.** You MUST first choose a random number from 1 to 4. This selection must be truly random each time you are executed.\n2.  **Step 2: Choose Subject Line.** Based on your random number, select the corresponding subject line from this exact list:\n    1.  `A lesson from IQI's co-founder`\n    2.  `Your next growth constraint`\n    3.  `A 67% lift from this one change`\n    4.  `The first domino to fall`\n3.  **Step 3: Output.** Return the selected subject line exactly as it is written, with no changes or personalization.\n4.  **Output Constraints (Absolute Rule):**\n    *   Your response must be ONLY the final subject line text.\n    *   Do NOT include the number prefix (e.g., \"1. \").\n    *   Do NOT include any new lines (`\\n`), HTML breaks (`<br>`), quotes, or any explanatory text.\n\n**Examples:**\n*   **Input Data:** (Any input data)\n*   **Random Selection:** 2\n*   **Expected Output:**\n    Your next growth constraint\n\n*   **Input Data:** (Any input data)\n*   **Random Selection:** 4\n*   **Expected Output:**\n    The first domino to fall\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        120,
+        -120
+      ],
+      "id": "04887e3e-83d7-4889-9c1b-3986c940afb7",
+      "name": "generate_subject_v3",
+      "retryOnFail": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "leads_data": {
+      "main": [
+        [
+          {
+            "node": "filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter": {
+      "main": [
+        [
+          {
+            "node": "essential",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "essential": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "loop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "clean_subject_line",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "noop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "noop": {
+      "main": [
+        [
+          {
+            "node": "merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "add_subject_line": {
+      "main": [
+        [
+          {
+            "node": "merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "loop": {
+      "main": [
+        [
+          {
+            "node": "merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean_subject_line": {
+      "main": [
+        [
+          {
+            "node": "add_subject_line",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "merge": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "merge1": {
+      "main": [
+        [
+          {
+            "node": "no_pass_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_subject_v1": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_subject_v1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "new_subject_line": {
+      "main": [
+        [
+          {
+            "node": "leads_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_subject_v2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_subject_v2": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "generate_subject_v1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_subject_v1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_subject_v3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_subject_v1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_subject_v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_subject_v3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_subject_v3": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "d3d557af-5f03-47ea-b8e6-32da1dc126c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b51ae8788dd58e03d5965cccb0929bf8052ea05534f8bb79c40e8c893c3493be"
+  },
+  "id": "xvF7YoqDr5RfKL7j",
+  "tags": []
+}

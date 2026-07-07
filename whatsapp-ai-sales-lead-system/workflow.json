@@ -1,0 +1,1571 @@
+{
+  "createdAt": "2025-07-09T06:02:08.542Z",
+  "updatedAt": "2025-07-09T06:02:18.000Z",
+  "id": "J3sb5zVxFlBGb3pv",
+  "name": "Cold Calling Automation",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "YOUR_DRIVE_FOLDER_ID",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/YOUR_DRIVE_FOLDER_ID",
+            "cachedResultName": "ReCharge"
+          }
+        },
+        "options": {}
+      },
+      "id": "130f08af-b3af-45cb-8293-e3cd297a20e3",
+      "name": "Search File",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1380,
+        540
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {}
+      },
+      "id": "fb0d0bf2-2450-47ba-98bd-ebbfbdead732",
+      "name": "Get Data",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1540,
+        540
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "documents",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "id": "516540e9-5425-4320-96d4-c0009ffb3897",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        1780,
+        340
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e85f0b10-ee92-4020-b9bd-6641777b71fa",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        1760,
+        520
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "id": "80ab44a0-2f41-4a58-ac0a-f03b5b3b94e3",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1900,
+        540
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f49bf595-2a91-4265-b253-dda56c269994",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        1940,
+        680
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "77c9a851-2675-4b18-8791-3c5813b5c46a",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1560,
+        340
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.payload._data.key.id }}",
+        "options": {
+          "systemMessage": "=You are a business intelligence assistant for ReCharge with access to:\n\n1. **company knowledge based** - General business documents and guides\n2. **Restaurant Leads Database** - Potential restaurant clients with ratings, contact info, and business details\n\nYou can help with:\n- Finding high-potential restaurant leads by location, rating, or category\n- Analyzing restaurant market opportunities  \n- Providing restaurant recommendations and insights\n- Preparing cold outreach strategies with personalized data\n- Business intelligence from collected restaurant data\n\nAlways use both knowledge sources to provide comprehensive answers."
+        }
+      },
+      "id": "c2e1a5a7-932b-4cb5-be44-a4110ef23d22",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        80,
+        700
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "ce2ea4a5-2f54-4fd4-be16-1e2a8dc3ea27",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        20,
+        860
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WAHA Trigger').item.json.payload._data.key.remoteJid }}",
+        "contextWindowLength": 20
+      },
+      "id": "153f404b-78f6-47f9-bac7-d2690bcc9915",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "position": [
+        160,
+        860
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f3d686b1-ce78-4224-85eb-c7ce60cb140e",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        300,
+        1000
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 0
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_DRIVE_FOLDER_ID",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/YOUR_DRIVE_FOLDER_ID",
+          "cachedResultName": "ReCharge"
+        },
+        "event": "fileUpdated",
+        "options": {
+          "fileType": "all"
+        }
+      },
+      "id": "9feec61a-bfc6-4117-a651-d1628a17b983",
+      "name": "Google Drive Trigger",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        1200,
+        540
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Company Knowledge Base\n",
+        "height": 620,
+        "width": 1100,
+        "color": 5
+      },
+      "id": "d9df43e8-09a6-433e-9ad8-e933280ac0a8",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        220
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "a7474cfe-566c-475a-bf56-4f5d396f3ef3",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -220,
+        140
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "<your apify url>",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"includeWebResults\": false,\n    \"language\": \"id\",\n    \"locationQuery\": \"{{ $json.lokasi }}\",\n    \"maxCrawledPlacesPerSearch\": 500,\n    \"maxImages\": 0,\n    \"maximumLeadsEnrichmentRecords\": 0,\n    \"scrapeContacts\": false,\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapePlaceDetailPage\": false,\n    \"scrapeReviewsPersonalData\": true,\n    \"scrapeTableReservationProvider\": false,\n    \"searchStringsArray\": [\n        \"Restoran\"\n    ],\n    \"skipClosedPlaces\": false\n}",
+        "options": {}
+      },
+      "id": "9c007966-b1bc-4be1-9d89-976ad5ffff9a",
+      "name": "Scrape Maps",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        220,
+        140
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Bersihkan dan format data dari spreadsheet\nconst cleanData = $input.all().map(item => {\n  const data = item.json;\n  \n  // Parse JSON strings jadi array yang mudah dibaca\n  function parseJsonField(field) {\n    try {\n      if (!field || field === 'not found') return [];\n      const parsed = JSON.parse(field);\n      if (Array.isArray(parsed)) {\n        return parsed.map(item => {\n          if (typeof item === 'object') {\n            return Object.keys(item).filter(key => item[key] === true);\n          }\n          return item;\n        }).flat();\n      }\n      return [];\n    } catch {\n      return [];\n    }\n  }\n  \n  // Parse opening hours jadi format mudah dibaca\n  function parseOpeningHours(hoursString) {\n    try {\n      if (!hoursString) return 'Jam buka tidak tersedia';\n      const hours = JSON.parse(hoursString);\n      return hours.map(h => `${h.day}: ${h.hours}`).join(', ');\n    } catch {\n      return 'Jam buka tidak tersedia';\n    }\n  }\n  \n  // Ekstrak data bersih\n  const keunggulan = parseJsonField(data.Keunggulan);\n  const fasilitas = parseJsonField(data.Fasilitas);\n  const pembayaran = parseJsonField(data.Pembayaran);\n  const allCategories = parseJsonField(data['All Categories']);\n  const openingHours = parseOpeningHours(data['Opening Hours']);\n  \n  // Buat deskripsi lengkap untuk AI\n  const businessDescription = `\n${data.Title} adalah ${data.Category} yang berlokasi di ${data.Neighborhood}. \nRating: ${data.Rating}/5 dengan ${data.Reviews} review. \nHarga: ${data.Price || 'Tidak diketahui'}.\n${data.Description || ''}\n\nKeunggulan: ${keunggulan.join(', ') || 'Tidak ada info keunggulan'}\nFasilitas: ${fasilitas.join(', ') || 'Tidak ada info fasilitas'}  \nMetode Pembayaran: ${pembayaran.join(', ') || 'Tidak ada info pembayaran'}\nKategori: ${allCategories.join(', ') || data.Category}\nJam Buka: ${openingHours}\n\nKontak: ${data.Phone || 'Tidak ada nomor telepon'}\nWebsite: ${data.Website !== 'not found' ? data.Website : 'Tidak ada website'}\nAlamat Lengkap: ${data.Address}\n`.trim();\n\n  // Hitung lead score\n  let leadScore = 0;\n  if (data.Rating >= 4.5) leadScore += 30;\n  if (data.Rating >= 4.0) leadScore += 20;\n  if (data.Reviews >= 1000) leadScore += 25;\n  if (data.Reviews >= 100) leadScore += 15;\n  if (data.Phone) leadScore += 20;\n  if (data.Website && data.Website !== 'not found') leadScore += 20;\n  if (keunggulan.length > 0) leadScore += 10;\n\n  return {\n    // Data utama\n    restaurant_name: data.Title,\n    category: data.Category,\n    description: data.Description || '',\n    location: data.Neighborhood,\n    full_address: data.Address,\n    phone: data.Phone,\n    website: data.Website !== 'not found' ? data.Website : '',\n    rating: data.Rating,\n    total_reviews: data.Reviews,\n    price_range: data.Price || 'Tidak diketahui',\n    \n    // Data terformat\n    keunggulan_list: keunggulan.join(', '),\n    fasilitas_list: fasilitas.join(', '),\n    pembayaran_list: pembayaran.join(', '),\n    kategori_lengkap: allCategories.join(', '),\n    jam_operasional: openingHours,\n    \n    // Untuk AI analysis\n    business_summary: businessDescription,\n    lead_score: leadScore,\n    lead_quality: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',\n    \n    // Metadata\n    scraped_date: new Date().toLocaleString('id-ID'),\n    data_source: 'Google Maps via Apify'\n  };\n});\n\nreturn cleanData;"
+      },
+      "id": "2749fb40-08ae-4579-b3b0-4ac1eece69a0",
+      "name": "Clean Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        220,
+        340
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=0",
+          "cachedResultName": "Restaurant"
+        },
+        "columns": {
+          "value": {
+            "Phone": "={{ $json.phone }}",
+            "Price": "={{ $json.price_range }}",
+            "Title": "={{ $json.restaurant_name }}",
+            "Rating": "={{ $json.rating }}",
+            "Address": "={{ $json.full_address }}",
+            "Reviews": "={{ $json.total_reviews }}",
+            "Website": "={{ $json.website }}",
+            "Category": "={{ $json.category }}",
+            "Fasilitas": "={{ $json.fasilitas_list }}",
+            "Keunggulan": "={{ $json.keunggulan_list }}",
+            "Lead Score": "={{ $json.lead_score }}",
+            "Pembayaran": "={{ $json.pembayaran_list }}",
+            "row_number": "={{ $('Get Leads').item.json.row_number }}",
+            "Description": "={{ $json.description }}",
+            "Lead Quality": "={{ $json.lead_quality }}",
+            "Neighborhood": "={{ $json.location }}",
+            "Opening Hours": "={{ $json.jam_operasional }}",
+            "All Categories": "={{ $json.kategori_lengkap }}"
+          },
+          "schema": [
+            {
+              "id": "Title",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Description",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Category",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Phone",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Rating",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reviews",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Reviews",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Price",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Website",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Neighborhood",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Neighborhood",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Opening Hours",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Opening Hours",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "All Categories",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "All Categories",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keunggulan",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Keunggulan",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fasilitas",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Fasilitas",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pembayaran",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Pembayaran",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Score",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Lead Score",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Quality",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Lead Quality",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "5ea884e3-c354-4948-9f23-a822a3fb352c",
+      "name": "Update Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        440,
+        340
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "path": "<your webhook>",
+        "options": {}
+      },
+      "id": "f65aeaa4-08eb-48d0-8478-a76c24f49977",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -220,
+        340
+      ],
+      "webhookId": "4ef17aa0-fc90-4b34-a6e2-e8a2ede9c334",
+      "typeVersion": 2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "<your webhook>",
+        "options": {}
+      },
+      "id": "d9ab4f9a-e75a-42b5-a633-395d88a4f0cb",
+      "name": "HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        880,
+        140
+      ],
+      "typeVersion": 4.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "<your apify get>",
+        "options": {}
+      },
+      "id": "08af1e09-abff-48ef-96ab-b5ccd55ff6ed",
+      "name": "Get Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        440,
+        140
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=0",
+          "cachedResultName": "Restaurant"
+        },
+        "columns": {
+          "value": {
+            "Phone": "={{ $json.phone ? $json.phone.replace(/[-\\s]/g, '') : '' }}",
+            "Price": "={{ $json.price }}",
+            "Title": "={{ $json.title }}",
+            "Rating": "={{ $json.totalScore }}",
+            "Address": "={{ $json.address }}",
+            "Reviews": "={{ $json.reviewsCount }}",
+            "Website": "={{ $json.website || \"not found\" }}",
+            "Category": "={{ $json.categoryName }}",
+            "Fasilitas": "={{ $json.additionalInfo.Fasilitas }}",
+            "Keunggulan": "={{ $json.additionalInfo.Keunggulan }}",
+            "Pembayaran": "={{ $json.additionalInfo.Pembayaran }}",
+            "Description": "={{ $json.description }}",
+            "Neighborhood": "={{ $json.neighborhood }}",
+            "Opening Hours": "={{ $json.openingHours }}",
+            "All Categories": "={{ $json.categories }}"
+          },
+          "schema": [
+            {
+              "id": "Title",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Description",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Category",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Phone",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Rating",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reviews",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Reviews",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Price",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Website",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Neighborhood",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Neighborhood",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Opening Hours",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Opening Hours",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "All Categories",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "All Categories",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keunggulan",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Keunggulan",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fasilitas",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Fasilitas",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pembayaran",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Pembayaran",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c90ef847-a28d-468d-9b14-9aa800b8c747",
+      "name": "Append Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        660,
+        140
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "",
+          "cachedResultName": ""
+        }
+      },
+      "id": "1ce4a75d-8fd3-4e10-b9e2-13341db8a3a7",
+      "name": "Get Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        0,
+        340
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "content": "# Scrapping and data Cleaning\n",
+        "height": 520,
+        "width": 1360,
+        "color": 7
+      },
+      "id": "dd17d2a6-9e89-486f-8807-850edb2297fb",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -280,
+        40
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "f3a2f183-e222-4dda-8232-606d5e643ef5",
+      "name": "Supabase Vector Store2",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        1780,
+        1020
+      ],
+      "typeVersion": 1.3,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "2205bcff-007b-4e5a-bc27-488a029bd6bd",
+      "name": "small3",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        1760,
+        1240
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "fc514961-f665-484f-ade8-ecb9e5ce117a",
+      "name": "Default Data Loader2",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1900,
+        1180
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "id": "cddc4c90-7322-4335-a740-6f980c7fafe4",
+      "name": "Recursive Character Text Splitter1",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        1900,
+        1320
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_SPREADSHEET_ID",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=drivesdk",
+          "cachedResultName": "Database ReCharge"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=0",
+          "cachedResultName": "Restaurant"
+        },
+        "options": {}
+      },
+      "id": "22aa8516-8edc-45fe-a28a-75feedcbeb5b",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        1180,
+        1020
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform data yang baru ditambah dari spreadsheet\nconst newData = $input.all().map(item => {\n  const data = item.json;\n  \n  // Skip jika data kosong\n  if (!data.Title || data.Title.trim() === '') {\n    return null;\n  }\n  \n  // Buat business summary untuk embedding\n  const businessSummary = `\n${data.Title} adalah ${data.Category || 'restoran'} yang berlokasi di ${data.Neighborhood || 'lokasi tidak diketahui'}. \nRating: ${data.Rating || 'belum ada rating'}/5 dengan ${data.Reviews || 0} review. \nHarga: ${data.Price || 'Tidak diketahui'}.\n${data.Description || ''}\n\nKeunggulan: ${data['Keunggulan Clean'] || 'Tidak ada info keunggulan'}\nFasilitas: ${data['Fasilitas Clean'] || 'Tidak ada info fasilitas'}  \nMetode Pembayaran: ${data['Pembayaran Clean'] || 'Tidak ada info pembayaran'}\nJam Operasional: ${data['Jam Operasional'] || 'Tidak tersedia'}\n\nKontak: ${data.Phone || 'Tidak ada nomor telepon'}\nWebsite: ${data.Website !== 'not found' ? data.Website : 'Tidak ada website'}\nAlamat: ${data.Address || 'Alamat tidak lengkap'}\n`.trim();\n\n  return {\n    // Content untuk embedding\n    business_summary: businessSummary,\n    \n    // Metadata\n    metadata: {\n      restaurant_name: data.Title,\n      category: data.Category,\n      location: data.Neighborhood,\n      phone: data.Phone,\n      rating: data.Rating,\n      total_reviews: data.Reviews,\n      lead_score: data['Lead Score'] || 0,\n      lead_quality: data['Lead Quality'] || 'Unknown',\n      keunggulan: data['Keunggulan Clean'] || '',\n      fasilitas: data['Fasilitas Clean'] || '',\n      pembayaran: data['Pembayaran Clean'] || '',\n      website: data.Website !== 'not found' ? data.Website : '',\n      price_range: data.Price || 'Tidak diketahui',\n      full_address: data.Address,\n      jam_operasional: data['Jam Operasional'] || 'Tidak tersedia',\n      row_number: data.row_number,\n      last_updated: new Date().toISOString(),\n      data_type: \"restaurant_lead\",\n      source: \"google_sheets_auto\"\n    }\n  };\n}).filter(item => item !== null);\n\nreturn newData;"
+      },
+      "id": "1c908703-4a70-4905-a24a-b288722ddecb",
+      "name": "Transform for Vector",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1360,
+        1020
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check dan handle existing data di Supabase vector database\nconst inputData = $input.all();\nconst processedData = [];\n\nfor (const item of inputData) {\n  const data = item.json;\n  \n  // Skip jika data kosong atau tidak valid\n  if (!data.Title || data.Title.trim() === '') {\n    console.log(`Skipping empty data for row ${data.row_number}`);\n    continue;\n  }\n  \n  // Buat unique identifier berdasarkan kombinasi nama + alamat\n  const uniqueId = `${data.Title}_${data.Address}`.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();\n  \n  // Buat business summary untuk embedding\n  const businessSummary = `\nNama Restoran: ${data.Title}\nKategori: ${data.Category || 'Restoran'}\nLokasi: ${data.Neighborhood || 'Tidak diketahui'}\nAlamat: ${data.Address || 'Alamat tidak lengkap'}\nRating: ${data.Rating || 'Belum ada rating'}/5 (${data.Reviews || 0} reviews)\nHarga: ${data.Price || 'Tidak diketahui'}\nDeskripsi: ${data.Description || 'Tidak ada deskripsi'}\n\nDetail Bisnis:\n- Keunggulan: ${data.Keunggulan || 'Tidak ada info keunggulan'}\n- Fasilitas: ${data.Fasilitas || 'Tidak ada info fasilitas'}\n- Metode Pembayaran: ${data.Pembayaran || 'Tidak ada info pembayaran'}\n- Jam Operasional: ${data['Opening Hours'] || 'Tidak tersedia'}\n\nKontak:\n- Telepon: ${data.Phone || 'Tidak ada nomor telepon'}\n- Website: ${data.Website && data.Website !== 'not found' ? data.Website : 'Tidak ada website'}\n\nLead Score: ${data['Lead Score'] || 0}\nLead Quality: ${data['Lead Quality'] || 'Unknown'}\n`.trim();\n\n  // Prepare data untuk vector store\n  const vectorData = {\n    // Text content untuk embedding\n    pageContent: businessSummary,\n    \n    // Metadata untuk filtering dan searching\n    metadata: {\n      unique_id: uniqueId,\n      restaurant_name: data.Title,\n      category: data.Category || 'Restoran',\n      location: data.Neighborhood || 'Tidak diketahui',\n      full_address: data.Address || '',\n      phone: data.Phone || '',\n      website: data.Website && data.Website !== 'not found' ? data.Website : '',\n      rating: parseFloat(data.Rating) || 0,\n      total_reviews: parseInt(data.Reviews) || 0,\n      price_range: data.Price || 'Tidak diketahui',\n      lead_score: parseInt(data['Lead Score']) || 0,\n      lead_quality: data['Lead Quality'] || 'Unknown',\n      \n      // Additional business info\n      keunggulan: data.Keunggulan || '',\n      fasilitas: data.Fasilitas || '',\n      pembayaran: data.Pembayaran || '',\n      jam_operasional: data['Opening Hours'] || '',\n      \n      // System metadata\n      row_number: data.row_number,\n      data_source: 'google_sheets',\n      data_type: 'restaurant_lead',\n      last_updated: new Date().toISOString(),\n      \n      // Status tracking\n      contact_status: 'not_contacted',\n      is_active: true\n    },\n    \n    // Original row data untuk reference\n    original_data: data\n  };\n  \n  // Add flag untuk indicate ini adalah update atau insert baru\n  vectorData.metadata.is_update = !!data.row_number;\n  \n  processedData.push(vectorData);\n  \n  console.log(`Processed: ${data.Title} (ID: ${uniqueId})`);\n}\n\nconsole.log(`Total processed: ${processedData.length} items`);\n\nreturn processedData;"
+      },
+      "id": "ac4a5e92-568a-43dd-ba5d-09fc821d017d",
+      "name": "Check Existing Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1580,
+        1020
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "CompanyDocuments",
+        "toolDescription": "Search CompanyDocument knowledge base and business documents",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "documents",
+          "cachedResultName": "documents"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "id": "8e79d58c-e87f-49f3-8253-3d2f2a2976cc",
+      "name": "RAG",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        300,
+        880
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "RestaurantLeads",
+        "toolDescription": "=Search restaurant leads and potential clients data",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "restaurant_leads",
+          "cachedResultName": "restaurant_leads"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "id": "3b11e3af-7716-43d7-a141-528aaff2aa19",
+      "name": "Leads",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        580,
+        880
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6d186554-6b25-47f7-bad3-16fdeee2d50f",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        580,
+        1020
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "content": "# Potential Leads Knowledge Base\n",
+        "height": 600,
+        "width": 1100,
+        "color": 5
+      },
+      "id": "a3cc044a-146c-41dd-81ae-6cef00c632de",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        900
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Respond as a chatbot",
+        "height": 560,
+        "width": 1360
+      },
+      "id": "cec67948-72b4-404e-8b18-d24608044bae",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -280,
+        600
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "618c377e-a99d-4937-9659-7a36d0d9916f",
+      "name": "WAHA Trigger",
+      "type": "@devlikeapro/n8n-nodes-waha.wahaTrigger",
+      "position": [
+        -600,
+        300
+      ],
+      "webhookId": "886de7ed-318f-4c8f-8d98-01720ddc8b82",
+      "typeVersion": 202502,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Company Business Intelligence Assistant\n\nYou are \"MinCharge\", a specialized business intelligence assistant for the company. Your primary responsibility is to provide answers exclusively based on the available knowledge sources.\n\n## Knowledge Sources\nYou have access to two critical knowledge bases:\n1. **CompanyDocuments** - Contains business documents, service guides, company information, and operational procedures\n2. **RestaurantLeads** - Contains potential restaurant client data including ratings, contact information, business details, and market insights\n\n## 🚨 CRITICAL: Tool Selection Protocol\n\n### MANDATORY Tool Usage Rules:\n**CompanyDocuments tool MUST be used for:**\n- ANY question about company services, capabilities, or offerings\n- Pricing inquiries (\"how much\", \"cost\", \"price\", \"fee\")\n- Company information (\"about the company\", \"what is the company\", \"company details\")\n- Business processes (\"how does the company work\", \"process\", \"procedure\")\n- Service features and benefits\n- Any question containing keywords: company, service, price, cost, business, how to, process, capability, offering\n\n**RestaurantLeads tool MUST be used for:**\n- Lead generation and prospecting requests\n- Restaurant recommendations and listings\n- Market analysis and competitive intelligence\n- Location-based restaurant queries\n- Rating, review, and business characteristic analysis\n- Contact information and outreach data\n\n### Search Strategy Hierarchy:\n1. **Company-specific queries** → Use CompanyDocuments FIRST, always\n2. **Restaurant/lead queries** → Use RestaurantLeads FIRST\n3. **Business intelligence/strategy** → Use BOTH tools sequentially\n4. **Ambiguous queries** → Default to CompanyDocuments first, then RestaurantLeads if needed\n\n## Execution Process (Follow Strictly):\n1. **Query Classification**: \n   - Identify if query mentions company, services, pricing, or company info\n   - If YES → Immediately use CompanyDocuments tool\n   - If restaurant/lead focused → Use RestaurantLeads tool\n   - If business strategy → Use both tools\n\n2. **Tool Selection Verification**:\n   - Double-check that you're using the correct tool for the query type\n   - When in doubt about company-related content → ALWAYS search CompanyDocuments\n\n3. **Search Execution**: \n   - Execute search in identified tool(s) before generating any response\n   - Use specific, relevant keywords from user query\n\n4. **Response Generation**: \n   - Base response entirely on search results\n   - Clearly cite which knowledge base provided the information\n   - Match user's language (Indonesian/English)\n\n## Core Operating Principles\n- **MANDATORY SEARCH**: Never respond without searching appropriate knowledge base first\n- **NO EXTERNAL KNOWLEDGE**: Absolutely no information from outside the knowledge bases\n- **EXPLICIT SOURCE CITATION**: Always state \"Based on CompanyDocuments...\" or \"According to RestaurantLeads...\"\n- **LANGUAGE MATCHING**: Respond in exact same language as user input\n- **ACCURACY OVER COMPLETENESS**: Better to say \"no information found\" than guess\n\n## Quality Assurance Checklist\nBefore every response, verify:\n- ✅ Did I search the appropriate knowledge base?\n- ✅ Is my answer based solely on search results?\n- ✅ Did I cite the correct source?\n- ✅ Am I responding in the user's language?\n- ✅ Did I avoid using external knowledge?\n\n## Error Handling\nIf no relevant information found in knowledge bases:\n- **English**: \"I searched [specific knowledge base] but don't have information about [topic]. Could you provide more specific details or rephrase your question?\"\n- **Indonesian**: \"Saya telah mencari di [basis pengetahuan spesifik] tetapi tidak memiliki informasi tentang [topik]. Bisakah Anda memberikan detail yang lebih spesifik atau mengubah pertanyaan Anda?\"\n\n## Debugging Mode\nAlways mention in your response which tool you used:\n- \"After searching CompanyDocuments...\"\n- \"Based on my search in RestaurantLeads...\"\n- \"From both knowledge bases...\"\n\nThis helps identify if tool selection is working correctly.\n\nRemember: Your value comes from providing accurate, source-backed intelligence from the company's specific business context and restaurant lead database. Always search first, cite sources, and match the user's language."
+        }
+      },
+      "id": "cd604b6a-82e4-4767-8f07-90dc536aebb3",
+      "name": "AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        80,
+        1300
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8184a1c5-1988-445b-8d17-8a817c618a1a",
+      "name": "Embeddings OpenAI3",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        280,
+        1620
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "CompanyDocuments",
+        "toolDescription": "=MANDATORY TOOL for questions about: CompanyDocument services, pricing, company information, business processes, operational procedures, service capabilities, company policies, internal guidelines, and any ReCharge-specific business inquiries. Always use this tool first when users ask about ReCharge services or company information.",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "documents",
+          "cachedResultName": "documents"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "id": "54e3b311-4399-4ff4-adf2-c70d39f31648",
+      "name": "RAG1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        300,
+        1480
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "RestaurantLeads",
+        "toolDescription": "=Search restaurant leads database containing potential client information, ratings, contact details, business characteristics, location data, and market insights. Use for lead generation, market analysis, and client prospecting.",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "restaurant_leads",
+          "cachedResultName": "restaurant_leads"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "id": "faddb519-2d1f-4f4a-8c66-f033b9f2ec21",
+      "name": "Leads1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        580,
+        1480
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "7de81413-ecc1-4820-bf6a-c4027261af39",
+      "name": "Embeddings OpenAI4",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        600,
+        1620
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "content": "# Send Message",
+        "height": 580,
+        "width": 1360,
+        "color": 4
+      },
+      "id": "f0efc190-917d-4aff-8437-54396627a735",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -280,
+        1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "4bd3a24d-f33f-467f-8484-579ef6100d55",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        -100,
+        1300
+      ],
+      "webhookId": "2d2ee28f-a0f6-4e3f-ace2-91558f2fae95",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "id": "03950146-4639-4c66-90cb-903989679943",
+      "name": "Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "position": [
+        160,
+        1460
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "2797928f-314a-40e6-a277-4fab7f3cade1",
+      "name": "Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        20,
+        1460
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {},
+      "id": "cded3bd1-d38b-476e-9c81-b26684c81223",
+      "name": "Reranker Cohere",
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "position": [
+        420,
+        1620
+      ],
+      "typeVersion": 1,
+      "credentials": {}
+    },
+    {
+      "parameters": {},
+      "id": "eb42efd2-0aa8-4da0-9e37-7462e137c3c8",
+      "name": "Reranker Cohere1",
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "position": [
+        720,
+        1620
+      ],
+      "typeVersion": 1,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e80e3961-4f18-4e38-8642-4c35075f13a1",
+              "name": "lokasi",
+              "type": "string",
+              "value": "Bali"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "455510d0-0313-4e6a-882c-a34c36b901f6",
+      "name": "Set Location",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        0,
+        140
+      ],
+      "typeVersion": 3.4
+    }
+  ],
+  "connections": {
+    "RAG": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Leads": {
+      "main": [
+        [
+          {
+            "node": "Clean Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Data": {
+      "main": [
+        [
+          {
+            "node": "Update Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Result": {
+      "main": [
+        [
+          {
+            "node": "Append Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Maps": {
+      "main": [
+        [
+          {
+            "node": "Get Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search File": {
+      "main": [
+        [
+          {
+            "node": "Get Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Leads": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Location": {
+      "main": [
+        [
+          {
+            "node": "Scrape Maps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "RAG",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Leads",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "RAG1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI4": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Leads1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform for Vector": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Transform for Vector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader2",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "eac1217b-db5e-49c9-ba8e-7f4489fad218",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:43.816Z",
+      "updatedAt": "2025-08-30T07:55:43.816Z",
+      "role": "workflow:owner",
+      "workflowId": "J3sb5zVxFlBGb3pv",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Project Owner",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

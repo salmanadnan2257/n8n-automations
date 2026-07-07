@@ -1,0 +1,921 @@
+{
+  "name": "NEW - Add Leads to Instantly",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw",
+          "mode": "list",
+          "cachedResultName": "Ultimate Real Estate Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Real Estate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "=1:{{ $('start_new_add_leads_instantly').item.json.start }}"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -860,
+        320
+      ],
+      "id": "d66bdb54-6342-4701-8a81-cd8ab9ce1d10",
+      "name": "leads_data",
+      "alwaysOutputData": true,
+      "notesInFlow": false,
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a8b00559-eec1-4d53-b64e-9673a6a1e53a",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": "={{ $('start_new_add_leads_instantly').item.json.filter }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        320
+      ],
+      "id": "99ad47d7-af97-4bcb-9e5c-d4e74bb09dfc",
+      "name": "filter"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function escapeForApi(str) {\n  if (typeof str !== 'string') return '';\n  // JSON.stringify→'\"…\"' includes all necessary backslashes; slice removes the outer quotes\n  return JSON.stringify(str).slice(1, -1);\n}\n\nlet first_email = escapeForApi($('leads_data').item.json.first_email);\nlet first_follow_up = escapeForApi($('leads_data').item.json.first_follow_up);\nlet second_follow_up = escapeForApi($('leads_data').item.json.second_follow_up);\nlet third_follow_up = escapeForApi($('leads_data').item.json.third_follow_up);\nlet fourth_follow_up = escapeForApi($('leads_data').item.json.fourth_follow_up);\nlet fifth_follow_up = escapeForApi($('leads_data').item.json.fifth_follow_up);\nlet subject_line = escapeForApi($('leads_data').item.json.subject_line);\n\nreturn {\n  json: {\n    first_email,\n    first_follow_up,\n    second_follow_up,\n    third_follow_up,\n    fourth_follow_up,\n    fifth_follow_up,\n    subject_line\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        320
+      ],
+      "id": "17bde7fc-64a8-46d2-9804-3018a5456dd1",
+      "name": "clean_data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instantly.ai/api/v2/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "YOUR_INSTANTLY_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"campaign\": \"444af23a-2d3c-42b6-bc24-fdcd5c05fdda\",\n  \"email\": \"{{ $('essential').item.json.email }}\",\n  \"first_name\": \"{{ $('essential').item.json.first_name }}\",\n  \"last_name\": \"{{ $('essential').item.json.last_name }}\",\n  \"company_name\": \"{{ $('essential').item.json.company_name }}\",\n  \"website\": \"{{ $('essential').item.json.company_website_url }}\",\n  \"phone\": \"{{ $('essential').item.json.company_phone_no }}\",\n  \"custom_variables\": {\n    \"first_email\": \"{{ $('essential').item.json.first_email }}\",\n    \"first_follow_up\": \"{{ $('essential').item.json.first_follow_up }}\",\n    \"second_follow_up\": \"{{ $('essential').item.json.second_follow_up }}\",\n    \"third_follow_up\": \"{{ $('essential').item.json.third_follow_up }}\",\n    \"fourth_follow_up\": \"{{ $('essential').item.json.fourth_follow_up }}\",\n    \"fifth_follow_up\": \"{{ $('essential').item.json.fifth_follow_up }}\",\n    \"subject_line\": \"{{ $('essential').item.json.subject_line }}\",\n    \"demo1_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo2_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo3_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo4_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo5_link\": \"https://youtu.be/yoVROBsIi74\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        -380
+      ],
+      "id": "62a52364-1bf2-4394-9090-999c8638c673",
+      "name": "add_leads",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "batchSize": 50,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        60,
+        320
+      ],
+      "id": "db99a90d-e2ee-4566-a02c-c21a88f171d6",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1160,
+        -300
+      ],
+      "id": "18cfe309-972e-45d2-8407-83ad50f22eba",
+      "name": "Wait",
+      "webhookId": "9f82c5f9-e26f-4cfc-9333-6c590ee1c420"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        -520
+      ],
+      "id": "3d1df1b1-1ee7-4a0b-bd34-70e0b74cf78f",
+      "name": "no_pass_data",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0d0e49b3-4833-41de-a138-dbbf32a36591"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d267072d-9e31-4b0a-b2c9-715b6d9b78b5",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "42f02d9a-458f-48a5-a292-984dad52931c",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "eb4f754f-17e2-45d5-9812-fdaf54bc2e0a",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "4",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "936c8d1f-885b-43ee-90e8-b0cf832445e9",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "5",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        320,
+        320
+      ],
+      "id": "370abe2d-d8c0-4052-a70b-70c2bb486be2",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a1aa886-b773-49ce-a8e1-097400fcfc54",
+              "name": "first_email",
+              "value": "={{ $json.first_email }}",
+              "type": "string"
+            },
+            {
+              "id": "a232c382-e401-4723-96cf-e82298a75d94",
+              "name": "first_follow_up",
+              "value": "={{ $json.first_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "c64a5620-83b8-48b6-b35f-ea1ac2cff96e",
+              "name": "second_follow_up",
+              "value": "={{ $json.second_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "8928f23c-8cda-40f6-8f9b-a631a56ca120",
+              "name": "third_follow_up",
+              "value": "={{ $json.third_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "54970c90-9757-46ae-abae-40b3ff016937",
+              "name": "fourth_follow_up",
+              "value": "={{ $json.fourth_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "397170da-497b-4a79-be8f-c84dd2567b95",
+              "name": "fifth_follow_up",
+              "value": "={{ $json.fifth_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "d4316e88-d109-4d50-9328-f81c5d74bae5",
+              "name": "subject_line",
+              "value": "={{ $json.subject_line }}",
+              "type": "string"
+            },
+            {
+              "id": "9bc58c97-5caa-4617-8d62-1a8691157777",
+              "name": "type",
+              "value": "={{ $('leads_data').item.json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "13496ef0-bc4f-43b0-91b7-9a91f742812e",
+              "name": "first_name",
+              "value": "={{ $('leads_data').item.json.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "6ab8a464-0708-4e27-a271-b1a24207537a",
+              "name": "last_name",
+              "value": "={{ $('leads_data').item.json.last_name }}",
+              "type": "string"
+            },
+            {
+              "id": "cc28d350-014c-4d50-948e-6325a298fb6a",
+              "name": "company_name",
+              "value": "={{ $('leads_data').item.json.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "4bc039cb-017b-4d89-8f9a-b95818499b11",
+              "name": "email",
+              "value": "={{ $('leads_data').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "94edf653-524f-4207-80ea-eb6179c24e63",
+              "name": "company_website_url",
+              "value": "={{ $('leads_data').item.json.company_website_url }}",
+              "type": "string"
+            },
+            {
+              "id": "45bf0f42-4273-4e18-bea9-9813b3f7ff1b",
+              "name": "company_phone_no",
+              "value": "={{ $('leads_data').item.json.company_phone_no }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -200,
+        320
+      ],
+      "id": "def3f177-6052-4dde-8837-fc73d77a1ff4",
+      "name": "essential"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instantly.ai/api/v2/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "YOUR_INSTANTLY_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"campaign\": \"7bf1bb5d-5105-4865-a673-7dabef17ec75\",\n  \"email\": \"{{ $('essential').item.json.email }}\",\n  \"first_name\": \"{{ $('essential').item.json.first_name }}\",\n  \"last_name\": \"{{ $('essential').item.json.last_name }}\",\n  \"company_name\": \"{{ $('essential').item.json.company_name }}\",\n  \"website\": \"{{ $('essential').item.json.company_website_url }}\",\n  \"phone\": \"{{ $('essential').item.json.company_phone_no }}\",\n  \"custom_variables\": {\n    \"first_email\": \"{{ $('essential').item.json.first_email }}\",\n    \"first_follow_up\": \"{{ $('essential').item.json.first_follow_up }}\",\n    \"second_follow_up\": \"{{ $('essential').item.json.second_follow_up }}\",\n    \"third_follow_up\": \"{{ $('essential').item.json.third_follow_up }}\",\n    \"fourth_follow_up\": \"{{ $('essential').item.json.fourth_follow_up }}\",\n    \"fifth_follow_up\": \"{{ $('essential').item.json.fifth_follow_up }}\",\n    \"subject_line\": \"{{ $('essential').item.json.subject_line }}\",\n    \"demo1_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo2_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo3_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo4_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo5_link\": \"https://youtu.be/yoVROBsIi74\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        20
+      ],
+      "id": "305eb2fe-41d6-447e-9042-13ba880f1f77",
+      "name": "add_leads1",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        100
+      ],
+      "id": "14c5dfe5-d742-4f41-92a8-7e9788b0bead",
+      "name": "Wait1",
+      "webhookId": "9f82c5f9-e26f-4cfc-9333-6c590ee1c420"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instantly.ai/api/v2/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "YOUR_INSTANTLY_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"campaign\": \"3dc28588-b99e-4ec2-9aed-9087ae6c4be4\",\n  \"email\": \"{{ $('essential').item.json.email }}\",\n  \"first_name\": \"{{ $('essential').item.json.first_name }}\",\n  \"last_name\": \"{{ $('essential').item.json.last_name }}\",\n  \"company_name\": \"{{ $('essential').item.json.company_name }}\",\n  \"website\": \"{{ $('essential').item.json.company_website_url }}\",\n  \"phone\": \"{{ $('essential').item.json.company_phone_no }}\",\n  \"custom_variables\": {\n    \"first_email\": \"{{ $('essential').item.json.first_email }}\",\n    \"first_follow_up\": \"{{ $('essential').item.json.first_follow_up }}\",\n    \"second_follow_up\": \"{{ $('essential').item.json.second_follow_up }}\",\n    \"third_follow_up\": \"{{ $('essential').item.json.third_follow_up }}\",\n    \"fourth_follow_up\": \"{{ $('essential').item.json.fourth_follow_up }}\",\n    \"fifth_follow_up\": \"{{ $('essential').item.json.fifth_follow_up }}\",\n    \"subject_line\": \"{{ $('essential').item.json.subject_line }}\",\n    \"demo1_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo2_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo3_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo4_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo5_link\": \"https://youtu.be/yoVROBsIi74\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        380
+      ],
+      "id": "240d9654-e98b-4a3e-b7e8-67809f0138bd",
+      "name": "add_leads2",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        460
+      ],
+      "id": "8ef76502-1058-4330-92d7-07720fdba706",
+      "name": "Wait2",
+      "webhookId": "9f82c5f9-e26f-4cfc-9333-6c590ee1c420"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "start",
+              "type": "number"
+            },
+            {
+              "name": "filter",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1060,
+        320
+      ],
+      "id": "b348e6fe-4b73-4250-9134-0de8508ffcc6",
+      "name": "start_new_add_leads_instantly"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instantly.ai/api/v2/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "YOUR_INSTANTLY_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"campaign\": \"3d837747-9561-4284-8e2b-da23213b55cd\",\n  \"email\": \"{{ $('essential').item.json.email }}\",\n  \"first_name\": \"{{ $('essential').item.json.first_name }}\",\n  \"last_name\": \"{{ $('essential').item.json.last_name }}\",\n  \"company_name\": \"{{ $('essential').item.json.company_name }}\",\n  \"website\": \"{{ $('essential').item.json.company_website_url }}\",\n  \"phone\": \"{{ $('essential').item.json.company_phone_no }}\",\n  \"custom_variables\": {\n    \"first_email\": \"{{ $('essential').item.json.first_email }}\",\n    \"first_follow_up\": \"{{ $('essential').item.json.first_follow_up }}\",\n    \"second_follow_up\": \"{{ $('essential').item.json.second_follow_up }}\",\n    \"third_follow_up\": \"{{ $('essential').item.json.third_follow_up }}\",\n    \"fourth_follow_up\": \"{{ $('essential').item.json.fourth_follow_up }}\",\n    \"fifth_follow_up\": \"{{ $('essential').item.json.fifth_follow_up }}\",\n    \"subject_line\": \"{{ $('essential').item.json.subject_line }}\",\n    \"demo1_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo2_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo3_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo4_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo5_link\": \"https://youtu.be/yoVROBsIi74\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        720
+      ],
+      "id": "aa18d519-3edf-462b-8f00-f42107530173",
+      "name": "add_leads3",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1080,
+        800
+      ],
+      "id": "34122cbf-6d83-40dc-b258-9249dac1964a",
+      "name": "Wait3",
+      "webhookId": "9f82c5f9-e26f-4cfc-9333-6c590ee1c420"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instantly.ai/api/v2/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "YOUR_INSTANTLY_API_KEY_HERE"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"campaign\": \"bd438c0f-52ef-428f-9387-bc0b40a3b33e\",\n  \"email\": \"{{ $('essential').item.json.email }}\",\n  \"first_name\": \"{{ $('essential').item.json.first_name }}\",\n  \"last_name\": \"{{ $('essential').item.json.last_name }}\",\n  \"company_name\": \"{{ $('essential').item.json.company_name }}\",\n  \"website\": \"{{ $('essential').item.json.company_website_url }}\",\n  \"phone\": \"{{ $('essential').item.json.company_phone_no }}\",\n  \"custom_variables\": {\n    \"first_email\": \"{{ $('essential').item.json.first_email }}\",\n    \"first_follow_up\": \"{{ $('essential').item.json.first_follow_up }}\",\n    \"second_follow_up\": \"{{ $('essential').item.json.second_follow_up }}\",\n    \"third_follow_up\": \"{{ $('essential').item.json.third_follow_up }}\",\n    \"fourth_follow_up\": \"{{ $('essential').item.json.fourth_follow_up }}\",\n    \"fifth_follow_up\": \"{{ $('essential').item.json.fifth_follow_up }}\",\n    \"subject_line\": \"{{ $('essential').item.json.subject_line }}\",\n    \"demo1_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo2_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo3_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo4_link\": \"https://youtu.be/yoVROBsIi74\",\n    \"demo5_link\": \"https://youtu.be/yoVROBsIi74\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        820,
+        1040
+      ],
+      "id": "d3c91ab5-4f25-4aed-b081-e9e4beb9a5b0",
+      "name": "add_leads4",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1060,
+        1120
+      ],
+      "id": "2a9c25ac-9ded-4960-b5a9-5b19af4259e7",
+      "name": "Wait4",
+      "webhookId": "9f82c5f9-e26f-4cfc-9333-6c590ee1c420"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "leads_data": {
+      "main": [
+        [
+          {
+            "node": "filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter": {
+      "main": [
+        [
+          {
+            "node": "clean_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean_data": {
+      "main": [
+        [
+          {
+            "node": "essential",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "no_pass_data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_leads": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "essential": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "add_leads",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "add_leads1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "add_leads2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "add_leads3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "add_leads4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_leads1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_leads2": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "start_new_add_leads_instantly": {
+      "main": [
+        [
+          {
+            "node": "leads_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_leads3": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_leads4": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "22ae1765-ba74-44d1-8d7b-f2054a4723df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b51ae8788dd58e03d5965cccb0929bf8052ea05534f8bb79c40e8c893c3493be"
+  },
+  "id": "R1Ulaq81S8GCHc5t",
+  "tags": []
+}

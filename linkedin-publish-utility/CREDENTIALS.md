@@ -1,0 +1,3 @@
+- Google Drive OAuth2 credential (used by the `Download file` node to download the source image)
+- LinkedIn OAuth2 credential with personal posting permission (used by the `Create a personal post` node)
+- LinkedIn OAuth2 credential with company page admin/posting permission (used by the `Create a company post` node; the exported workflow points this at the same credential entry as the personal post node)

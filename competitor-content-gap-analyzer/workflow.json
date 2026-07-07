@@ -1,0 +1,1102 @@
+{
+  "createdAt": "2025-08-12T09:14:04.285Z",
+  "updatedAt": "2025-08-30T08:54:50.000Z",
+  "id": "XODvEB9uHnHOk15k",
+  "name": "Competitors Content Gaps copy",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "2e795f2e-9517-4a10-af40-fb8e4d53dccb",
+      "name": "When clicking \"Execute Workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        220,
+        1120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.URL }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "1576bafb-3286-4bed-8ba1-7c8c14248888",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        800,
+        900
+      ],
+      "typeVersion": 3,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "extractionValues": {
+          "values": [
+            {
+              "key": "body",
+              "cssSelector": "html"
+            }
+          ]
+        },
+        "options": {
+          "trimValues": false
+        }
+      },
+      "id": "60a40e35-39e0-40cd-b736-e6037448bbc4",
+      "name": "HTML Extract",
+      "type": "n8n-nodes-base.htmlExtract",
+      "position": [
+        980,
+        900
+      ],
+      "typeVersion": 1,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "ce3afa56-3a04-4440-81fc-364b9ff7a826",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2000,
+        740
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "if ($input.item.json.body){nnnn$input.item.json.content = $input.item.json.body.replaceAll('/^s+|s+$/g', '').replace('/(rn|n|r)/gm', \"\").replace(/s+/g, ' ')nnn  $input.item.json.contentShort = $input.item.json.content.slice(0, 10000)n}nnnnnreturn $input.item"
+      },
+      "id": "45fd3be0-a797-4301-a6b3-02a96ef989f9",
+      "name": "Clean Content",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1140,
+        900
+      ],
+      "executeOnce": false,
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f1c7c856-6721-47a3-93ee-bf8495f8981e",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        540,
+        820
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 1. Specify the Google Sheet filenn#### It should contain the company names and their URLs (in the URL column). Also the Topical Summary and the Graph Summary columns that we will copy the data to.nnuc0u55358 u56588  [SEE GOOGLE SHEETS TEMPLATE HERE](https://docs.google.com/spreadsheets/d/14qR7Gi8SRCd3eM6_V3ftRcDODkEFAILEqogjUvk7hKs/edit?usp=sharing) - use the same column names and replace with your data. Can be a list of companies generated with the workflow below, or Manus AI or any other Deep Research mode or a list of URLs you'd like to analyze for SEO.nnnu55357 u57000  Make sure you specify the file here",
+        "height": 600,
+        "width": 580
+      },
+      "id": "6f1d8550-512f-4a91-b9aa-bc43aa8ecfac",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        440
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 2. Avoid rate limit errornn#### Split requests into batches of 10 nnso you don't make too many requests at once. nnn",
+        "height": 600,
+        "width": 220
+      },
+      "id": "029701c7-5436-409c-904f-77cfb6585267",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        440
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 3. Make an HTTP request and extract text content from the links providednn#### Clean up the content to extract only text, not HTMLnnwe will then use this content to analyze data",
+        "height": 520,
+        "width": 520
+      },
+      "id": "90663e52-483b-43b2-bbfe-319e621fb2a9",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        760,
+        520
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 4. Use InfraNodus GraphRAG Content Enhancer Tool nn#### It will use its AI to generate topical summaries and structural insights from every company's website. nnIt will generate a nn1) Topical Summary '97 AI generated summaries of the main topical clusters found in the document (if `graph summary` requestMode is used or a single summary if `summary` requestMode is used.nn2) Graph Summary '97 the information about the content gaps, the main topical clusters, keywords, and keyword combinations for the websites you provided.nn",
+        "height": 680,
+        "width": 440
+      },
+      "id": "f8e0af5d-1523-4b72-bf9e-d8b67c1c6dc8",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1340,
+        360
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://infranodus.com/api/v1/graphAndAdvice?doNotSave=true&optimize=develop&includeGraph=false&includeGraphSummary=true",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "n8n_dummy_graph"
+            },
+            {
+              "name": "aiTopics",
+              "value": "true"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.contentShort }}"
+            },
+            {
+              "name": "requestMode",
+              "value": "summary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9c2e0afa-efaf-470e-885e-b46bebce4c33",
+      "name": "InfraNodus GraphRAG Content Enhancer",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1500,
+        860
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1q_pjPlg7flnP5TooBEC_4r-SkyY6F5tgrC-kE7lbFls/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('InfraNodus AI Advice').item.json.aiAdvice[0].text }}nn{{ $('InfraNodus Question Generator').item.json.aiAdvice.slice(0, 3).map(advice => advice.text).join('nn') }}"
+            }
+          ]
+        }
+      },
+      "id": "801004e9-ea3a-43b3-987f-c0e328f12193",
+      "name": "Google Docs",
+      "type": "n8n-nodes-base.googleDocs",
+      "position": [
+        4200,
+        1200
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Topical Summary"
+            },
+            {
+              "fieldToAggregate": "Graph Summary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6c385bdf-b63e-4687-b320-939a9320aaad",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        3520,
+        1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit?usp=drivesdk",
+          "cachedResultName": "Visual Text Analysis Tools"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": 1122486654,
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit#gid=1122486654",
+          "cachedResultName": "Empty"
+        },
+        "options": {}
+      },
+      "id": "3f9b3774-771a-4a35-91e4-e72e2c49d858",
+      "name": "Read a Google Sheets File",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        220,
+        840
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit?gid=1287901638#gid=1287901638"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": 1122486654,
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit#gid=1122486654",
+          "cachedResultName": "Empty"
+        },
+        "columnToMatchOn": "URL",
+        "valueToMatchOn": "={{ $json.URL }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "Graph Summary",
+              "fieldValue": "={{ $json.graphSummary }}"
+            },
+            {
+              "column": "Topical Summary",
+              "fieldValue": "={{ $json.aiAdvice[0].text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "683c6ba3-452d-4492-9a32-eebb7cdcaf1a",
+      "name": "Update Google Sheets with Content Insights",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2420,
+        840
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "content": "## 5. Add the enhanced content to original rownn#### We use this node to match the result to the table row (company and URL) we used to generate this result.n",
+        "height": 460,
+        "width": 260
+      },
+      "id": "ed98dbd1-bbce-4641-90a2-b0e556f41dd6",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1920,
+        460
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 6. Enrich the original Google sheets with the contentnn#### We save the keywords, topical clusters, topical summaries, and content gaps to the Google sheets, so you can reuse it later in other workflows. nnuc0u55357 u57000  Make sure to specify the Google sheets file here",
+        "height": 520,
+        "width": 260
+      },
+      "id": "0ff47d65-23ea-4ce3-9047-74f9dc13be5b",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2340,
+        500
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "unit": "seconds"
+      },
+      "id": "781a537d-ded3-449e-b9ee-64c125582744",
+      "name": "Wait to avoid API overload",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        2700,
+        1100
+      ],
+      "webhookId": "e48bd7c5-7bc3-4f1d-8134-e25c7619ba83",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "6b987d9e-7977-4c1e-a22c-42f1bd47e780",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              },
+              "leftValue": "={{ $node[\"Split In Batches\"].context[\"noItemsLeft\"] }}",
+              "rightValue": "value2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8b219ff3-87cc-44dd-a0d9-69db1302ac5f",
+      "name": "If Node: did we process all the data?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2920,
+        1100
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "content": "## 7. Batch complete? Go to the next one.nn#### We process content in batches of 10 to avoid API overload and rate limit errors.",
+        "height": 400,
+        "width": 420
+      },
+      "id": "5b760481-ffc5-492f-a194-84a238043bfc",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2660,
+        900
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit?usp=drivesdk",
+          "cachedResultName": "Visual Text Analysis Tools"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": 1122486654,
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit#gid=1122486654",
+          "cachedResultName": "Empty"
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "id": "35f67ee9-da4e-4d17-9e30-25ecb48b689d",
+      "name": "Get the content from Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3220,
+        1200
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://infranodus.com/api/v1/graphAndAdvice?doNotSave=true&optimize=develop&includeGraph=false&includeGraphSummary=true",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "aiTopics",
+              "value": "true"
+            },
+            {
+              "name": "prompt",
+              "value": "=Tell me what are the main topics and gaps in the discourse provided"
+            },
+            {
+              "name": "requestMode",
+              "value": "response"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json['Topical Summary'].join(' ') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a7d3ac6c-b10c-41d5-bd30-a8b92d6b575a",
+      "name": "InfraNodus AI Advice",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3740,
+        1080
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "## 8. Enrich the original Google sheets with your insightsnn#### We can then use this data for further research and SEOnnuc0u55357 u57000  Make sure to specify the Google sheets file here",
+        "height": 580
+      },
+      "id": "8ffa1cc5-46d0-41a5-b9ba-dd600826c657",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3160,
+        840
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 9. Get all the insights obtained from all the documents and create the final report.nn#### Synthesize the final report based on the main topics, summaries, and content gaps discovered in the previous stepsnnOptional: You can also feed this output to another workflow to create a full report or SEO-friendly article. ",
+        "height": 580,
+        "width": 500
+      },
+      "id": "d3b31d63-c5cb-4ed6-9727-094ae95ead2d",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3460,
+        840
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 0. Specify the starting pointnn#### You may choose to connect this node directly to the Step 8 if you already enriched the data in the Excel sheet.nnIn that case, the workflow will take data from the Topical Summary column and generate the results for younn",
+        "height": 300,
+        "width": 300
+      },
+      "id": "bf47e4a1-ae0d-45ca-9a46-8b19b71decca",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        120,
+        1360
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Stage 1: Data Enrichment",
+        "height": 100,
+        "width": 2940,
+        "color": 7
+      },
+      "id": "6ed11dff-0621-4215-886f-6fdd97498697",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        120,
+        200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Stage 2: Insight Generation",
+        "height": 100,
+        "width": 1220,
+        "color": 7
+      },
+      "id": "daffded4-4396-42e9-957c-0e9fefb2668e",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3140,
+        200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 10. Save the insights into a Google Docnn#### We can then use this data for further research and SEOnnuc0u55357 u57000  Make sure to specify the Google docs file here",
+        "height": 580
+      },
+      "id": "c8676b0e-1e8d-41c4-ae18-6083406767c6",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4140,
+        840
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "aiAdvice",
+        "joinMode": "keepEverything",
+        "options": {}
+      },
+      "id": "d65b4841-9a88-47fc-89df-c7156acaafd2",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        4000,
+        1200
+      ],
+      "typeVersion": 3.1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://infranodus.com/api/v1/graphAndAdvice?doNotSave=true&optimize=gap&includeGraph=false&includeGraphSummary=true",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "aiTopics",
+              "value": "true"
+            },
+            {
+              "name": "prompt",
+              "value": "=Tell me what are the main topics and gaps in the discourse provided"
+            },
+            {
+              "name": "requestMode",
+              "value": "question"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json['Topical Summary'].join(' ') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b5b95cdd-2ce5-474e-a60b-5ff949aac5c9",
+      "name": "InfraNodus Question Generator",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3740,
+        1300
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={n  \"model\": \"sonar-pro\",n  \"messages\": [n    {n      \"role\": \"system\",n      \"content\": \"Act as a professional  researcher  whose task is to create the most comprehensive list of links that relate to the niche provided.\"n    },n    {n      \"role\": \"user\",n      \"content\": \"Find all the link that relate to the following field: '{{ $json['Niche'] }}'nnAdditional instructions: '{{ $json['Model Instructions'] }}'n IMPORTANT: nMake a json list of at least 20 of them. One column is the name, the other is the URL, the third one is the category they operate in. Be as comprehensive in your search as you can. IMPORTANT: answer exclusively in JSON, do NOT add any additional comments.EXAMPLE OF YOUR RESPONSEnn[{\"Name\":\"A\",\"URL\":\"https://website.com\"}]\"n    }n  ]n}n",
+        "options": {}
+      },
+      "id": "b9fb62b8-57c8-4186-ba5b-ee5218e688aa",
+      "name": "Perplexity Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1040,
+        1660
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "formTitle": "Generate a List of Companies for a Market Niche",
+        "formDescription": "Describe the market for which you want to get a list of companies",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Niche",
+              "placeholder": "e.g. customer feedback analysis tools",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Additional Search Instructions",
+              "placeholder": "e.g. make sure to include only big companies"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "348fae5b-8ed5-4a8d-b524-bc00cb90f270",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        700,
+        1660
+      ],
+      "webhookId": "fcf3ba43-d94f-4aad-a8a0-62492274b372",
+      "typeVersion": 2.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take this content and generate a JSON from it: {{ $json.choices[0].message.content }}. Make sure your JSON is just a list of companies like an array. Don't give it an additional name. Your response should be in the `response` object."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "id": "048b54dc-9d31-43cf-8b4e-c32c55c42d47",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        1340,
+        1660
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit?usp=drivesdk",
+          "cachedResultName": "Visual Text Analysis Tools"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": 1122486654,
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1l4RBfavkqZLz8JdwrgNsSwD8xERlDm6BrA2gXFPm0Dg/edit#gid=1122486654",
+          "cachedResultName": "Empty"
+        },
+        "columns": {
+          "value": {},
+          "schema": [
+            {
+              "id": "Name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Category",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "8a349768-bb16-4fde-a474-1b489c6873f0",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2180,
+        1660
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.response",
+        "options": {}
+      },
+      "id": "fcc6d3cb-e77f-4dc4-9c7f-a60130a20f29",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        1680,
+        1660
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "b12fa583-c227-4980-b5d8-49dff273ce81",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1880,
+        1660
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "content": "## Generate a List of URLs to Analyze nn#### Use this workflow to seed the Excel file with the list of URLs you'd like to analyze using the workflow above nnTrigger execution by clicking \"Test Workflow\" next to the form",
+        "height": 480,
+        "width": 1740,
+        "color": 6
+      },
+      "id": "e93d3e5c-60e0-437e-ba3b-7439ade2de81",
+      "name": "Sticky Note13",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        1440
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update Google Sheets with Content Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "InfraNodus AI Advice",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "InfraNodus Question Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Extract": {
+      "main": [
+        [
+          {
+            "node": "Clean Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Content": {
+      "main": [
+        [
+          {
+            "node": "InfraNodus GraphRAG Content Enhancer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Perplexity Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity Research": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InfraNodus AI Advice": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read a Google Sheets File": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait to avoid API overload": {
+      "main": [
+        [
+          {
+            "node": "If Node: did we process all the data?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InfraNodus Question Generator": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "When clicking \"Execute Workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Read a Google Sheets File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the content from Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InfraNodus GraphRAG Content Enhancer": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If Node: did we process all the data?": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get the content from Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Google Sheets with Content Insights": {
+      "main": [
+        [
+          {
+            "node": "Wait to avoid API overload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d20e747e-9519-4d9f-a8d7-1045c12f92dd",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.451Z",
+      "updatedAt": "2025-08-30T07:55:44.451Z",
+      "role": "workflow:owner",
+      "workflowId": "XODvEB9uHnHOk15k",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Workflow Owner <YOUR_EMAIL_HERE>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

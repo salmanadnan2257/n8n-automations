@@ -1,0 +1,302 @@
+{
+  "name": "SEO AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Conversion Rate Optimizer",
+        "formDescription": "Your Landing Page is Leaking Sales—Fix It Now",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Landing Page Url",
+              "placeholder": "https://example.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1beb6df-2edd-4de0-8357-50f13dff42bd",
+      "name": "Landing Page Url",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        32,
+        368
+      ],
+      "webhookId": "f78c1fbc-06cb-4ae5-ba05-21e6b15cd448",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a top-tier SEO Manager with deep expertise in technical SEO and a proven track record of optimizing websites for high performance in Google search rankings.\n\nYour task is to conduct a comprehensive On-Page Technical SEO Audit of a webpage by analyzing its HTML code.\n\nAudit Guidelines:\nReview all technical SEO elements, including but not limited to meta tags, headings, structured data, internal linking, page speed, mobile-friendliness, and indexability.\n\nIdentify any issues that may be impacting the page's ability to rank effectively in search engines.\n\nDeliverables:\nPresent your findings in well-organized bullet points, categorized under the following sections:\n\nCritical Issues – High-priority problems that must be addressed immediately.\n\nQuick Wins – Simple, actionable changes that can lead to significant improvements.\n\nOpportunities for Improvement – Areas that require more effort but offer long-term SEO benefits.\n\nOutput Requirements:\n\nKeep the output professional, concise, and clearly formatted.\n\nUse only bullet points—no introductory or explanatory text before or after the audit.\n\nEnsure readability and clarity throughout the response.\n\nHere is the content of my landing page: {{ $json.data }}",
+        "options": {}
+      },
+      "id": "ee1bb3c1-907c-45d6-9ce4-1994a0b88d9f",
+      "name": "Content Audit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        592,
+        560
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a top-tier SEO Manager with deep expertise in technical SEO and a proven track record of optimizing websites for high performance in Google search rankings.\n\nYour task is to conduct a comprehensive On-Page Technical SEO Audit of a webpage by analyzing its HTML code.\n\nAudit Guidelines:\nReview all technical SEO elements, including but not limited to meta tags, headings, structured data, internal linking, page speed, mobile-friendliness, and indexability.\n\nIdentify any issues that may be impacting the page's ability to rank effectively in search engines.\n\nDeliverables:\nPresent your findings in well-organized bullet points, categorized under the following sections:\n\nCritical Issues – High-priority problems that must be addressed immediately.\n\nQuick Wins – Simple, actionable changes that can lead to significant improvements.\n\nOpportunities for Improvement – Areas that require more effort but offer long-term SEO benefits.\n\nOutput Requirements:\n\nKeep the output professional, concise, and clearly formatted.\n\nUse only bullet points—no introductory or explanatory text before or after the audit.\n\nEnsure readability and clarity throughout the response.\n\nHere is the content of my landing page: {{ $json.data }}",
+        "options": {}
+      },
+      "id": "7d533722-092b-4c27-81c9-c6c378b17398",
+      "name": "Technical Audit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        592,
+        160
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {},
+      "id": "7ba41108-0106-4214-a5c2-e5994ca249d1",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1088,
+        368
+      ],
+      "typeVersion": 3,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ca3a13f8-6685-48b7-9806-99883173d9e7",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1280,
+        368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "=# On-Page Technical Audit\n{{ $json.output[0] }}\n\n# On-Page SEO Content Audit\n{{ $json.output[1] }}",
+        "options": {}
+      },
+      "id": "4e330c07-cbc1-49c2-a514-7c8dda9c0ca9",
+      "name": "Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        1488,
+        368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Send Email \nConnect your credentials & Easily send emails from a Gmail address. \n\nMake sure to add your email in \"To:\" field",
+        "height": 140,
+        "width": 360,
+        "color": 3
+      },
+      "id": "d0d70ff2-c232-4d32-bb82-96a04d2509f4",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1568,
+        208
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL_HERE",
+        "subject": "=On-Page SEO Audit -  {{ $('Landing Page Url').item.json['Landing Page Url'] }}",
+        "message": "={{ $json.data }}",
+        "options": {}
+      },
+      "id": "febaa1bc-eb14-4e5d-96ed-b529c23b009b",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1680,
+        368
+      ],
+      "webhookId": "2979e4dc-1689-447e-8cd4-eb907b4eedf4",
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        544,
+        368
+      ],
+      "id": "0fd9fa1d-4237-45e7-8cc9-cb9de9e9580b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        624,
+        784
+      ],
+      "id": "c5cff09e-5175-4ea1-afd2-7f9152dba52d",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Video Tutorial\nCheckout this video guide on how to run. [Create SEO AI Agent For On-Page SEO](https://youtu.be/O-AShZI8JU0)",
+        "height": 140,
+        "width": 440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d716bdb2-062e-41a6-80fb-75f797811ab0",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Audit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Technical Audit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Landing Page Url": {
+      "main": [
+        [
+          {
+            "node": "Content Audit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Technical Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Technical Audit",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Audit",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "f045525a-e4a9-4ac7-a50a-05a962db4b17",
+  "meta": {
+    "instanceId": "20fb6c3e9cd0af2e99c4894876576c3c39e557383cf01d312b9e42e633900806"
+  },
+  "id": "rqYBji4CMMGkZu9VVZbYv",
+  "tags": []
+}

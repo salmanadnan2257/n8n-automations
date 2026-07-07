@@ -1,0 +1,311 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "41c69858-2c5e-4f60-bb60-63e1ef4da773",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.5,
+      "position": [
+        720,
+        80
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "PDpJu2ov3qjSNCL2",
+          "name": "Open AI Arete Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=AI Prompt: Instagram Reel Performance Analysis & Optimization Strategy\n\n1. Input Data:\n\nViews:\n{{ $json.Views }}\nLikes:\n{{ $json.Likes }}\nComments:\n{{ $json.Comments }}\nVideo Transcription:\n{{ $json.Transcript }}\nCaption: \n{{ $json.Caption }}\n\nYou are my content strategist. take this data and tell me what we can do better for the video",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1120,
+        80
+      ],
+      "id": "97d0b211-6b7d-4be7-879b-2d9c3c76c994",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1140,
+        300
+      ],
+      "id": "8d7de912-9673-4db6-a294-79f1226b8142",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PDpJu2ov3qjSNCL2",
+          "name": "Open AI Arete Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "name",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1480,
+        80
+      ],
+      "id": "2363c47b-5d23-47ad-b5de-b86badf0d590",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0x4f7fQodxRIkV5r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Instagram reel scraper",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Instagram Usernames",
+              "placeholder": "@ahmedd",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "How many reels would you like scraped",
+              "fieldType": "number",
+              "placeholder": "10",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        80
+      ],
+      "id": "f72bd4a0-52ec-4ac9-9001-1ad573f42da4",
+      "name": "On form submission1",
+      "webhookId": "6ad0792d-dcf8-4133-8ca9-9cdc571e8236"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"resultsLimit\": {{ $json['How many reels would you like scraped'] }},\n  \"username\": [\n    \"{{ $json['Instagram Usernames'] }}\"\n  ]\n}",
+        "options": {}
+      },
+      "id": "928ae385-9cf4-4fba-b26d-61bed4b896c2",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "name",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        900,
+        80
+      ],
+      "id": "4dcc7e26-ac4c-402b-90b1-3039ac625d04",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0x4f7fQodxRIkV5r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sync.api.cloudconvert.com/v2/jobs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer "
+            },
+            {
+              "name": "Content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tasks\": {\n    \"import-my-file\": {\n      \"operation\": \"import/url\",\n      \"url\": \"{{ $json.videoUrl }}\"\n    },\n    \"convert-my-file\": {\n      \"operation\": \"convert\",\n      \"input\": \"import-my-file\",\n      \"input_format\": \"mp4\",\n      \"output_format\": \"mp3\"\n    },\n    \"export-my-file\": {\n      \"operation\": \"export/url\",\n      \"input\": \"convert-my-file\"\n    }\n  },\n  \"redirect\": true\n} ",
+        "options": {}
+      },
+      "id": "49f8b8db-63f9-42f0-9d45-fcb4e2ecbfe2",
+      "name": "HTTP Request4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        80
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "95ca59fc-ec97-4f41-a6e0-89a156c7f57d",
+  "meta": {
+    "instanceId": "18b0e35db249f2a347d043bd44dc233d49d3b37e64ce338e1a27cb9b18fe66c9"
+  },
+  "id": "J5RTneOevSibxXFB",
+  "tags": [
+    {
+      "createdAt": "2025-05-13T12:23:15.304Z",
+      "updatedAt": "2025-05-13T12:23:15.304Z",
+      "id": "C5bVBt9OjilxnqpW",
+      "name": "YouTube Ready"
+    }
+  ]
+}

@@ -1,0 +1,1358 @@
+{
+  "name": "NEW - Generate All Emails",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1100,
+        1075
+      ],
+      "id": "3cb206f2-2ccf-4230-ab5c-8bfd0cf304fc",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "XWO8Vk60CAtKqMZ7",
+          "mode": "list",
+          "cachedResultName": "NEW - First Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        200
+      ],
+      "id": "5fdc79b8-46ae-43aa-b128-c6df5aedbe6f",
+      "name": "first_email"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "XWO8Vk60CAtKqMZ7",
+          "mode": "list",
+          "cachedResultName": "NEW - First Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -780,
+        380
+      ],
+      "id": "af752e89-19e9-4611-b2db-e7307811a01b",
+      "name": "first_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "EVvU5n0eVNBPRi0L",
+          "mode": "list",
+          "cachedResultName": "NEW - Second Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -780,
+        580
+      ],
+      "id": "8ef885b6-ad5f-4d4e-8f0e-a3f6c8b5668f",
+      "name": "second_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5Qs1m9PgAAXjlDtx",
+          "mode": "list",
+          "cachedResultName": "NEW - Third Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        760
+      ],
+      "id": "ae076e1b-7d86-4537-98fc-4907fbb9c92c",
+      "name": "third_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ZmBZTndCariUFkPG",
+          "mode": "list",
+          "cachedResultName": "NEW - Fourth Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        200
+      ],
+      "id": "7ba4e939-803b-446f-a895-5baab277f560",
+      "name": "fourth_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "0cCjyXbEFA9IjB2f",
+          "mode": "list",
+          "cachedResultName": "NEW - Fifth Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        400
+      ],
+      "id": "76608688-cb54-477f-8717-25760aa06c6b",
+      "name": "fifth_follow_up"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9549c83c-2c03-4c8f-b1de-159ecb7d6e1b",
+              "name": "start",
+              "value": "={{ $('Increment Loop Var').item.json.page }}",
+              "type": "number"
+            },
+            {
+              "id": "3fa169db-8724-4b04-a001-96266a90dc5a",
+              "name": "filter",
+              "value": "={{ $('Increment Loop Var').item.json.another }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -220,
+        647.5
+      ],
+      "id": "751c08df-ffe4-4992-88bc-188417b1162d",
+      "name": "start_filter"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "lnEpaK7gFzg1qGct",
+          "mode": "list",
+          "cachedResultName": "Add Leads to Instantly"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        620
+      ],
+      "id": "bd3bec81-2531-4e7e-8859-fcab5dacdb42",
+      "name": "add_leads_to_instantly"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a042073f-f9e7-4258-80db-360a09c549e4",
+              "name": "page",
+              "value": "={{ ($('Forward Prev Page Num').isExecuted) ? $('Forward Prev Page Num').first().json.prevPage + 100 : $('Initialize Loop Vars').first().json.page }}",
+              "type": "number"
+            },
+            {
+              "id": "2c89962d-62a7-4162-aa9f-d4197e1d8aa7",
+              "name": "another",
+              "value": "={{ ($('Forward Prev Page Num').isExecuted) ? $('Forward Prev Page Num').first().json.prevPage - 1 : $('Initialize Loop Vars').first().json.another }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -660,
+        1080
+      ],
+      "id": "2f29cc69-8241-4fe7-b30b-3cd62c180d3b",
+      "name": "Increment Loop Var"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4571994d-b14e-4474-85a8-29d667c467d6",
+              "leftValue": "={{  $('Increment Loop Var').first().json.page }}",
+              "rightValue": "={{ $('Initialize Loop Vars').first().json.pageCount }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        700
+      ],
+      "id": "eb7f2580-22b7-4920-832e-8c6f275ce02c",
+      "name": "If - Done"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "32a6221a-b000-4b5f-9b93-271c44d542fd",
+              "name": "page",
+              "value": 2601,
+              "type": "number"
+            },
+            {
+              "id": "91668535-ba9c-4626-8e64-e7a20644c8e2",
+              "name": "pageCount",
+              "value": 2701,
+              "type": "number"
+            },
+            {
+              "id": "feded23d-97ac-47da-93a1-1431c1630c3e",
+              "name": "another",
+              "value": 2400,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        1080
+      ],
+      "id": "68569fff-4fa6-40d5-9a00-1984213dd4c7",
+      "name": "Initialize Loop Vars"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1503b89d-7f11-49fc-86ed-38ed600fc34c",
+              "name": "prevPage",
+              "value": "={{ $('Increment Loop Var').first().json.page }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        1475
+      ],
+      "id": "d0f6e481-dfe5-42ab-a011-1dc5a0b01e44",
+      "name": "Forward Prev Page Num",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        1347.5
+      ],
+      "id": "825fe3f4-9f39-4cdb-8f25-a0b04f546b81",
+      "name": "Tight Loop Safety Check",
+      "webhookId": "c3bd2cff-f5cf-447f-bba6-87378ea67bcb"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        880,
+        600
+      ],
+      "id": "f0771cc5-139e-47a7-b8b3-715bd2486f8b",
+      "name": "Continue Workflow Steps After Loop"
+    },
+    {
+      "parameters": {
+        "numberInputs": 8
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        220,
+        595
+      ],
+      "id": "776741a3-b743-49b1-a347-8fa9f5578825",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        700
+      ],
+      "id": "2cc2e0fc-e7c7-49da-bc43-7a7a0cdcccd6",
+      "name": "Edit Fields",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VarP35XK6Wne31CF",
+          "mode": "list",
+          "cachedResultName": "Generate Subject Line"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -520,
+        820
+      ],
+      "id": "4703a1d1-6b23-4c8c-bfe0-7a78cb768bc0",
+      "name": "subject_line"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "XWO8Vk60CAtKqMZ7",
+          "mode": "list",
+          "cachedResultName": "NEW - First Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        400
+      ],
+      "id": "ea5565aa-3bdb-4587-9ed9-ebc711a390d7",
+      "name": "new_first_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "EVvU5n0eVNBPRi0L",
+          "mode": "list",
+          "cachedResultName": "NEW - Second Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        620
+      ],
+      "id": "58a7f779-7e01-422f-8b40-7e83bfc4c7a1",
+      "name": "new_second_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5Qs1m9PgAAXjlDtx",
+          "mode": "list",
+          "cachedResultName": "NEW - Third Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        820
+      ],
+      "id": "f3ad6d1c-7c10-4960-a340-a6864d07964c",
+      "name": "new_third_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ZmBZTndCariUFkPG",
+          "mode": "list",
+          "cachedResultName": "NEW - Fourth Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1000
+      ],
+      "id": "cdf9e308-3be1-4274-9c43-25bedda02a13",
+      "name": "new_fourth_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "0cCjyXbEFA9IjB2f",
+          "mode": "list",
+          "cachedResultName": "NEW - Fifth Follow Up"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1200
+      ],
+      "id": "33382af8-76a7-4f35-85c6-8bed5222d628",
+      "name": "new_fifth_follow_up"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xvF7YoqDr5RfKL7j",
+          "mode": "list",
+          "cachedResultName": "NEW - Generate Subject Line"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        220
+      ],
+      "id": "db3644c3-29e3-44f7-b59e-e7eada333255",
+      "name": "new_subject_lines"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "z5q6JxwwjTfvB7Y6",
+          "mode": "list",
+          "cachedResultName": "NEW - First Email"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        20
+      ],
+      "id": "4d17ed42-7f01-416e-a502-48f4070b54a8",
+      "name": "tmp_new_first_email"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "z5q6JxwwjTfvB7Y6",
+          "mode": "list",
+          "cachedResultName": "NEW - First Email"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "filter": "={{ $('start_filter').item.json.filter }}",
+            "start": "={{ $('start_filter').item.json.start }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "609aed4f-64ef-4f28-9a70-bf8cc990a065",
+      "name": "new_first_email"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "R1Ulaq81S8GCHc5t",
+          "mode": "list",
+          "cachedResultName": "NEW - Add Leads to Instantly"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start": "={{ $('start_filter').item.json.start }}",
+            "filter": "={{ $('start_filter').item.json.filter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "start",
+              "displayName": "start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "filter",
+              "displayName": "filter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1400
+      ],
+      "id": "7b69b5c7-b97c-4267-959e-ca40d5fda70d",
+      "name": "new_add_leads_to_instantly"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Initialize Loop Vars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "first_email": {
+      "main": [
+        []
+      ]
+    },
+    "first_follow_up": {
+      "main": [
+        []
+      ]
+    },
+    "second_follow_up": {
+      "main": [
+        []
+      ]
+    },
+    "third_follow_up": {
+      "main": [
+        []
+      ]
+    },
+    "fourth_follow_up": {
+      "main": [
+        []
+      ]
+    },
+    "start_filter": {
+      "main": [
+        [
+          {
+            "node": "new_first_follow_up",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "new_second_follow_up",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "new_third_follow_up",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "new_fourth_follow_up",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "new_fifth_follow_up",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "new_add_leads_to_instantly",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "new_subject_lines",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "new_first_email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fifth_follow_up": {
+      "main": [
+        []
+      ]
+    },
+    "Increment Loop Var": {
+      "main": [
+        [
+          {
+            "node": "start_filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Done": {
+      "main": [
+        [
+          {
+            "node": "Continue Workflow Steps After Loop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tight Loop Safety Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Loop Vars": {
+      "main": [
+        [
+          {
+            "node": "Increment Loop Var",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward Prev Page Num": {
+      "main": [
+        [
+          {
+            "node": "Increment Loop Var",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tight Loop Safety Check": {
+      "main": [
+        [
+          {
+            "node": "Forward Prev Page Num",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_leads_to_instantly": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If - Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subject_line": {
+      "main": [
+        []
+      ]
+    },
+    "new_first_follow_up": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "new_second_follow_up": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "new_third_follow_up": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "new_fourth_follow_up": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "new_fifth_follow_up": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "new_subject_lines": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "tmp_new_first_email": {
+      "main": [
+        []
+      ]
+    },
+    "new_first_email": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "new_add_leads_to_instantly": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "84ed182c-8424-4486-915c-f16773a0d27a",
+  "meta": {
+    "instanceId": "b51ae8788dd58e03d5965cccb0929bf8052ea05534f8bb79c40e8c893c3493be"
+  },
+  "id": "ubQrcRo8x0HjoOta",
+  "tags": []
+}

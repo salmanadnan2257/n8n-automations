@@ -1,0 +1,115 @@
+{
+  "createdAt": "2025-08-15T15:04:55.647Z",
+  "updatedAt": "2025-09-17T04:30:03.000Z",
+  "id": "0DHgjt6X8noxOp4K",
+  "name": "Tutorial RAG Chat Agent - Error Handler",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -48
+      ],
+      "id": "901f27c8-3be0-47b0-8798-2ab8f056988d",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "fromEmail": "you@example.com",
+        "toEmail": "alerts@example.com",
+        "subject": "Error in your workflow",
+        "emailFormat": "text",
+        "text": "={{ $json.inputArray.keys() }}\n\n{{ $json.inputArray.values() }}\n\nError: {{ $json.inputArray.error.message }}\nStack: {{ $json.inputArray.error.stack }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        -48
+      ],
+      "id": "c240ce11-8262-4e83-ab5a-88186419acdd",
+      "name": "Send Email",
+      "webhookId": "608ed4fd-becc-4dbd-b774-f8141838aeec",
+      "credentials": {
+        "smtp": {
+          "id": "IQJhVnnyEPtO0BEg",
+          "name": "salman@digitalise.agency"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Access all incoming items\nconst items = $json.execution;\n\n// Assume the first (and only) item contains your full data array under `json`\n// Adjust if your data structure differs\nconst inputArray = items;\n\n// Return in n8n’s expected data structure\nreturn {\n  json: {\n    inputArray\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -48
+      ],
+      "id": "5094124d-0fb2-4f38-96fc-0c0b3542c9a4",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5c5d4237-867f-4472-85a9-5d6594d65587",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.595Z",
+      "updatedAt": "2025-08-30T07:55:44.595Z",
+      "role": "workflow:owner",
+      "workflowId": "0DHgjt6X8noxOp4K",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Owner <you@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

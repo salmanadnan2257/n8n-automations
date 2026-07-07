@@ -1,0 +1,258 @@
+{
+  "name": "CRM Lead Won ClickUp --> Send Invoice Stripe",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "170df7e5-777a-4065-a6ff-42c558cf16f4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bf05d9c8-4a6f-45a5-a56e-a69b04158e48",
+      "name": "Webhook",
+      "webhookId": "170df7e5-777a-4065-a6ff-42c558cf16f4"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json.body.payload.id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "7c27f4ba-5de5-4eac-a6ea-b6b3b9b0249f",
+      "name": "ClickUp",
+      "credentials": {
+        "clickUpApi": {
+          "id": "K2rHYcpg6BiyrYWl",
+          "name": "ClickUp Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "customer",
+        "operation": "create",
+        "name": "={{ $json.name }}",
+        "additionalFields": {
+          "email": "={{ $json.custom_fields[19].value }}"
+        }
+      },
+      "type": "n8n-nodes-base.stripe",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ],
+      "id": "b9b23ea7-de4a-42e0-b780-482ffc7e6f52",
+      "name": "Stripe",
+      "credentials": {
+        "stripeApi": {
+          "id": "lOy3YTWAEKPt0xM6",
+          "name": "Stripe account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stripe.com/v1/invoiceitems",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "stripeApi",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customer",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "amount",
+              "value": "={{ $('ClickUp').item.json.custom_fields[5].value * 100 }}"
+            },
+            {
+              "name": "currency",
+              "value": "usd"
+            },
+            {
+              "name": "description",
+              "value": "1st Deposit"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "29ee285b-3bfe-479b-b39a-e46d6c6de047",
+      "name": "Create Invoice Item Stripe",
+      "credentials": {
+        "stripeApi": {
+          "id": "lOy3YTWAEKPt0xM6",
+          "name": "Stripe account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stripe.com/v1/invoices",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "stripeApi",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customer",
+              "value": "={{ $('Stripe').item.json.id }}"
+            },
+            {
+              "name": "auto_advance",
+              "value": "=true"
+            },
+            {
+              "name": "collection_method",
+              "value": "send_invoice"
+            },
+            {
+              "name": "days_until_due",
+              "value": "2"
+            },
+            {
+              "name": "pending_invoice_items_behavior",
+              "value": "include"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        0
+      ],
+      "id": "ef5cb34d-42fa-4d9d-84eb-734c981d0ea1",
+      "name": "Create Invoice Stripe",
+      "credentials": {
+        "stripeApi": {
+          "id": "lOy3YTWAEKPt0xM6",
+          "name": "Stripe account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.stripe.com/v1/invoices/{{ $json.id }}/finalize",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "stripeApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1060,
+        0
+      ],
+      "id": "469ab8ee-7d22-45dc-8787-97a0a85b1613",
+      "name": "Finalize Invoice Stripe",
+      "credentials": {
+        "stripeApi": {
+          "id": "lOy3YTWAEKPt0xM6",
+          "name": "Stripe account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "ClickUp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp": {
+      "main": [
+        [
+          {
+            "node": "Stripe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe": {
+      "main": [
+        [
+          {
+            "node": "Create Invoice Item Stripe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Invoice Item Stripe": {
+      "main": [
+        [
+          {
+            "node": "Create Invoice Stripe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Invoice Stripe": {
+      "main": [
+        [
+          {
+            "node": "Finalize Invoice Stripe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "eed8a167-c9b4-4706-8438-ef29efb5d55d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b0dcdc2a61168afbc3bb8907befe60a34408308859f86b899e8ba57a64038046"
+  },
+  "id": "5RlTLsPHDThcYXoX",
+  "tags": [
+    {
+      "createdAt": "2025-02-25T16:53:08.138Z",
+      "updatedAt": "2025-02-25T16:53:08.138Z",
+      "id": "987WX9PvnYkGNzpl",
+      "name": "Nick n8n"
+    }
+  ]
+}

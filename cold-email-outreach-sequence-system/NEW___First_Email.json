@@ -1,0 +1,1546 @@
+{
+  "name": "NEW - First Email",
+  "nodes": [
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite-preview-06-17",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        260,
+        -220
+      ],
+      "id": "573ffa22-5d91-499e-96ed-816fe7bb5bf9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "331o3XPdMm9h3FMw",
+          "name": "it.expert2210"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/Downloads/IMP/Ultimate AI Research.pdf",
+        "options": {
+          "dataPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        220
+      ],
+      "id": "99ec8aea-c257-4e97-9e40-31eefedf18b9",
+      "name": "read_ai_research",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw",
+          "mode": "list",
+          "cachedResultName": "Ultimate Real Estate Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Real Estate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "=1:{{ $('start_new_first_email').item.json.start }}"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1620,
+        220
+      ],
+      "id": "976439d6-206f-4297-b8c4-4beee1457551",
+      "name": "leads_data",
+      "alwaysOutputData": true,
+      "notesInFlow": false,
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "41acfcf8-10aa-4288-abd5-72c9349d3e0a",
+              "leftValue": "={{ $('leads_data').item.json.row_number }}",
+              "rightValue": "={{ $('start_new_first_email').item.json.filter }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1420,
+        220
+      ],
+      "id": "7f5d9795-bfd9-421c-9524-0b9f46212274",
+      "name": "filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "072f6df3-874c-4a18-8f91-bcee02ceac37",
+              "name": "name",
+              "value": "={{ $('leads_data').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "fab19b52-cbf1-468f-b69c-a0707d0b42ff",
+              "name": "company_name",
+              "value": "={{ $('leads_data').item.json.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "55b9c802-9038-41a0-ae00-33b31b2d26ff",
+              "name": "headline",
+              "value": "={{ $('leads_data').item.json.headline }}",
+              "type": "string"
+            },
+            {
+              "id": "d5d1098b-3f4c-4cf3-bb2b-c4a9c00b5784",
+              "name": "title",
+              "value": "={{ $('leads_data').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "695abffd-ef86-4282-804a-9698ad0748b5",
+              "name": "general_search",
+              "value": "={{ $('leads_data').item.json.general_search }}",
+              "type": "string"
+            },
+            {
+              "id": "68543b39-6fa9-45c8-aeaa-83678a0c7c86",
+              "name": "news_search",
+              "value": "={{ $('leads_data').item.json.news_search }}",
+              "type": "string"
+            },
+            {
+              "id": "d1dc58e2-ee5d-4468-9c96-db37a6d23779",
+              "name": "person_linkedin_scrape",
+              "value": "={{ $('leads_data').item.json.person_linkedin_scrape }}",
+              "type": "string"
+            },
+            {
+              "id": "b7dce3f3-ea90-420e-9742-1ec681fcb336",
+              "name": "company_linkedin_scrape",
+              "value": "={{ $('leads_data').item.json.company_linkedin_scrape }}",
+              "type": "string"
+            },
+            {
+              "id": "cb221bbd-6c09-42c9-9ec9-c07d1dd93b53",
+              "name": "first_email",
+              "value": "={{ $('leads_data').item.json.first_email }}",
+              "type": "string"
+            },
+            {
+              "id": "1e0a28f1-ba30-4031-8e3f-acbff021456a",
+              "name": "first_follow_up",
+              "value": "={{ $('leads_data').item.json.first_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "f87c6d42-127d-4d1b-9bf9-a2dac3af9920",
+              "name": "second_follow_up",
+              "value": "={{ $('leads_data').item.json.second_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "9698f51c-ae9a-47f3-b27b-e4f4a1f8829a",
+              "name": "third_follow_up",
+              "value": "={{ $('leads_data').item.json.third_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "7fb12635-c188-42bc-8734-c673a136b779",
+              "name": "fourth_follow_up",
+              "value": "={{ $('leads_data').item.json.fourth_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "f0a93035-8bf5-4e12-b145-f86f80458e1b",
+              "name": "fifth_follow_up",
+              "value": "={{ $('leads_data').item.json.fifth_follow_up }}",
+              "type": "string"
+            },
+            {
+              "id": "a2ed4536-746e-4389-af07-6f7546ca0268",
+              "name": "row_number",
+              "value": "={{ $('leads_data').item.json.row_number }}",
+              "type": "string"
+            },
+            {
+              "id": "bb3e638e-b891-42f0-bd65-61dc06e5226d",
+              "name": "type",
+              "value": "=5",
+              "type": "string"
+            },
+            {
+              "id": "39aef184-7769-4ffb-b6ae-ab760b987b67",
+              "name": "day",
+              "value": "={{ $('Date & Time').item.json.day }}",
+              "type": "string"
+            },
+            {
+              "id": "00b54135-e6e3-48ea-b685-15a35065343c",
+              "name": "tmp",
+              "value": "={{ Math.floor(Math.random() * 3) + 1 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1220,
+        220
+      ],
+      "id": "469be401-4dbc-4484-a74f-2db89f43217e",
+      "name": "essential"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3abd7399-4285-4a7a-9f3c-7b85ca3c93e0",
+              "leftValue": "={{ $('essential').item.json.first_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1000,
+        220
+      ],
+      "id": "df54836f-69d8-4a8f-9a5a-1f852ab9628b",
+      "name": "if_first_email"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d8d999bb-2f53-4cdd-bcba-bede091c21c4",
+              "leftValue": "={{ $('Final').item.json.output }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1300,
+        100
+      ],
+      "id": "0e9a5508-e173-4167-995c-d189ef7029cd",
+      "name": "Is_output"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function formatText(input) {\n  const formatted = input\n    .replace(/\\*\\*\\*(.*?)\\*\\*\\*/g, '$1')\n    .replace(/\\*\\*(.*?)\\*\\*/g, '$1')\n    .replace(/\\*(.*?)\\*/g, '$1')\n    .replace(/\\n/g, '<br>')\n    .replace(/\"/g, '&quot;');\n\n  // return JSON.stringify(formatted);\n  return formatted;\n}\n\n// const email1 = $(\"generate_first_email_v1\").item.json.output;\n\n// const text1 = email1\n//   .replace(/\\*\\*\\*(.*?)\\*\\*\\*/g, '$1')  // bold-italic\n//   .replace(/\\*\\*(.*?)\\*\\*/g, '$1')               // bold\n//   .replace(/\\*(.*?)\\*/g, '$1')                           // italic\n//   .replace(/\\n/g, '<br>')                                         // newline to <br>\n//   .replace(/\"/g, '&quot;');                                       // escape double\nlet first_email = formatText($('Final').item.json.output);\n\nreturn {\n  json: {\n    \"first_email\": first_email\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        0
+      ],
+      "id": "ca96766a-f902-46f5-bca9-42ac3be6208e",
+      "name": "clean_first_email",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw",
+          "mode": "list",
+          "cachedResultName": "Ultimate Real Estate Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Real Estate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zp6q1vrAcCegp6-LU-JrGlh8c_T0e_T1Z3-BjdnG_bw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Final').item.json.row_number }}",
+            "first_email": "={{ $('Final').item.json.output }}",
+            "type": "={{ $('Final').item.json.type }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "headline",
+              "displayName": "headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_website_url",
+              "displayName": "company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_fb",
+              "displayName": "company_fb",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_linkedin",
+              "displayName": "company_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_twitter",
+              "displayName": "company_twitter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_phone_no",
+              "displayName": "company_phone_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_primary_phone_no",
+              "displayName": "company_primary_phone_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_city",
+              "displayName": "company_city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_country",
+              "displayName": "company_country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "general_search",
+              "displayName": "general_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "news_search",
+              "displayName": "news_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "person_linkedin_scrape",
+              "displayName": "person_linkedin_scrape",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_linkedin_scrape",
+              "displayName": "company_linkedin_scrape",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "first_email",
+              "displayName": "first_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "first_follow_up",
+              "displayName": "first_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "second_follow_up",
+              "displayName": "second_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "third_follow_up",
+              "displayName": "third_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fourth_follow_up",
+              "displayName": "fourth_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fifth_follow_up",
+              "displayName": "fifth_follow_up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "subject_line",
+              "displayName": "subject_line",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1760,
+        0
+      ],
+      "id": "7b2bbdac-54e1-4d11-9b7f-8a9c70070beb",
+      "name": "add_first_email",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1900,
+        100
+      ],
+      "id": "36d5a7ef-d755-4832-9d46-251c20c4e933",
+      "name": "merge"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -560,
+        660
+      ],
+      "id": "85694312-0cb6-4bbd-875d-67463a54348c",
+      "name": "merge1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        120
+      ],
+      "id": "bd5109f3-04f1-46d4-80dd-92eea701add7",
+      "name": "noop"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        680
+      ],
+      "id": "6ba9da35-0c09-4aaa-94fa-6344d097a16d",
+      "name": "noop2"
+    },
+    {
+      "parameters": {
+        "batchSize": 25,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -760,
+        220
+      ],
+      "id": "db799006-8e77-40f6-bb9b-8fdfc17b9da6",
+      "name": "loop"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2020,
+        220
+      ],
+      "id": "bc0241c8-3d5a-486b-a12d-c5d4c1ee5dc8",
+      "name": "extract_txt"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        660
+      ],
+      "id": "d491d425-ca37-450f-b964-93e12193de98",
+      "name": "no_pass_data",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Now: {{ $('essential').item.json.day }}\nName: {{ $('essential').item.json.name }}\nCompany Name: {{ $('essential').item.json.company_name }}\nHeadline: {{ $('essential').item.json.headline }}\nTitle: {{ $('essential').item.json.title }}\nGoogle Research on person + company (could be inaccurate, so you must compare it with the person's info provided above i.e. name, company, title, etc.):\n\"\"\"\n{{ $('essential').item.json.general_search }}\n\n{{ $('essential').item.json.news_search }}\n\n{{ $('essential').item.json.person_linkedin_scrape }}\n\n{{ $('essential').item.json.company_linkedin_scrape }}\n\"\"\"\n\nStatistics and Research for reference:\n\"\"\"\n{{ $('extract_txt').first().json.text }}\n\"\"\"\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are an expert AI copywriter. Your sole function is to generate punchy, human-like, and professional cold emails by populating a fixed template with provided data. Your execution must be flawless.\n\n**Context:**\nYou will be given a set of data including the current day (now), prospect information, and service details. Your task is to use this data to construct a highly persuasive and personalized email designed to drive curiosity and secure a meeting. Adherence to the template is mandatory.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Mandatory Tone:** The email's tone must be professional yet casual, friendly, human-like, and punchy. It must be written to be impactful and easy to skim.\n2.  **Mandatory Template:** You must use the following template. No deviation is permitted.\n    Hey {{first_name}},<br><br>{{icebreaker}}.<br><br>Most people trying to fix [[pain point]] add more tools or hire more people.<br><br>The blind spot? That just adds complexity and cost.<br><br>The real problem isn't a lack of resources—it's the manual friction and delay in the process itself.<br><br>The highest-leverage fix is to use a single, lightweight system to make [[task]] instant and consistent.<br><br>[[benefit]]<br><br>This frees up your team for high-value work, not tedious chores.<br><br>Built a system already doing this for other agents, happy to walk you through it.<br><br>Would 9 or 10 AM ET work better for you — [[Tomorrow, Business Day]] or [[Day after Tomorrow, Business Day]]?<br><br>Best,<br>{{sendingAccountName}}\n3.  **Variable Population (Strict Instructions):**\n    *   {{first_name}}: You must replace this with the prospect's First Name.\n    *   {{icebreaker}}: You must create a concise, impactful, one-sentence icebreaker from Google Research. Verify this research against the Name and Company Name. If inaccurate, you must create a powerful icebreaker based on their Title and Company Name.\n    *   [[pain point]], [[task]], and [[benefit]]: You must infer these from Statistics and Research for reference. Use direct, simple language. The [[benefit]] must be an extremely impactful and convincing statement that is **under five words**.\n    *   [[Tomorrow, Business Day]] and [[Day after Tomorrow, Business Day]]: You must calculate these based on the now input field. Business days are Monday-Saturday. You must find the next business day after now, and the business day after that one.\n    *   {{sendingAccountName}}: You must leave this placeholder exactly as {{sendingAccountName}}.\n4.  **Strict Constraints:**\n    *   **Formatting:** You must use <br> for all new lines.\n    *   **Output Purity:** You must only return the final, generated email text. Do not include any other text, explanations, or markdown code blocks (). Your response must be the email and only the email.\n\n**Examples:**\n*   **Input Data:**\n    *   now: Thursday\n    *   Name: Alex Carter\n    *   Company Name: Momentum Realty\n    *   Title: Lead Agent\n    *   Google Research on person + company: \"Alex Carter from Momentum Realty was just awarded 'Top Producer of the Quarter' in their brokerage.\"\n    *   Statistics and Research for reference: \"Our system automates initial outreach to new web leads, increasing connection rates by 300% and eliminating manual dialing.\"\n*   AI Output (This must be the only thing you return):\n    Hey Alex,<br><br>Saw you were named Top Producer of the Quarter—huge congrats.<br><br>Most people trying to fix slow lead response times add more tools or hire more people.<br><br>The blind spot? That just adds complexity and cost.<br><br>The real problem isn't a lack of resources—it's the manual friction and delay in the process itself.<br><br>The highest-leverage fix is to use a single, lightweight system to make initial lead outreach instant and consistent.<br><br>3x higher connection rates.<br><br>This frees up your team for high-value work, not tedious chores.<br><br>Built a system already doing this for other agents, happy to walk you through it.<br><br>Would 9 or 10 AM ET work better for you — Friday or Saturday?<br><br>Best,<br>{{sendingAccountName}}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        180,
+        -400
+      ],
+      "id": "21abb6ee-de9d-4d00-bfa0-ac6a46d65670",
+      "name": "generate_first_email_v1",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite-001",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        220,
+        80
+      ],
+      "id": "f87e0ae1-42d3-4c47-90bc-16a97f3c1d79",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "331o3XPdMm9h3FMw",
+          "name": "it.expert2210"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Now: {{ $('essential').item.json.day }}\nName: {{ $('essential').item.json.name }}\nCompany Name: {{ $('essential').item.json.company_name }}\nHeadline: {{ $('essential').item.json.headline }}\nTitle: {{ $('essential').item.json.title }}\nGoogle Research on person + company (could be inaccurate, so you must compare it with the person's info provided above i.e. name, company, title, etc.):\n\"\"\"\n{{ $('essential').item.json.general_search }}\n\n{{ $('essential').item.json.news_search }}\n\n{{ $('essential').item.json.person_linkedin_scrape }}\n\n{{ $('essential').item.json.company_linkedin_scrape }}\n\"\"\"\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are an expert AI copywriter specializing in crafting punchy, high-impact follow-up emails. Your execution must be precise.\n\n**Context:**\nYou are tasked with generating the second email in a sequence. You will be provided with the current day (now) and specific research on a prospect. Your sole function is to populate a fixed email template, with a critical focus on making the icebreaker flow seamlessly and naturally into the body of the email.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Mandatory Tone & Flow:** The email must be professional yet casual, friendly, and punchy. The {{icebreaker}} is the most important element. It must be short, brief, accurate, and impactful, creating a flawless transition into the next line.\n2.  **Mandatory Template:** You must use the following template. No deviation is permitted.\n    Hey {{first_name}},<br><br>{{icebreaker}}.<br><br>Most leads go cold in under 5 minutes — and the first agent to call usually wins.<br><br>I built a tool that auto-calls leads the instant they come in.<br><br>One client saw an 85% drop in time wasted on unqualified leads.<br><br>I'm giving a few top agents an early peek in exchange for honest feedback.<br><br>Would 9 or 10 AM ET work better for you — [[Tomorrow, Business Day]] or [[Day after Tomorrow, Business Day]]?<br><br>Best,<br>{{sendingAccountName}}\n3.  **Variable Population (Strict Instructions):**\n    *   {{first_name}}: You must replace this with the prospect's First Name.\n    *   {{icebreaker}}: You must create a concise, one-sentence icebreaker from Google Research. First, verify the research against the prospect's Name, Company Name, and Title. If inaccurate, you must create a generic but relevant icebreaker based on their Title that still flows perfectly into the next line.\n    *   [[Tomorrow, Business Day]] and [[Day after Tomorrow, Business Day]]: You must calculate these based on the now input field. Business days are Monday-Saturday. You must find the next business day after now, and the business day after that one.\n    *   {{sendingAccountName}}: You must leave this placeholder exactly as {{sendingAccountName}}.\n4.  **Strict Constraints:**\n    *   **Formatting:** You must use <br> for all new lines.\n    *   **Output Purity:** You must only return the final, generated email text. Do not include any other text, explanations, or markdown code blocks (). Your response must be the email and only the email.\n\n**Examples:**\n*   **Input Data:**\n    *   now: Saturday\n    *   Name: Samantha Lee\n    *   Company Name: Apex Homes\n    *   Title: Real Estate Agent\n    *   Google Research on person + company: \"Samantha Lee from Apex Homes recently closed 5 deals in a single week, according to their company blog.\"\n*   AI Output (This must be the only thing you return):\n    Hey Samantha,<br><br>Just saw the blog post on you closing 5 deals in one week.<br><br>Most leads go cold in under 5 minutes — and the first agent to call usually wins.<br><br>I built a tool that auto-calls leads the instant they come in.<br><br>One client saw an 85% drop in time wasted on unqualified leads.<br><br>I'm giving a few top agents an early peek in exchange for honest feedback.<br><br>Would 9 or 10 AM ET work better for you — Monday or Tuesday?<br><br>Best,<br>{{sendingAccountName}}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        180,
+        -80
+      ],
+      "id": "06fc6864-e88b-4b6b-b83e-0e67382dddb5",
+      "name": "generate_first_email_v2",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "cccc",
+        "outputFieldName": "day",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -1820,
+        220
+      ],
+      "id": "ba30d553-955e-4483-9d5a-ba22bbfcf8ca",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "start",
+              "type": "number"
+            },
+            {
+              "name": "filter",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2440,
+        220
+      ],
+      "id": "cc696b05-9fb0-48b1-a99d-1869555f888f",
+      "name": "start_new_first_email"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite-001",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        360
+      ],
+      "id": "d47f9c62-aaf4-4cee-864f-ecc239d67981",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "D23vKDHO3QTCP6Pe",
+          "name": "Shahrs55555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6320fa02-8416-4d6c-be72-79946d10ad4c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f521ca59-4990-4059-9fb7-45f981eacce5",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "32c93c4a-4f78-4fbf-9a99-81753fcf36aa",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "db5098fd-dae0-46b3-9de2-2016a04faeb2",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "4",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6b61cd0a-8f65-439e-81d0-868a9285e37f",
+                    "leftValue": "={{ $('essential').item.json.type }}",
+                    "rightValue": "5",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -500,
+        240
+      ],
+      "id": "be774a9f-2b6d-4bed-bd41-27dc406c188f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Now: \"{{ $('essential').item.json.day }}\"\nName: \"{{ $('essential').item.json.name }}\"\nCompany Name: \"{{ $('essential').item.json.company_name }}\"\nHeadline: \"{{ $('essential').item.json.headline }}\"\nTitle: \"{{ $('essential').item.json.title }}\"\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a specialized Email Personalization Engine. Your function is to process input data and generate a formatted email string based on a fixed template and a set of precise rules.\n\n**Context:**\nYou will be given a set of data fields (`Now`, `Name`, `Company Name`, `Headline`, `Title`) and a specific email template. Your task is to populate this template with the provided data, adhering strictly to the formatting and substitution rules, and return a single, formatted email string.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  You must use the following email template exactly as written:\n    `Hey {{first_name}},<br><br>I just spoke with Shahid Saleem, co-founder of IQI Global. His key insight: the top 1% of brokerages have stopped trying to win with manpower.<br><br>They are winning with leverage.<br><br>They know adding agents to a broken follow-up process is like adding horses to a carriage when competitors have a car engine.<br><br>Our system provides that leverage. It automates lead engagement so your closers can focus entirely on what they do best.<br><br>I'm briefing a few select leaders this week on a 15-minute plan to implement this.<br><br>Are you free [Tomorrow, Business Day] at 9 AM or 10 AM ET?<br><br>Best,<br>{{sendingAccountName}}`\n2.  **Field Population:**\n    *   Replace `{{first_name}}` with the first word from the `Name` field.\n    *   Keep `{{sendingAccountName}}` exactly as it is; do not change it.\n    *   Calculate and replace `[Tomorrow, Business Day]` based on the `Now` field.\n        *   Business days are Monday, Tuesday, Wednesday, Thursday, Friday, Saturday.\n        *   If `Now` is Friday, `[Tomorrow, Business Day]` becomes \"Saturday\".\n        *   If `Now` is Saturday, `[Tomorrow, Business Day]` becomes \"Monday\".\n        *   Apply this next-business-day logic for all days.\n3.  **Formatting:**\n    *   Use `<br>` for all new lines. The final output must be a single string. Do not use `\\n`.\n4.  **Output Constraints:**\n    *   Your response must be ONLY the generated email string.\n    *   Do not include any other text, greetings, explanations, or markdown like ```` ``` ````.\n\n**Examples:**\n*   **Input Data:**\n    *   Now: \"Wednesday\"\n    *   Name: \"Daniel LaRusso\"\n    *   Company Name: \"LaRusso Auto Group\"\n    *   Headline: \"Owner\"\n    *   Title: \"Owner\"\n*   **Expected Output:**\n    Hey Daniel,<br><br>I just spoke with Shahid Saleem, co-founder of IQI Global. His key insight: the top 1% of brokerages have stopped trying to win with manpower.<br><br>They are winning with leverage.<br><br>They know adding agents to a broken follow-up process is like adding horses to a carriage when competitors have a car engine.<br><br>Our system provides that leverage. It automates lead engagement so your closers can focus entirely on what they do best.<br><br>I'm briefing a few select leaders this week on a 15-minute plan to implement this.<br><br>Are you free Thursday at 9 AM or 10 AM ET?<br><br>Best,<br>{{sendingAccountName}}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        140,
+        180
+      ],
+      "id": "ab5a34ef-69ec-465f-be6f-f06cc91caffb",
+      "name": "generate_first_email_v3",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite-001",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        180,
+        680
+      ],
+      "id": "569ebd4a-c3b4-4a0a-9c2e-25feb0066c64",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HpUCjJRzSfWwA3BR",
+          "name": "Laptopwallstore"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Now: \"{{ $('essential').item.json.day }}\"\nName: \"{{ $('essential').item.json.name }}\"\nCompany Name: \"{{ $('essential').item.json.company_name }}\"\nHeadline: \"{{ $('essential').item.json.headline }}\"\nTitle: \"{{ $('essential').item.json.title }}\"\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a specialized Email Personalization Engine. Your function is to process input data and generate a formatted email string based on a fixed template and a set of precise rules.\n\n**Context:**\nYou will be given a set of data fields (Now, Name, Company Name, Headline, Title) and a specific email template. Your task is to populate this template with the provided data, adhering strictly to the formatting and substitution rules, and return a single, formatted email string.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  You must use the following email template exactly as written:\n    This is a cold email, but the story inside is too relevant not to send.<br><br>{{first_name}}, a colleague of mine—one of the best operators I know—told me on a call... <br><br>\"It's a chaotic rush down here. Leads pouring in, and phones ringing... but for some reason, our revenue is flat. I just can't figure out why.\"<br><br>So I practically moved into his office to figure it out.<br><br>His team was incredible, a well-oiled machine. <br><br>But the machine was leaking. <br><br>In the daily chaos, new leads often waited 10, 20, and sometimes 30 minutes for a response. <br><br>We realized the problem wasn't a lack of talent; it was a lack of speed.<br><br>We built a simple system for him that closed that gap.<br><br>The results were staggering. <br><br>He didn't just plug the leak; he effectively doubled his team's output without adding a single new agent.<br><br>I have a feeling your agency is fighting a similar quiet battle every day.<br><br>I can walk you through the system we built for him in 10 minutes. Are you free [Tomorrow, Business Day] at 9 AM or [Day After Tomorrow, Business Day] at 12 PM (Eastern Time)?<br><br>Cheers,<br>{{sendingAccountName}}\n2.  **Field Population:**\n    *   Replace {{first_name}} with the first word from the Name field.\n    *   Keep {{sendingAccountName}} exactly as it is; do not change it.\n    *   Calculate and replace [Tomorrow, Business Day] and [Day After Tomorrow, Business Day] based on the Now field.\n        *   Business days are Monday, Tuesday, Wednesday, Thursday, Friday, Saturday.\n        *   If Now is Friday, [Tomorrow, Business Day] becomes \"Saturday\" and [Day After Tomorrow, Business Day] becomes \"Monday\".\n        *   If Now is Saturday, [Tomorrow, Business Day] becomes \"Monday\" and [Day After Tomorrow, Business Day] becomes \"Tuesday\".\n        *   Apply this next-business-day logic for all days.\n3.  **Formatting:**\n    *   Use <br> for all new lines. The final output must be a single string. Do not use \\n.\n4.  **Output Constraints:**\n    *   Your response must be ONLY the generated email string. Do not include any other text, greetings, explanations, or markdown like   .\n\n**Examples:**\n*   **Input Data:**\n    *   Now: \"Thursday\"\n    *   Name: \"Sarah Chen\"\n    *   Company Name: \"Innovate Corp\"\n    *   Headline: \"Founder & Visionary\"\n    *   Title: \"Founder\"\n*   **Expected Output:**\n    This is a cold email, but the story inside is too relevant not to send.<br><br>Sarah, a colleague of mine—one of the best operators I know—told me on a call... <br><br>\"It's a chaotic rush down here. Leads pouring in, and phones ringing... but for some reason, our revenue is flat. I just can't figure out why.\"<br><br>So I practically moved into his office to figure it out.<br><br>His team was incredible, a well-oiled machine. <br><br>But the machine was leaking. <br><br>In the daily chaos, new leads often waited 10, 20, and sometimes 30 minutes for a response. <br><br>We realized the problem wasn't a lack of talent; it was a lack of speed.<br><br>We built a simple system for him that closed that gap.<br><br>The results were staggering. <br><br>He didn't just plug the leak; he effectively doubled his team's output without adding a single new agent.<br><br>I have a feeling your agency is fighting a similar quiet battle every day.<br><br>I can walk you through the system we built for him in 10 minutes. Are you free Friday at 9 AM or Saturday at 12 PM (Eastern Time)?<br><br>Cheers,<br>{{sendingAccountName}}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        160,
+        500
+      ],
+      "id": "e91efb4c-edd0-4b1d-852e-a747b3395c83",
+      "name": "generate_first_email_v4",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1e76b51-0d66-43ef-8ebe-d5e060764d32",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "94006bf5-89bf-4995-a2b0-2efce8b64584",
+              "name": "row_number",
+              "value": "={{ $('essential').item.json.row_number }}",
+              "type": "string"
+            },
+            {
+              "id": "8b6b2618-daf4-4610-ade7-8c19635a669e",
+              "name": "type",
+              "value": "={{ $('essential').item.json.type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        940,
+        140
+      ],
+      "id": "94b753a6-0ab5-41d0-a49a-08f405c6cd15",
+      "name": "Final"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite-001",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        180,
+        1020
+      ],
+      "id": "234b8c96-2f21-4631-ae77-d2a7c05232fb",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "D23vKDHO3QTCP6Pe",
+          "name": "Shahrs55555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Now: \"{{ $('essential').item.json.day }}\"\nName: \"{{ $('essential').item.json.name }}\"\nCompany Name: \"{{ $('essential').item.json.company_name }}\"\nHeadline: \"{{ $('essential').item.json.headline }}\"\nTitle: \"{{ $('essential').item.json.title }}\"\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a specialized Email Personalization Engine. Your function is to process input data and generate a formatted email string based on a fixed template and a set of precise rules.\n\n**Context:**\nYou will be given a set of data fields (`Now`, `Name`, `Company Name`, `Headline`, `Title`) and a specific email template. Your task is to populate this template with the provided data, adhering strictly to the formatting and substitution rules, and return a single, formatted email string.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  You must use the following email template exactly as written:\n    `Hey {{first_name}},<br><br>You're already winning the game. This email is about changing the rules.<br><br>My partners and I are running a quiet, off-market program. <br><br>We're installing a new AI-powered operating system for a handful of the top-performing real estate teams in the country. <br><br>It automates the entire client acquisition funnel—from lead engagement to booked appointment—so their closers can focus exclusively on high-value conversations.<br><br>We're accepting three more partners for our final cohort before we close the program until Q2 of next year.<br><br>We identified {{company_name}} as an ideal fit.<br><br>Are you free on [Tomorrow, Business Day] or [Day after Tomorrow, Business Day] - 9 AM or 10 AM (Eastern Time) for a 15-minute chat? No pitch, just putting the pieces together.<br><br>Best,<br>{{sendingAccountName}}`\n2.  **Field Population:**\n    *   Replace `{{first_name}}` with the first word from the `Name` field.\n    *   Replace `{{company_name}}` with the value from the `Company Name` field.\n    *   Keep `{{sendingAccountName}}` exactly as it is; do not change it.\n    *   Calculate and replace `[Tomorrow, Business Day]` and `[Day after Tomorrow, Business Day]` based on the `Now` field.\n        *   Business days are Monday, Tuesday, Wednesday, Thursday, Friday, Saturday.\n        *   If `Now` is Friday, `[Tomorrow, Business Day]` becomes \"Saturday\" and `[Day after Tomorrow, Business Day]` becomes \"Monday\".\n        *   If `Now` is Saturday, `[Tomorrow, Business Day]` becomes \"Monday\" and `[Day after Tomorrow, Business Day]` becomes \"Tuesday\".\n        *   Apply this next-business-day logic for all days.\n3.  **Formatting:**\n    *   Use `<br>` for all new lines. The final output must be a single string. Do not use `\\n`.\n4.  **Output Constraints:**\n    *   Your response must be ONLY the generated email string.\n    *   Do not include any other text, greetings, explanations, or markdown like ```` ``` ````.\n\n**Examples:**\n*   **Input Data:**\n    *   Now: \"Saturday\"\n    *   Name: \"Jessica Wong\"\n    *   Company Name: \"Prestige Homes\"\n    *   Headline: \"Founder of Prestige Homes\"\n    *   Title: \"Founder\"\n*   **Expected Output:**\n    Hey Jessica,<br><br>You're already winning the game. This email is about changing the rules.<br><br>My partners and I are running a quiet, off-market program. <br><br>We're installing a new AI-powered operating system for a handful of the top-performing real estate teams in the country. <br><br>It automates the entire client acquisition funnel—from lead engagement to booked appointment—so their closers can focus exclusively on high-value conversations.<br><br>We're accepting three more partners for our final cohort before we close the program until Q2 of next year.<br><br>We identified Prestige Homes as an ideal fit.<br><br>Are you free on Monday or Tuesday - 9 AM or 10 AM (Eastern Time) for a 15-minute chat? No pitch, just putting the pieces together.<br><br>Best,<br>{{sendingAccountName}}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        160,
+        840
+      ],
+      "id": "4bed1e37-4e2f-4ad9-95c3-317998b42db1",
+      "name": "generate_first_email_v5",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_first_email_v1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_ai_research": {
+      "main": [
+        [
+          {
+            "node": "extract_txt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leads_data": {
+      "main": [
+        [
+          {
+            "node": "filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter": {
+      "main": [
+        [
+          {
+            "node": "essential",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "essential": {
+      "main": [
+        [
+          {
+            "node": "if_first_email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if_first_email": {
+      "main": [
+        [
+          {
+            "node": "loop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "noop2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is_output": {
+      "main": [
+        [
+          {
+            "node": "clean_first_email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "noop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean_first_email": {
+      "main": [
+        [
+          {
+            "node": "add_first_email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_first_email": {
+      "main": [
+        [
+          {
+            "node": "merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "merge": {
+      "main": [
+        [
+          {
+            "node": "loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "merge1": {
+      "main": [
+        [
+          {
+            "node": "no_pass_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "noop": {
+      "main": [
+        [
+          {
+            "node": "merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "noop2": {
+      "main": [
+        [
+          {
+            "node": "merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "loop": {
+      "main": [
+        [
+          {
+            "node": "merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract_txt": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_first_email_v1": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_first_email_v2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "leads_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_first_email_v2": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "start_new_first_email": {
+      "main": [
+        [
+          {
+            "node": "read_ai_research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_first_email_v3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "generate_first_email_v1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_first_email_v2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_first_email_v3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_first_email_v4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate_first_email_v5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_first_email_v3": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_first_email_v4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_first_email_v4": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final": {
+      "main": [
+        [
+          {
+            "node": "Is_output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_first_email_v5",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_first_email_v5": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "9428972e-1c51-4f8c-8132-760fd1d2750e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b51ae8788dd58e03d5965cccb0929bf8052ea05534f8bb79c40e8c893c3493be"
+  },
+  "id": "z5q6JxwwjTfvB7Y6",
+  "tags": []
+}

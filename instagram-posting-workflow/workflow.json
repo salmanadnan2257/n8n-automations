@@ -1,0 +1,167 @@
+{
+  "name": "Instagram Posting Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "##  Publish to Instagram\n\nSetup\n1. Instructions to set it up\nhttps://www.youtube.com/watch?v=PXcDqmamX2Q\n",
+        "height": 208,
+        "width": 416,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0de06c06-ee35-442f-8525-9679fe0402d8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "imageUrl",
+              "value": "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80"
+            },
+            {
+              "name": "captionText",
+              "value": "Hello from n8n! 👋 This is an automated post. #n8n #automation #instagram"
+            },
+            {
+              "name": "Node",
+              "value": "YOUR_INSTAGRAM_BUSINESS_ACCOUNT_ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Image & Caption",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        752,
+        48
+      ],
+      "id": "8ac34801-f80f-439d-93e7-d3bbe9bae42d"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $json.Node }}",
+        "edge": "media",
+        "allowUnauthorizedCerts": true,
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "image_url",
+                "value": "={{ $json.imageUrl }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $json.captionText }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        976,
+        48
+      ],
+      "id": "906dd6b7-1956-4e5a-9a7c-43c23b4f09c1",
+      "name": "Creating Container ID"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('Set Image & Caption').item.json.Node }}",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "image_url",
+                "value": "={{ $('Set Image & Caption').item.json.imageUrl }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Set Image & Caption').item.json.captionText }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        48
+      ],
+      "id": "62f97387-c62e-4fb0-84f4-cf8f731e723d",
+      "name": "Facebook Graph API1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        528,
+        48
+      ],
+      "id": "1f2b1fe2-b2bc-4dcc-8ec0-f88f704950c4",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {
+    "Set Image & Caption": {
+      "main": [
+        [
+          {
+            "node": "Creating Container ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creating Container ID": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Image & Caption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "tags": []
+}

@@ -1,0 +1,232 @@
+{
+  "createdAt": "2025-08-22T01:28:17.623Z",
+  "updatedAt": "2025-08-30T08:02:00.000Z",
+  "id": "U2LAx9VCTivfYOsj",
+  "name": "AI Motivational Quotes",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9b106411-d86e-4591-8cef-8912284108e8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Give a quote",
+        "options": {
+          "systemMessage": "You are a helpful assistant.\n\nGenerate one very short, incredibly amazing quote. And return only the quote."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "d3789bc4-1309-42e6-81eb-ebb512f90b1a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        220
+      ],
+      "id": "fad5a94e-e698-442a-936e-b7df73689834",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "aa5703e0-bdfb-4570-994c-7565fdf0aa1b\t"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        220
+      ],
+      "id": "ac4e0264-c160-4be1-a3e3-9bb5362c5d59",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "model": "gpt-image-1",
+        "prompt": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        580,
+        0
+      ],
+      "id": "dcf526bb-ead3-4ee9-9a1e-a236903da193",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "mjpNcaX4CSAZ5WOb",
+          "name": "salmanadnan0206 n8n email outreach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "697c7c6b-6b23-4993-94c4-826f3c1fbe6c",
+      "name": "Telegram",
+      "webhookId": "16685c02-abb8-471a-9266-3d6040a97bbd",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "AI Agent": [
+      {
+        "json": {
+          "output": "The universe whispers secrets to those who listen.\n"
+        }
+      }
+    ],
+    "OpenAI": [
+      {
+        "json": {
+          "mimeType": "image/png",
+          "fileType": "image",
+          "fileExtension": "png",
+          "fileName": "data",
+          "id": "filesystem-v2:workflows/U2LAx9VCTivfYOsj/executions/3253/binary_data/c5bd4e6c-9e33-4975-b328-dd262cd9e817",
+          "fileSize": "3.57 MB"
+        }
+      }
+    ]
+  },
+  "versionId": "0ca18dcd-03f4-4ed4-9bb1-598f39db549e",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.679Z",
+      "updatedAt": "2025-08-30T07:55:44.679Z",
+      "role": "workflow:owner",
+      "workflowId": "U2LAx9VCTivfYOsj",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "YOUR_N8N_PROJECT_NAME",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,1712 @@
+{
+  "name": "Linkedin Extractor from Google Maps",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "nwua9Gu5YrADL7ZDj",
+          "mode": "list",
+          "cachedResultName": "Google Maps Scraper (compass/crawler-google-places)",
+          "cachedResultUrl": "https://console.apify.com/actors/nwua9Gu5YrADL7ZDj/input"
+        },
+        "customBody": "={{ JSON.stringify($json) }}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        656
+      ],
+      "id": "f3211fdc-ab6c-43f1-a942-1394e54a7dd6",
+      "name": "Run an Actor and get dataset(Google Maps)"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg",
+          "mode": "list",
+          "cachedResultName": "Linkedin Leads - Google Maps",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Location",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "subTitle",
+              "displayName": "subTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "categoryName",
+              "displayName": "categoryName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "neighborhood",
+              "displayName": "neighborhood",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "street",
+              "displayName": "street",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "postalCode",
+              "displayName": "postalCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "countryCode",
+              "displayName": "countryCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "website",
+              "displayName": "website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phoneUnformatted",
+              "displayName": "phoneUnformatted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "claimThisBusiness",
+              "displayName": "claimThisBusiness",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "locatedIn",
+              "displayName": "locatedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "floor",
+              "displayName": "floor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "plusCode",
+              "displayName": "plusCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "menu",
+              "displayName": "menu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "servicesLink",
+              "displayName": "servicesLink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "totalScore",
+              "displayName": "totalScore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "permanentlyClosed",
+              "displayName": "permanentlyClosed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "temporarilyClosed",
+              "displayName": "temporarilyClosed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "placeId",
+              "displayName": "placeId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "categories",
+              "displayName": "categories",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fid",
+              "displayName": "fid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cid",
+              "displayName": "cid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reviewsCount",
+              "displayName": "reviewsCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "imagesCount",
+              "displayName": "imagesCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "imageCategories",
+              "displayName": "imageCategories",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "scrapedAt",
+              "displayName": "scrapedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reserveTableUrl",
+              "displayName": "reserveTableUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "googleFoodUrl",
+              "displayName": "googleFoodUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hotelStars",
+              "displayName": "hotelStars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hotelDescription",
+              "displayName": "hotelDescription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "checkInDate",
+              "displayName": "checkInDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "checkOutDate",
+              "displayName": "checkOutDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hotelAds",
+              "displayName": "hotelAds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "popularTimesLiveText",
+              "displayName": "popularTimesLiveText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "popularTimesLivePercent",
+              "displayName": "popularTimesLivePercent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "popularTimesHistogram",
+              "displayName": "popularTimesHistogram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "openingHours",
+              "displayName": "openingHours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "peopleAlsoSearch",
+              "displayName": "peopleAlsoSearch",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "placesTags",
+              "displayName": "placesTags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reviewsTags",
+              "displayName": "reviewsTags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "gasPrices",
+              "displayName": "gasPrices",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "searchPageUrl",
+              "displayName": "searchPageUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "searchString",
+              "displayName": "searchString",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "language",
+              "displayName": "language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rank",
+              "displayName": "rank",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "isAdvertisement",
+              "displayName": "isAdvertisement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "imageUrl",
+              "displayName": "imageUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kgmid",
+              "displayName": "kgmid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "leadsEnrichment",
+              "displayName": "leadsEnrichment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "additionalInfo",
+              "displayName": "additionalInfo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "additionalOpeningHours",
+              "displayName": "additionalOpeningHours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        656
+      ],
+      "id": "8abccbd2-6dda-4c6e-a320-33188fe717ba",
+      "name": "Append or update row in sheet"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg",
+          "mode": "list",
+          "cachedResultName": "Linkedin Leads - Google Maps",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 611509769,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit#gid=611509769"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1392,
+        656
+      ],
+      "id": "67b1d487-cd10-4f73-bfce-c5975833db19",
+      "name": "Append or update row in sheet2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg",
+          "mode": "list",
+          "cachedResultName": "Linkedin Leads - Google Maps",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Location",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        656
+      ],
+      "id": "d4164ded-5541-4e42-a3fe-1298e78bc91b",
+      "name": "Get row(s) in sheet1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const formData = $('Google Maps Form1').item.json;\n\nconst splitField = (val) => {\n  if (!val) return null;\n  if (Array.isArray(val)) return val.map(v => v.toLowerCase()).filter(v => v !== '');\n  if (typeof val === 'string' && val.trim() !== '') return val.split(',').map(v => v.trim().toLowerCase()).filter(v => v !== '');\n  return null;\n};\n\nconst body = {\n  searchStringsArray: [formData['Search Keyword']],\n  locationQuery: Array.isArray(formData['Location'])\n    ? formData['Location'].join(', ')\n    : formData['Location'],\n  maxCrawledPlacesPerSearch: parseInt(formData['Max Places']),\n  language: 'en',\n  searchMatching: 'all',\n  placeMinimumStars: '',\n  website: 'allPlaces',\n  skipClosedPlaces: false,\n  scrapePlaceDetailPage: false,\n  scrapeTableReservationProvider: false,\n  scrapeOrderOnline: false,\n  includeWebResults: false,\n  scrapeDirectories: false,\n  maxQuestions: 0,\n  scrapeContacts: false,\n  scrapeSocialMediaProfiles: {\n    facebooks: false,\n    instagrams: false,\n    youtubes: false,\n    tiktoks: false,\n    twitters: false\n  },\n  maximumLeadsEnrichmentRecords: 2,\n  leadsEnrichmentDepartments: ['c_suite', 'operations','marketing'],\n  verifyLeadsEnrichmentEmails: false,\n  maxReviews: 0,\n  reviewsStartDate: '2024-01-01',\n  reviewsSort: 'newest',\n  reviewsFilterString: '',\n  reviewsOrigin: 'all',\n  scrapeReviewsPersonalData: false,\n  maxImages: 0,\n  scrapeImageAuthors: false,\n  countryCode: '',\n  state: '',\n  county: '',\n  postalCode: '',\n  startUrls: [],\n  placeIds: [],\n  allPlacesNoSearchAction: ''\n};\n\nconst categories = splitField(formData['Category Filter']);\nif (categories) body.categoryFilterWords = categories;\n\nreturn body;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        656
+      ],
+      "id": "5e21ff80-a97c-47ce-91c1-19ed24024a0a",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "formTitle": "Google Maps Scraper",
+        "formDescription": "Configure parameters for Google Maps scraper",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Search Keyword",
+              "placeholder": "e.g. baby clothing store, towel shop",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Location",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "United States"
+                  },
+                  {
+                    "option": "Canada"
+                  },
+                  {
+                    "option": "United Kingdom"
+                  },
+                  {
+                    "option": "Ireland"
+                  },
+                  {
+                    "option": "Australia"
+                  },
+                  {
+                    "option": "New Zealand"
+                  },
+                  {
+                    "option": "Germany"
+                  },
+                  {
+                    "option": "France"
+                  },
+                  {
+                    "option": "Netherlands"
+                  },
+                  {
+                    "option": "Belgium"
+                  },
+                  {
+                    "option": "Luxembourg"
+                  },
+                  {
+                    "option": "Switzerland"
+                  },
+                  {
+                    "option": "Austria"
+                  },
+                  {
+                    "option": "Spain"
+                  },
+                  {
+                    "option": "Portugal"
+                  },
+                  {
+                    "option": "Italy"
+                  },
+                  {
+                    "option": "Greece"
+                  },
+                  {
+                    "option": "Sweden"
+                  },
+                  {
+                    "option": "Norway"
+                  },
+                  {
+                    "option": "Denmark"
+                  },
+                  {
+                    "option": "Finland"
+                  },
+                  {
+                    "option": "Poland"
+                  },
+                  {
+                    "option": "Czech Republic"
+                  },
+                  {
+                    "option": "Hungary"
+                  },
+                  {
+                    "option": "Romania"
+                  },
+                  {
+                    "option": "Bulgaria"
+                  },
+                  {
+                    "option": "Croatia"
+                  },
+                  {
+                    "option": "Slovakia"
+                  },
+                  {
+                    "option": "Slovenia"
+                  },
+                  {
+                    "option": "Estonia"
+                  },
+                  {
+                    "option": "Latvia"
+                  },
+                  {
+                    "option": "Lithuania"
+                  },
+                  {
+                    "option": "Ukraine"
+                  },
+                  {
+                    "option": "Saudi Arabia"
+                  },
+                  {
+                    "option": "United Arab Emirates"
+                  },
+                  {
+                    "option": "Qatar"
+                  },
+                  {
+                    "option": "Kuwait"
+                  },
+                  {
+                    "option": "Bahrain"
+                  },
+                  {
+                    "option": "Oman"
+                  },
+                  {
+                    "option": "Jordan"
+                  },
+                  {
+                    "option": "Lebanon"
+                  },
+                  {
+                    "option": "Egypt"
+                  },
+                  {
+                    "option": "Israel"
+                  },
+                  {
+                    "option": "Turkey"
+                  },
+                  {
+                    "option": "Iraq"
+                  },
+                  {
+                    "option": "Pakistan"
+                  },
+                  {
+                    "option": "India"
+                  },
+                  {
+                    "option": "Brazil"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Max Places",
+              "fieldType": "number",
+              "placeholder": "e.g. 20",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Category Filter",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "clothing store"
+                  },
+                  {
+                    "option": "baby store"
+                  },
+                  {
+                    "option": "children's clothing store"
+                  },
+                  {
+                    "option": "boutique"
+                  },
+                  {
+                    "option": "department store"
+                  },
+                  {
+                    "option": "supermarket"
+                  },
+                  {
+                    "option": "hypermarket"
+                  },
+                  {
+                    "option": "wholesale market"
+                  },
+                  {
+                    "option": "hotel"
+                  },
+                  {
+                    "option": "hospital"
+                  },
+                  {
+                    "option": "gym"
+                  },
+                  {
+                    "option": "spa"
+                  },
+                  {
+                    "option": "resort"
+                  },
+                  {
+                    "option": "restaurant"
+                  },
+                  {
+                    "option": "school"
+                  },
+                  {
+                    "option": "sports complex"
+                  },
+                  {
+                    "option": "shopping mall"
+                  },
+                  {
+                    "option": "wholesaler"
+                  },
+                  {
+                    "option": "warehouse"
+                  },
+                  {
+                    "option": "manufacturer"
+                  },
+                  {
+                    "option": "importer"
+                  },
+                  {
+                    "option": "exporter"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -416,
+        656
+      ],
+      "id": "0f56d20f-bd06-4e80-ab65-7ddc87cdd4c9",
+      "name": "Google Maps Form1",
+      "webhookId": "4ec624ec-44f7-4116-a3da-b4057b6af9ba"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=You are a lead qualification bot. You only ever respond with one word: either Qualified or Disqualified. No explanation. No punctuation. No extra text. One word only.",
+              "role": "system"
+            },
+            {
+              "content": "=Research the following company and determine if they are a potential buyer for baby and children's textile products: baby hooded towels, baby blankets, swaddle sets, muslin wraps, newborn bath sets, washcloths, children's towels, kids robes, crib fitted sheets, baby throws, and baby or children's clothing and apparel.\n\nCompany Name: {{ $json['Company'] }}\nWebsite: {{ $json['Website'] }}\n\nSTEP 1 — RESEARCH THE COMPANY THOROUGHLY. Do all of the following:\n- Visit the homepage and read it in full\n- Find and explore their Products, Shop, Collections, or Categories pages\n- Check their About page to understand their business type\n- Look for any baby, infant, newborn, toddler, nursery, or children's section\n- Run this search: site:{{ $json['Website'] }} baby OR infant OR toddler OR children OR kids OR towel OR blanket OR swaddle OR bedding OR nursery\n- Run this search: \"{{ $json['Company'] }}\" baby towels OR children textiles OR kids bedding OR infant products OR baby clothing\n\nSTEP 2 — APPLY THESE QUALIFICATION RULES:\n\nQualify if the company matches ANY of these:\n- Sells or stocks baby or children's textile products (towels, blankets, swaddles, robes, washcloths, muslin, bedding, bath sets, or any clothing and apparel for ages 0 to 8)\n- Is a baby or kids specialty retailer that sells soft goods or clothing\n- Is a department store, hypermarket, or pharmacy chain that stocks baby textile products or baby clothing\n- Is a wholesale distributor or importer of baby or children's textile goods or apparel\n- Is a maternity hospital or newborn care facility that procures baby textiles\n- Sells baby gift sets, newborn hampers, or nursery bundles that include textile items or clothing\n- Is an e-commerce store with a baby or children's category that includes soft goods or apparel\n\nDisqualify only if the company does not meet any of the qualification points above.\n\nReply with one word only: Qualified or Disqualified."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        736,
+        1024
+      ],
+      "id": "5bc8bdea-39fb-4249-b4f6-c74cf484e71c",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        496,
+        1008
+      ],
+      "id": "134e7ae8-5541-4ed6-9a00-a432225a5cdd",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg",
+          "mode": "list",
+          "cachedResultName": "Linkedin Leads - Google Maps",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 611509769,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit#gid=611509769"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        1024
+      ],
+      "id": "67783d08-11bd-40e8-82a1-4d5562c32648",
+      "name": "Get row(s) in sheet2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0ce5f75b-5e66-4284-b30b-54b971b68234",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        1024
+      ],
+      "id": "88507866-a8e6-48bb-a1ef-dfc27cebddda",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        1024
+      ],
+      "id": "a0dfd1f9-f1bd-41ac-ac3f-d6ae7363397b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst seenCompanies = new Set();\nconst unique = [];\n\nfor (const item of items) {\n  const company = (item.json.title || '').toLowerCase().trim();\n\n  if (!company) continue;\n\n  if (!seenCompanies.has(company)) {\n    seenCompanies.add(company);\n    unique.push(item);\n  }\n}\n\nreturn unique;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        656
+      ],
+      "id": "88c8ce70-33cc-4b01-b1f2-035ea9556d92",
+      "name": "Remove Duplicates from Apify"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Existing places already in the sheet\nconst existingRows = $('Get row(s) in sheet1').all();\nconst existingPlaces = new Set(\n  existingRows\n    .map(item => item.json['placeId'] || '')\n    .filter(p => p !== '')\n);\n\n// New places from Apify\nconst newPlaces = $('Remove Duplicates from Apify').all();\nconst unique = [];\nconst seenInThisRun = new Set();\n\nfor (const item of newPlaces) {\n  const placeId = item.json.placeId || '';\n  const key = placeId || item.json.title || '';\n\n  if (key && !existingPlaces.has(placeId) && !seenInThisRun.has(key)) {\n    seenInThisRun.add(key);\n    unique.push(item);\n  }\n}\n\nreturn unique;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        656
+      ],
+      "id": "8eaa9b33-ffd6-484e-b5e1-3d5090b5824f",
+      "name": "Remove Duplicates from Old Data and new data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $('Remove Duplicates from Old Data and new data').all();\nconst leads = [];\n\nfor (const item of items) {\n  const place = item.json;\n  const enriched = place.leadsEnrichment || [];\n  \n  for (const lead of enriched) {\n    leads.push({\n      'Company': lead.companyName || '',\n      'Website': lead.companyWebsite || '',\n      'Phone': lead.companyPhoneNumber || '',\n      'First Name': lead.firstName || '',\n      'Last Name': lead.lastName || '',\n      'Job Title': lead.jobTitle || '',\n      'Email': lead.email || '',\n      'Email Status': lead.emailVerification?.result || '',\n      'Seniority': lead.seniority || '',\n      'LinkedIn': lead.linkedinProfile || ''\n    });\n  }\n}\n\nreturn leads;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        656
+      ],
+      "id": "181641a9-481a-4903-9a3d-48518d108a3c",
+      "name": "Clean Lead Enrichment"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg",
+          "mode": "list",
+          "cachedResultName": "Linkedin Leads - Google Maps",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 611509769,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dxYtg_XxQvHMNg4A11hkEpkNu2mq-sUYp-gOnGxgtRg/edit#gid=611509769"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet2').item.json.row_number }}",
+            "Status": "={{ $('Message a model').item.json.choices[0].message.content }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "instantly_status",
+              "displayName": "instantly_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "interest_status",
+              "displayName": "interest_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_open_count",
+              "displayName": "email_open_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_reply_count",
+              "displayName": "email_reply_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_click_count",
+              "displayName": "email_click_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_contacted",
+              "displayName": "last_contacted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_opened",
+              "displayName": "last_opened",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_replied",
+              "displayName": "last_replied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "instantly_synced_at",
+              "displayName": "instantly_synced_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        1024
+      ],
+      "id": "91e906c9-83d9-4e12-bcf8-ff4aaaea16c0",
+      "name": "Update row in sheet"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        304,
+        1008
+      ],
+      "id": "884892b3-54cb-4e7b-9032-634cd3c51045",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "content": "## Main Lead Extractor\n",
+        "height": 336,
+        "width": 2100
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        528
+      ],
+      "typeVersion": 1,
+      "id": "85a5419e-80dd-4948-a8c6-e2111704558f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Lead Qualifier\nNeed to update perplexity user prompt before using\n",
+        "height": 320,
+        "width": 1680
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        912
+      ],
+      "typeVersion": 1,
+      "id": "6e0921c1-2f88-4b43-9ef0-7896e65f4676",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Higher priority = picked first when capping at 2\nconst seniorityRank = {\n  c_suite: 1,\n  founder: 2,\n  senior:  3,\n  manager: 4,\n  entry:   5,\n  '':      6\n};\n\n// Step 1: Remove duplicate people (same LinkedIn URL)\nconst seenLinkedIn = new Set();\nconst unique = [];\n\nfor (const item of items) {\n  const linkedin = item.json.LinkedIn;\n  if (linkedin && seenLinkedIn.has(linkedin)) continue;\n  if (linkedin) seenLinkedIn.add(linkedin);\n  unique.push(item);\n}\n\n// Step 2: Sort by seniority so the best 2 survive the cap\nunique.sort((a, b) => {\n  const rankA = seniorityRank[a.json.Seniority ?? ''] ?? 6;\n  const rankB = seniorityRank[b.json.Seniority ?? ''] ?? 6;\n  return rankA - rankB;\n});\n\n// Step 3: Keep max 2 per company\nconst companyCount = {};\nconst result = [];\n\nfor (const item of unique) {\n  const company = item.json.Company || '__unknown__';\n  companyCount[company] = companyCount[company] || 0;\n\n  if (companyCount[company] < 2) {\n    companyCount[company]++;\n    result.push(item);\n  }\n}\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        656
+      ],
+      "id": "bb536419-823f-47f7-880a-8aefb1a27d6c",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "Run an Actor and get dataset(Google Maps)": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates from Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Clean Lead Enrichment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates from Old Data and new data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset(Google Maps)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Maps Form1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates from Apify": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates from Old Data and new data": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Lead Enrichment": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

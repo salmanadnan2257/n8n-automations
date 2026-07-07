@@ -1,0 +1,3945 @@
+{
+  "name": "DA - Subscribe Email Sequence",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        16
+      ],
+      "id": "2540890c-2444-4f82-ac0f-8e655c516960",
+      "name": "When clicking \u2018Execute workflow\u2019",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "YOUR_WEBHOOK_PATH_HERE",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        -176
+      ],
+      "id": "46a1e46b-e637-49c3-af05-ce0a1f9904fe",
+      "name": "Webhook",
+      "webhookId": "YOUR_WEBHOOK_PATH_HERE"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "34274e78-0f1d-4eb9-a01a-2a7343c730b6",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "070f50b7-7939-4286-b886-ad2921c918f6",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "0bcc153c-5535-49bd-b8d3-29191f6bd137",
+              "name": "phone number",
+              "value": "={{ $json.body.phone_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        -80
+      ],
+      "id": "84d04dc3-8ac2-4fa2-b7a7-ddf6886daded",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{\n  $('Edit Fields').item.json.name\n    .trim()\n    .replace(/\\s+/g, ' ')\n    .split(' ')\n    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())\n    .join(' ')\n}}",
+            "Last Name": "={{ \n  $('Edit Fields').item.json.name\n    .trim()\n    .replace(/\\s+/g, ' ')\n    .split(' ')\n    .slice(1)\n    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())\n    .join(' ')\n}}",
+            "First Name": "={{ $('Edit Fields').item.json.name.trim().replace(/\\s+/g, ' ').split(' ')[0].charAt(0).toUpperCase() + $('Edit Fields').item.json.name.trim().replace(/\\s+/g, ' ').split(' ')[0].slice(1).toLowerCase() }}",
+            "Contact Email": "={{ $('Edit Fields').item.json.email }}",
+            "Contact Phone": "='{{\n(() => {\n  const raw = String($('Edit Fields').item.json[\"phone number\"] || '');\n\n  // Remove everything except digits and +\n  let phone = raw.replace(/[^0-9+]/g, '');\n\n  // Convert leading 00 to +\n  if (phone.startsWith('00')) {\n    phone = '+' + phone.slice(2);\n  }\n\n  // Add + if missing\n  if (!phone.startsWith('+') && phone.length > 0) {\n    phone = '+' + phone;\n  }\n\n  return phone;\n})()\n}}",
+            "Started Sequence?": "false",
+            "Closed?": "false",
+            "Contract Sent? ": "false",
+            "Contract Signed?": "false",
+            "F1?": "false",
+            "F2?": "false",
+            "F3?": "false",
+            "F4?": "false",
+            "F5?": "false",
+            "F6?": "false",
+            "F7?": "false",
+            "F8?": "false"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        -80
+      ],
+      "id": "5d117c08-3392-47e3-a68e-2776db9d83f8",
+      "name": "Append or update row in sheet"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json.email }}",
+        "subject": "Most e-commerce founders don't know their biggest risk",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Most e-commerce founders don't know their biggest risk</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        \n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n            background-color: #f5f5f5;\n            color: #1a1a1a;\n            line-height: 1.6;\n        }\n        \n        .email-container {\n            max-width: 600px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            padding: 20px;\n        }\n        \n        .sender-name {\n            font-size: 13px;\n            color: #666;\n            margin-bottom: 10px;\n        }\n        \n        .greeting {\n            font-size: 15px;\n            color: #1a1a1a;\n            margin-bottom: 20px;\n        }\n        \n        .body-text {\n            font-size: 15px;\n            color: #1a1a1a;\n            line-height: 1.7;\n            margin-bottom: 16px;\n        }\n        \n        .highlight {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .highlight-box {\n            background-color: #f8f8f8;\n            border-left: 3px solid #1F36D3;\n            padding: 16px;\n            margin: 20px 0;\n        }\n        \n        .highlight-box p {\n            margin-bottom: 8px;\n            margin-top: 0;\n            font-size: 15px;\n        }\n        \n        .highlight-box p:last-child {\n            margin-bottom: 0;\n        }\n        \n        .data-point {\n            margin-bottom: 12px;\n            margin-left: 15px;\n        }\n        \n        .data-point-bullet {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .signature {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n        }\n        \n        .signature-name {\n            font-weight: 600;\n            color: #1a1a1a;\n            font-size: 15px;\n        }\n        \n        .signature-title {\n            color: #666;\n            font-size: 13px;\n        }\n        \n        .ps-section {\n            margin-top: 20px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n            font-size: 14px;\n            color: #1a1a1a;\n        }\n        \n        .ps-label {\n            font-weight: 600;\n            color: #1a1a1a;\n        }\n        \n        .ps-question {\n            margin-bottom: 10px;\n            margin-left: 20px;\n        }\n        \n        .ps-question-number {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        @media (max-width: 600px) {\n            .email-container {\n                padding: 15px;\n            }\n            \n            .body-text {\n                font-size: 14px;\n            }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"sender-name\">From: Salman</div>\n        \n        <div class=\"greeting\">\n            <p>Hey {{ $('Edit Fields').item.json.name }},</p>\n        </div>\n        \n        <div class=\"body-text\">\n            <p>I've been researching something over the past few months, and I wanted to share what I'm finding.</p>\n            \n            <p>Most e-commerce brands doing $500K\u2013$2M are operating with a critical vulnerability: <span class=\"highlight\">they're 70\u201380% dependent on paid advertising for customer acquisition.</span></p>\n            \n            <p>Here's why that matters:</p>\n            \n            <p>According to Semrush's 2024 E-commerce Report, 62% of brands cite \"ad account instability\" as their biggest concern. Not competition. Not product-market fit. Ad platform risk.</p>\n            \n            <p>And the data backs it up:</p>\n            \n            <div class=\"highlight-box\">\n                <div class=\"data-point\"><span class=\"data-point-bullet\">\u2022</span> <strong>2024:</strong> iOS attribution changes locked out 40%+ of brands from accurate tracking</div>\n                <div class=\"data-point\"><span class=\"data-point-bullet\">\u2022</span> <strong>2023:</strong> Google made 8 major algorithm changes affecting Shopping ads</div>\n                <div class=\"data-point\"><span class=\"data-point-bullet\">\u2022</span> <strong>2022:</strong> Meta had 3 major ad policy overhauls</div>\n                <div class=\"data-point\"><span class=\"data-point-bullet\">\u2022</span> <strong>2021:</strong> iOS 14.5 broke attribution for most brands</div>\n            </div>\n            \n            <p>It's not <em>if</em> your ad account will have issues. It's <em>when</em>.</p>\n            \n            <p>The scary part? Most founders don't have a backup plan.</p>\n            \n            <p><strong>Here's what I'm working on:</strong></p>\n            \n            <p>I've been studying how the top e-commerce brands (Helix Sleep, Coop Sleep Goods, Allbirds, etc.) actually generate revenue when ad dependency becomes a liability.</p>\n            \n            <p>The pattern is clear: <span class=\"highlight\">The brands surviving platform volatility all have 30\u201350% of revenue from search-based, owned channels.</span></p>\n            \n            <p>Not instead of ads. Alongside them.</p>\n            \n            <p>I'm currently building a system to help founders like you engineer this second revenue engine\u2014specifically using AI-powered SEO blog funnels.</p>\n            \n            <p>Over the next week, I'm sending you:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 How to identify which search keywords your customers are already searching for</p>\n                <p>\u2022 Why traditional organic takes forever (and how to engineer it to be fast)</p>\n                <p>\u2022 A breakdown of exactly how fast-growing brands structure this</p>\n            </div>\n            \n            <p>No fluff. Just the frameworks I'm testing.</p>\n        </div>\n        \n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n        \n        <div class=\"ps-section\">\n            <p><span class=\"ps-label\">P.S.</span> I'm curious about your specific situation. Could you hit reply and tell me:</p>\n            <div class=\"ps-question\"><span class=\"ps-question-number\">1.</span> What percentage of your revenue currently comes from paid ads?</div>\n            <div class=\"ps-question\"><span class=\"ps-question-number\">2.</span> Have you ever had a platform scare (account suspension, policy change, etc.)?</div>\n            <div class=\"ps-question\"><span class=\"ps-question-number\">3.</span> Are you open to exploring a secondary revenue channel?</div>\n            <p>Would love to hear from you.</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false,
+          "ccList": "YOUR_EMAIL_HERE@example.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        -80
+      ],
+      "id": "0416d6be-9f14-4b16-b1aa-46535b8a8fd1",
+      "name": "Send a message",
+      "webhookId": "66e3e4a5-2c8a-4943-9a00-1a1851fba210"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Edit Fields').item.json.email }}",
+            "Started Sequence?": "true",
+            "F1?": "true",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        -80
+      ],
+      "id": "5918f481-4c6c-4211-b155-2beb438531fa",
+      "name": "Append or update row in sheet1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        624
+      ],
+      "id": "d1475150-ee2b-456a-a002-c93b523f0a73",
+      "name": "Schedule Trigger",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        128,
+        624
+      ],
+      "id": "e5fb2bf1-b29a-4139-9967-f4ba3a1d6ec0",
+      "name": "Get row(s) in sheet"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99982af6-4cc2-4d84-af4f-efa34c0c70f2",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 5760,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            },
+            {
+              "id": "2ea7f3ee-a459-4267-a7f9-c8a97851b54d",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes\n}}",
+              "rightValue": 4320,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "51ebb46b-0019-484b-b9a1-5994249fb757",
+              "leftValue": "={{ $json[\"F2?\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        624
+      ],
+      "id": "a359f2db-c324-48d6-9ab0-084f66f20d6e",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+        "subject": "=How one founder lost $280K when his ad account got banned",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>How platform changes just cost one founder $280K</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        \n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n            background-color: #f5f5f5;\n            color: #1a1a1a;\n            line-height: 1.6;\n        }\n        \n        .email-container {\n            max-width: 600px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            padding: 20px;\n        }\n        \n        .greeting {\n            font-size: 15px;\n            color: #1a1a1a;\n            margin-bottom: 20px;\n        }\n        \n        .body-text {\n            font-size: 15px;\n            color: #1a1a1a;\n            line-height: 1.7;\n            margin-bottom: 16px;\n        }\n        \n        .highlight {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .highlight-box {\n            background-color: #f8f8f8;\n            border-left: 3px solid #1F36D3;\n            padding: 16px;\n            margin: 20px 0;\n        }\n        \n        .highlight-box p {\n            margin-bottom: 8px;\n            margin-top: 0;\n            font-size: 15px;\n        }\n        \n        .highlight-box p:last-child {\n            margin-bottom: 0;\n        }\n        \n        .case-study-label {\n            font-weight: 600;\n            color: #1a1a1a;\n            margin-top: 20px;\n            margin-bottom: 10px;\n        }\n        \n        .signature {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n        }\n        \n        .signature-name {\n            font-weight: 600;\n            color: #1a1a1a;\n            font-size: 15px;\n        }\n        \n        .signature-title {\n            color: #666;\n            font-size: 13px;\n        }\n        \n        @media (max-width: 600px) {\n            .email-container {\n                padding: 15px;\n            }\n            \n            .body-text {\n                font-size: 14px;\n            }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"greeting\">\n            <p>Hey {{ $('Get row(s) in sheet').item.json['First Name'] }},</p>\n        </div>\n        \n        <div class=\"body-text\">\n            <p>I want to walk you through something I found while researching this.</p>\n            \n            <p>There's a public case study from a sleep e-commerce brand (let's call them Brand X to protect privacy) that illustrates the vulnerability perfectly.</p>\n            \n            <p class=\"case-study-label\">Their situation:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 $2M/year in revenue (all from paid ads)</p>\n                <p>\u2022 Growing 40% YoY</p>\n                <p>\u2022 Zero organic revenue channel</p>\n                <p>\u2022 One day: Ad account flagged for pixel tracking policy violation</p>\n            </div>\n            \n            <p class=\"case-study-label\">What happened:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Account suspended for investigation: 6 weeks</p>\n                <p>\u2022 Revenue during suspension: Zero (they couldn't sell anything)</p>\n                <p>\u2022 Cash burn during suspension: $280K (payroll, inventory, operations)</p>\n                <p>\u2022 Outcome: Nearly bankrupt, had to lay off team</p>\n            </div>\n            \n            <p><strong>What I found interesting:</strong></p>\n            \n            <p>The brand recovered their account after 6 weeks. But here's the kicker: <span class=\"highlight\">if they had just 30% of their revenue from organic channels, that crisis would've cost them $50K instead of $280K.</span></p>\n            \n            <p>That's the difference between resilience and fragility.</p>\n            \n            <p><strong>The bigger pattern:</strong></p>\n            \n            <p>When I looked at case studies from brands that <em>survived</em> platform volatility (Helix Sleep's 2023 pivot when iOS broke attribution, Allbirds' diversification), they all had one thing in common:</p>\n            \n            <p><span class=\"highlight\">Multiple revenue channels from day one.</span></p>\n            \n            <p>Not because they predicted these crises. But because smart operators don't put all eggs in one basket.</p>\n            \n            <p>The irony? Organic revenue isn't hard to build. It's just misunderstood.</p>\n            \n            <p>Most brands fail because they try to do it the wrong way (write blog posts, hope for rankings, wait 6 months).</p>\n            \n            <p>But what if you built the funnel <em>first</em>, optimized for search <em>second</em>?</p>\n            \n            <p>That's the framework I'm exploring with founders right now.</p>\n            \n            <p>More tomorrow.</p>\n        </div>\n        \n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        240
+      ],
+      "id": "7a397bbd-7476-4bf5-97f6-9e3aadbf9ea0",
+      "name": "Follow-Up 2",
+      "webhookId": "4b04140f-9365-42bb-a506-41c6f34bf6cb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99982af6-4cc2-4d84-af4f-efa34c0c70f2",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 5760,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            },
+            {
+              "id": "2ea7f3ee-a459-4267-a7f9-c8a97851b54d",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 4320,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "51ebb46b-0019-484b-b9a1-5994249fb757",
+              "leftValue": "={{ $json[\"F3?\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        720
+      ],
+      "id": "f3304cf9-b4f2-49ca-b0cc-a789f9eb1a3e",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+        "subject": "=Why 'organic takes 6 months' is killing your business",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Why 'organic takes 6 months' is killing your business</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        \n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n            background-color: #f5f5f5;\n            color: #1a1a1a;\n            line-height: 1.6;\n        }\n        \n        .email-container {\n            max-width: 600px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            padding: 20px;\n        }\n        \n        .greeting {\n            font-size: 15px;\n            color: #1a1a1a;\n            margin-bottom: 20px;\n        }\n        \n        .body-text {\n            font-size: 15px;\n            color: #1a1a1a;\n            line-height: 1.7;\n            margin-bottom: 16px;\n        }\n        \n        .highlight {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .myth-reality {\n            background-color: #f8f8f8;\n            border-left: 3px solid #1F36D3;\n            padding: 16px;\n            margin: 20px 0;\n        }\n        \n        .myth-reality p {\n            margin-bottom: 8px;\n            margin-top: 0;\n            font-size: 15px;\n        }\n        \n        .myth-reality p:last-child {\n            margin-bottom: 0;\n        }\n        \n        .section-title {\n            font-weight: 600;\n            color: #1a1a1a;\n            margin-top: 20px;\n            margin-bottom: 12px;\n        }\n        \n        .step-list {\n            margin-left: 15px;\n            margin-bottom: 16px;\n        }\n        \n        .step-item {\n            margin-bottom: 10px;\n        }\n        \n        .step-number {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .signature {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n        }\n        \n        .signature-name {\n            font-weight: 600;\n            color: #1a1a1a;\n            font-size: 15px;\n        }\n        \n        .signature-title {\n            color: #666;\n            font-size: 13px;\n        }\n        \n        @media (max-width: 600px) {\n            .email-container {\n                padding: 15px;\n            }\n            \n            .body-text {\n                font-size: 14px;\n            }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"greeting\">\n            <p>Hey {{ $('Get row(s) in sheet').item.json['First Name'] }},</p>\n        </div>\n        \n        <div class=\"body-text\">\n            <p>Here's something I've been studying.</p>\n            \n            <div class=\"myth-reality\">\n                <p><strong>Myth:</strong> \"Organic traffic takes 6\u201312 months to build.\"</p>\n                <p><strong>Reality:</strong> If engineered correctly, you can have qualified search traffic flowing in 2\u20133 weeks.</p>\n            </div>\n            \n            <p>Here's why most brands fail at organic:</p>\n            \n            <p>They follow the traditional playbook:</p>\n            \n            <div class=\"step-list\">\n                <div class=\"step-item\"><span class=\"step-number\">1.</span> Write blog posts (weeks 1\u20134)</div>\n                <div class=\"step-item\"><span class=\"step-number\">2.</span> Hope Google indexes them (weeks 5\u20138)</div>\n                <div class=\"step-item\"><span class=\"step-number\">3.</span> Wait for rankings (months 2\u20136)</div>\n                <div class=\"step-item\"><span class=\"step-number\">4.</span> Finally get traffic (months 6\u201312)</div>\n            </div>\n            \n            <p>By month 6, they're frustrated and quit.</p>\n            \n            <p class=\"section-title\">But here's what I'm seeing from brands that <em>do</em> succeed:</p>\n            \n            <p>They reverse the order:</p>\n            \n            <div class=\"step-list\">\n                <div class=\"step-item\"><span class=\"step-number\">1.</span> <strong>Identify high-intent search keywords</strong> customers are actively searching for (using competitor analysis + keyword data)</div>\n                <div class=\"step-item\"><span class=\"step-number\">2.</span> <strong>Build AI-powered content</strong> engineered to rank <em>and convert</em> (not just inform)</div>\n                <div class=\"step-item\"><span class=\"step-number\">3.</span> <strong>Optimize before publishing</strong> for search intent + conversion (not after)</div>\n                <div class=\"step-item\"><span class=\"step-number\">4.</span> <strong>Monitor early performance</strong> and double down on winners (week 2\u20133)</div>\n                <div class=\"step-item\"><span class=\"step-number\">5.</span> <strong>Expand with supporting assets</strong> once you have baseline traffic</div>\n            </div>\n            \n            <p>When you engineer this way, the timeline changes dramatically.</p>\n            \n            <p class=\"section-title\">Example from Helix Sleep's organic strategy (public case study):</p>\n            \n            <p>They identified \"best pillows for side sleepers\" as a high-intent keyword, built a comprehensive guide addressing that exact search intent, published with technical SEO optimization, and <span class=\"highlight\">ranked within 14 days.</span> Generated $3K+ in first month from that single piece.</p>\n            \n            <p>That's not luck. That's engineering.</p>\n            \n            <p class=\"section-title\">Here's the key difference:</p>\n            \n            <p><strong>Traditional organic</strong> = hope-based (write content, hope it ranks, hope it converts)</p>\n            \n            <p><strong>Engineered organic</strong> = outcome-focused (identify keywords, build conversion-optimized content, measure results)</p>\n            \n            <p>Most agencies teach the first approach. I'm exploring the second.</p>\n            \n            <p>I'll send you the exact framework tomorrow.</p>\n        </div>\n        \n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        432
+      ],
+      "id": "daed0dce-459f-46fe-9e5d-fcf8a9f751a9",
+      "name": "Follow-Up 3",
+      "webhookId": "4b04140f-9365-42bb-a506-41c6f34bf6cb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99982af6-4cc2-4d84-af4f-efa34c0c70f2",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 5760,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            },
+            {
+              "id": "2ea7f3ee-a459-4267-a7f9-c8a97851b54d",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 4320,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "51ebb46b-0019-484b-b9a1-5994249fb757",
+              "leftValue": "={{ $json[\"F4?\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        816
+      ],
+      "id": "89cd6af3-bb90-4aaa-b1cb-a36289621a95",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+        "subject": "=Stop waiting for your ad account to break (3 founder calls this week)",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>I'm onboarding 3 founders into the beta program (1 spot left)</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        \n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n            background-color: #f5f5f5;\n            color: #1a1a1a;\n            line-height: 1.6;\n        }\n        \n        .email-container {\n            max-width: 600px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            padding: 20px;\n        }\n        \n        .greeting {\n            font-size: 15px;\n            color: #1a1a1a;\n            margin-bottom: 20px;\n        }\n        \n        .body-text {\n            font-size: 15px;\n            color: #1a1a1a;\n            line-height: 1.7;\n            margin-bottom: 16px;\n        }\n        \n        .highlight {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .highlight-box {\n            background-color: #f8f8f8;\n            border-left: 3px solid #1F36D3;\n            padding: 16px;\n            margin: 20px 0;\n        }\n        \n        .highlight-box p {\n            margin-bottom: 8px;\n            margin-top: 0;\n            font-size: 15px;\n        }\n        \n        .highlight-box p:last-child {\n            margin-bottom: 0;\n        }\n        \n        .section-title {\n            font-weight: 600;\n            color: #1a1a1a;\n            margin-top: 20px;\n            margin-bottom: 12px;\n        }\n        \n        .list-item {\n            margin-bottom: 10px;\n            margin-left: 15px;\n        }\n        \n        .list-number {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .cta-box {\n            background-color: #f8f8f8;\n            border: 1px solid #e0e0e0;\n            padding: 20px;\n            margin: 20px 0;\n            border-radius: 4px;\n        }\n        \n        .cta-button {\n            display: inline-block;\n            background-color: #1F36D3;\n            color: white;\n            padding: 12px 30px;\n            text-decoration: none;\n            border-radius: 4px;\n            font-weight: 600;\n            font-size: 15px;\n            margin: 16px 0;\n        }\n        \n        .cta-link {\n            color: #1F36D3;\n            text-decoration: none;\n            font-weight: 600;\n        }\n        \n        .signature {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n        }\n        \n        .signature-name {\n            font-weight: 600;\n            color: #1a1a1a;\n            font-size: 15px;\n        }\n        \n        .signature-title {\n            color: #666;\n            font-size: 13px;\n        }\n        \n        .ps-section {\n            margin-top: 20px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n            font-size: 14px;\n        }\n        \n        .ps-label {\n            font-weight: 600;\n            color: #1a1a1a;\n        }\n        \n        @media (max-width: 600px) {\n            .email-container {\n                padding: 15px;\n            }\n            \n            .body-text {\n                font-size: 14px;\n            }\n            \n            .cta-button {\n                display: block;\n                text-align: center;\n                width: 100%;\n            }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"greeting\">\n            <p>Hey {{ $('Get row(s) in sheet').item.json['First Name'] }},</p>\n        </div>\n        \n        <div class=\"body-text\">\n            <p>Over the last 3 days, I've shared:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2713 Why ad dependency is risky (the $280K platform crisis case study)</p>\n                <p>\u2713 How brands are building secondary channels (Helix Sleep example)</p>\n                <p>\u2713 Why organic isn't slow when engineered correctly (the framework)</p>\n            </div>\n            \n            <p>Here's where I'm at with this:</p>\n            \n            <p>I've spent the last few months researching how e-commerce brands actually build organic revenue channels that stick. And I'm ready to start implementing this with founders.</p>\n            \n            <p class=\"section-title\">Here's what I'm offering:</p>\n            \n            <p>I'm opening up a <span class=\"highlight\">beta program</span> where I work directly with 3 founders to:</p>\n            \n            <div class=\"highlight-box\">\n                <p><span class=\"list-number\">1.</span> Audit your organic opportunity (which keywords you're leaving on the table)</p>\n                <p><span class=\"list-number\">2.</span> Build a custom strategy (specific to your niche + products)</p>\n                <p><span class=\"list-number\">3.</span> Execute the first phase (keyword research, content roadmap, AI content generation)</p>\n                <p><span class=\"list-number\">4.</span> Track results and optimize (first 90 days)</p>\n            </div>\n            \n            <p class=\"section-title\">Why \"beta\"?</p>\n            \n            <p>Because this is the first time I'm offering this formally. I want to work closely with a small group of founders, learn from the process, and refine the system based on what works.</p>\n            \n            <p class=\"section-title\">What you get:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 Personalized organic revenue strategy (custom to your brand)</p>\n                <p>\u2022 Help identifying high-intent keywords competitors are missing</p>\n                <p>\u2022 AI-powered content framework + templates</p>\n                <p>\u2022 Direct access to me during the 90-day build phase</p>\n                <p>\u2022 Detailed breakdown of what's working and why</p>\n            </div>\n            \n            <p class=\"section-title\">What this costs:</p>\n            \n            <p><strong>$8K\u201315K</strong> depending on your brand scope (one-time project fee)</p>\n            \n            <p class=\"section-title\">Timeline:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 Week 1: Strategy call + audit</p>\n                <p>\u2022 Week 2\u20133: Keyword research + content roadmap</p>\n                <p>\u2022 Week 4\u20138: Content creation + optimization</p>\n                <p>\u2022 Week 9\u201312: Monitoring + optimization</p>\n            </div>\n            \n            <p class=\"section-title\">Why work with me?</p>\n            \n            <p>I'm not an agency with 50 clients. I'm a founder building this system from first principles. Which means:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 You get direct access (not a junior account manager)</p>\n                <p>\u2022 I'm motivated to make this work (it's my reputation)</p>\n                <p>\u2022 I'm learning alongside you (transparency about what's working)</p>\n                <p>\u2022 You're part of shaping how this service evolves</p>\n            </div>\n            \n            <p class=\"section-title\">Here's the data backing this:</p>\n            \n            <p>According to HubSpot's 2024 State of SEO report:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 Brands with organic revenue see 23% higher conversion rates</p>\n                <p>\u2022 Organic customers have 24% higher LTV</p>\n                <p>\u2022 Organic CAC is 60% lower than paid on average</p>\n            </div>\n            \n            <p>This isn't experimental. It's proven.</p>\n            \n            <p class=\"section-title\">Here's the offer:</p>\n            \n            <p>If you're serious about building a secondary revenue channel and want to be part of the beta program:</p>\n            \n            <p>Reply to this email with:</p>\n            \n            <div class=\"highlight-box\">\n                <p><span class=\"list-number\">1.</span> <strong>Your biggest concern</strong> about your current all-paid model</p>\n                <p><span class=\"list-number\">2.</span> <strong>Your interest level</strong> (are you genuinely open to this?)</p>\n                <p><span class=\"list-number\">3.</span> <strong>Your timeline</strong> (when would you want to start?)</p>\n            </div>\n            \n            <p>I'll personally review your situation and determine if it's a fit.</p>\n            \n            <p><strong>Important:</strong> I'm only taking 3 founders. This isn't a sales pitch\u2014I'm selective because quality > quantity. So be honest about your situation. If it's not a fit, I'll tell you.</p>\n        </div>\n        \n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n        \n        <div class=\"ps-section\">\n            <p><span class=\"ps-label\">P.S.</span> Spots are filling fast. I have one founder applying today already. If you're interested, reply now. Beta closes Friday.</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1024,
+        624
+      ],
+      "id": "da617773-1cb1-4e2d-bcfb-b68d2a7489da",
+      "name": "Follow-Up  4",
+      "webhookId": "4b04140f-9365-42bb-a506-41c6f34bf6cb"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iQTElvT9MMIjdRTO09ZW5tcuMKuvuzfbxOkW1BXSHNM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+            "F2?": "true",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        240
+      ],
+      "id": "cd82af75-38d7-4f06-bbef-4813d14e18d0",
+      "name": "Update F2 Sheets"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iQTElvT9MMIjdRTO09ZW5tcuMKuvuzfbxOkW1BXSHNM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+            "F3?": "true",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        432
+      ],
+      "id": "f0921726-e6a5-4965-b06a-83f1669781da",
+      "name": "Update F3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iQTElvT9MMIjdRTO09ZW5tcuMKuvuzfbxOkW1BXSHNM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+            "F4?": "true",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        624
+      ],
+      "id": "9e6a0c3f-8c09-4c5c-9de4-28daf1db7f02",
+      "name": "Update F4 "
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iQTElvT9MMIjdRTO09ZW5tcuMKuvuzfbxOkW1BXSHNM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}",
+            "F8?": "true"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2144,
+        1008
+      ],
+      "id": "47db4f0b-00e2-4cee-a233-aad4ade661d0",
+      "name": "Update F4 1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99982af6-4cc2-4d84-af4f-efa34c0c70f2",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 5760,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            },
+            {
+              "id": "2ea7f3ee-a459-4267-a7f9-c8a97851b54d",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 4320,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "51ebb46b-0019-484b-b9a1-5994249fb757",
+              "leftValue": "={{ $json[\"F5?\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        912
+      ],
+      "id": "b1c0b630-3642-47d3-afc7-932c364275ed",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+        "subject": "=When their ad account broke, they had $28K organic as backup",
+        "emailType": "text",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Here's the $20K/month opportunity most brands in your space miss</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        \n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n            background-color: #f5f5f5;\n            color: #1a1a1a;\n            line-height: 1.6;\n        }\n        \n        .email-container {\n            max-width: 600px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            padding: 20px;\n        }\n        \n        .greeting {\n            font-size: 15px;\n            color: #1a1a1a;\n            margin-bottom: 20px;\n        }\n        \n        .body-text {\n            font-size: 15px;\n            color: #1a1a1a;\n            line-height: 1.7;\n            margin-bottom: 16px;\n        }\n        \n        .highlight {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .highlight-box {\n            background-color: #f8f8f8;\n            border-left: 3px solid #1F36D3;\n            padding: 16px;\n            margin: 20px 0;\n        }\n        \n        .highlight-box p {\n            margin-bottom: 8px;\n            margin-top: 0;\n            font-size: 15px;\n        }\n        \n        .highlight-box p:last-child {\n            margin-bottom: 0;\n        }\n        \n        .section-title {\n            font-weight: 600;\n            color: #1a1a1a;\n            margin-top: 20px;\n            margin-bottom: 12px;\n        }\n        \n        .data-label {\n            color: #666;\n            font-size: 14px;\n            margin-bottom: 4px;\n        }\n        \n        .data-value {\n            font-weight: 600;\n            color: #1a1a1a;\n            margin-bottom: 8px;\n        }\n        \n        .cta-link {\n            color: #1F36D3;\n            text-decoration: none;\n            font-weight: 600;\n        }\n        \n        .signature {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n        }\n        \n        .signature-name {\n            font-weight: 600;\n            color: #1a1a1a;\n            font-size: 15px;\n        }\n        \n        .signature-title {\n            color: #666;\n            font-size: 13px;\n        }\n        \n        .ps-section {\n            margin-top: 20px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n            font-size: 14px;\n        }\n        \n        .ps-label {\n            font-weight: 600;\n            color: #1a1a1a;\n        }\n        \n        @media (max-width: 600px) {\n            .email-container {\n                padding: 15px;\n            }\n            \n            .body-text {\n                font-size: 14px;\n            }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"greeting\">\n            <p>Hey {{ $('Get row(s) in sheet').item.json['First Name'] }},</p>\n        </div>\n        \n        <div class=\"body-text\">\n            <p>I want to walk you through what an engineered organic system could look like for a brand like yours.</p>\n            \n            <p><strong>Note:</strong> This is a hypothetical based on the framework I'm developing, not a current client case. But I think it's useful to see what's possible.</p>\n            \n            <p class=\"section-title\">The scenario:</p>\n            \n            <div class=\"highlight-box\">\n                <div class=\"data-label\">Brand:</div>\n                <div class=\"data-value\">Sleep e-commerce (similar to your space)</div>\n                \n                <div class=\"data-label\">Current revenue:</div>\n                <div class=\"data-value\">$1.2M/year (100% from paid ads)</div>\n                \n                <div class=\"data-label\">Current CAC:</div>\n                <div class=\"data-value\">$38</div>\n                \n                <div class=\"data-label\">Current conversion rate:</div>\n                <div class=\"data-value\">2.1%</div>\n                \n                <div class=\"data-label\">Current AOV:</div>\n                <div class=\"data-value\">$145</div>\n            </div>\n            \n            <p class=\"section-title\">The audit:</p>\n            \n            <p>When I researched organic opportunities for this brand, here's what I found:</p>\n            \n            <p><strong>High-intent keywords they're NOT ranking for:</strong></p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 \"Best pillow for side sleepers\" (8,400 searches/month, 0.5% competition)</p>\n                <p>\u2022 \"Cooling gel pillow reviews\" (4,200 searches/month, competitor owns it)</p>\n                <p>\u2022 \"Memory foam pillow vs latex\" (2,100 searches/month, 0% optimization)</p>\n                <p>\u2022 \"Pillow for neck pain\" (5,600 searches/month, competitors dominating)</p>\n            </div>\n            \n            <p>Total addressable search volume: 20,300 searches/month</p>\n            \n            <p>If even 5% of these searches convert to customers: <span class=\"highlight\">101 customers/month from organic alone</span></p>\n            \n            <p>At $145 AOV: <span class=\"highlight\">$14,645/month in organic revenue</span></p>\n            \n            <p>That's $175,740/year of revenue they're currently leaving on the table.</p>\n            \n            <p class=\"section-title\">The strategy:</p>\n            \n            <p>What would it look like to capture even 30% of this opportunity?</p>\n            \n            <div class=\"highlight-box\">\n                <p><strong>Months 1\u20132:</strong> Build 8 cornerstone content pieces targeting the highest-intent keywords</p>\n                <p><strong>Month 2\u20133:</strong> Optimize and monitor early ranking/conversion performance</p>\n                <p><strong>Month 3\u20134:</strong> Expand supporting assets</p>\n                <p><strong>Month 4\u20136:</strong> Monitor and scale winners</p>\n            </div>\n            \n            <p class=\"section-title\">The projected outcome (conservative estimate):</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 <strong>Month 1\u20132:</strong> $0 revenue (content building phase)</p>\n                <p>\u2022 <strong>Month 3:</strong> $3K\u20135K (first pieces starting to rank)</p>\n                <p>\u2022 <strong>Month 4:</strong> $8K\u201312K (more pieces ranking, conversion optimization)</p>\n                <p>\u2022 <strong>Month 5\u20136:</strong> $15K\u201320K/month (steady state, compounding)</p>\n            </div>\n            \n            <p><strong>6-month total:</strong> $35K\u201350K in organic revenue</p>\n            \n            <p><strong>Cost to implement:</strong> $12K</p>\n            \n            <p><strong>ROI:</strong> 200\u2013300% in first 6 months alone</p>\n            \n            <p class=\"section-title\">The bigger picture:</p>\n            \n            <p>This revenue stream doesn't stop after month 6. It compounds.</p>\n            \n            <p>By month 12, you'd be generating $20K+/month from organic alone (growing month-over-month).</p>\n            \n            <p>And it doesn't go away when your ad account has issues.</p>\n            \n            <p class=\"section-title\">Why I'm sharing this:</p>\n            \n            <p>This is the framework I'm working with founders on right now.</p>\n            \n            <p>It's not theoretical. It's based on analyzing real competitor strategies (Helix, Coop Sleep Goods, etc.) and understanding what works.</p>\n            \n            <p>If you want to explore what this looks like specifically for <em>your</em> brand and niche, that's what the beta program is about.</p>\n        </div>\n        \n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n        \n        <div class=\"ps-section\">\n            <p><span class=\"ps-label\">P.S.</span> Want to see a custom breakdown for your specific brand? Reply and tell me your niche, and I can map out the keyword opportunity like I did above. Takes me 15 minutes.</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        1104
+      ],
+      "id": "722a24c7-a405-4f77-8eca-82c6c79011ec",
+      "name": "Follow-Up  5",
+      "webhookId": "4b04140f-9365-42bb-a506-41c6f34bf6cb"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iQTElvT9MMIjdRTO09ZW5tcuMKuvuzfbxOkW1BXSHNM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}",
+            "F5?": "true"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        1104
+      ],
+      "id": "d97b5bac-2536-4021-9e5b-6ab5ca88ca8f",
+      "name": "Update F4 2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99982af6-4cc2-4d84-af4f-efa34c0c70f2",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 5760,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            },
+            {
+              "id": "2ea7f3ee-a459-4267-a7f9-c8a97851b54d",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 4320,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "51ebb46b-0019-484b-b9a1-5994249fb757",
+              "leftValue": "={{ $json[\"F6?\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        816
+      ],
+      "id": "68edd3ad-9949-46ab-8377-ca8b72bcb6c0",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+        "subject": "=The system we hide from competitors (but sharing with you)",
+        "emailType": "text",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>I studied 50 e-commerce brands. Here's their organic playbook.</title>\n    <style>\n        * {margin: 0; padding: 0; box-sizing: border-box;}\n        body {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5; color: #1a1a1a; line-height: 1.6;}\n        .email-container {max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px;}\n        .greeting {font-size: 15px; color: #1a1a1a; margin-bottom: 20px;}\n        .body-text {font-size: 15px; color: #1a1a1a; line-height: 1.7; margin-bottom: 16px;}\n        .highlight {color: #1F36D3; font-weight: 600;}\n        .highlight-box {background-color: #f8f8f8; border-left: 3px solid #1F36D3; padding: 16px; margin: 20px 0;}\n        .highlight-box p {margin-bottom: 8px; margin-top: 0; font-size: 15px;}\n        .highlight-box p:last-child {margin-bottom: 0;}\n        .section-title {font-weight: 600; color: #1a1a1a; margin-top: 20px; margin-bottom: 12px;}\n        .step-number {color: #1F36D3; font-weight: 600;}\n        .signature {margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;}\n        .signature-name {font-weight: 600; color: #1a1a1a; font-size: 15px;}\n        .signature-title {color: #666; font-size: 13px;}\n        .ps-section {margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 14px;}\n        .ps-label {font-weight: 600; color: #1a1a1a;}\n        @media (max-width: 600px) {.email-container {padding: 15px;} .body-text {font-size: 14px;}}\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"greeting\"><p>Hey {{ $('Get row(s) in sheet').item.json['First Name'] }},</p></div>\n        <div class=\"body-text\">\n            <p>I want to show you the exact framework I'm building for this.</p>\n            <p>I've spent the last few months analyzing how e-commerce brands actually build organic revenue that sticks. And I've noticed a clear pattern among the ones that succeed.</p>\n            <p class=\"section-title\">The framework has 5 steps:</p>\n            \n            <p class=\"section-title\"><span class=\"step-number\">Step 1: Keyword Intelligence</span></p>\n            <p>Identify search keywords where:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Monthly search volume: 200\u20132,000 (high intent, realistic targeting)</p>\n                <p>\u2022 Searcher intent = buyer intent (not just research)</p>\n                <p>\u2022 Your products are the natural solution</p>\n                <p>\u2022 Competitors are ranking but not optimizing well</p>\n            </div>\n            <p><strong>How to find these:</strong></p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Use competitor analysis (SEMrush, Ahrefs, SimilarWeb)</p>\n                <p>\u2022 Study what your paying customers are searching for</p>\n                <p>\u2022 Analyze Google Search Console data from your site</p>\n                <p>\u2022 Map customer journey backwards from purchase</p>\n            </div>\n            <p><strong>Example:</strong> If you sell sleep pillows, search for \"best pillow for side sleepers\" and analyze who ranks #1\u201310. Odds are, most aren't optimizing conversion\u2014they're just providing information. That's your opening.</p>\n            \n            <p class=\"section-title\"><span class=\"step-number\">Step 2: Content Engineering</span></p>\n            <p>Build content that:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Ranks naturally (SEO-optimized from the start)</p>\n                <p>\u2022 Converts at 2\u20135% (not 0.1% information content)</p>\n                <p>\u2022 Addresses the searcher's specific problem</p>\n                <p>\u2022 Links directly to relevant products</p>\n                <p>\u2022 Makes buying from you the obvious next step</p>\n            </div>\n            <p><strong>The key difference:</strong></p>\n            <p>Most organic strategies are built by marketers who optimize for <em>ranking</em> first, then wonder why traffic doesn't convert.</p>\n            <p>Smart strategies are built backwards:</p>\n            <div class=\"highlight-box\">\n                <p><span class=\"step-number\">1.</span> What does the searcher want to buy?</p>\n                <p><span class=\"step-number\">2.</span> What content would convince them to buy from us?</p>\n                <p><span class=\"step-number\">3.</span> How do we optimize that content to rank?</p>\n            </div>\n            <p><strong>Example:</strong> A blog post titled \"Best Pillow for Side Sleepers\" should include sleep position explanation, product recommendations from your store, clear CTAs, comparison tables, and real testimonials\u2014not just generic pillow information.</p>\n            \n            <p class=\"section-title\"><span class=\"step-number\">Step 3: Strategic Placement</span></p>\n            <p>Publish content where:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Search engines can crawl and index it (technical SEO)</p>\n                <p>\u2022 Your customers will find it (keyword targeting)</p>\n                <p>\u2022 It drives traffic to high-margin products</p>\n                <p>\u2022 It feeds into your funnel (email capture, retargeting, repeat purchase)</p>\n            </div>\n            <p><strong>Technical considerations:</strong></p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Site structure (URL hierarchy matters)</p>\n                <p>\u2022 Internal linking (guides search engines + user paths)</p>\n                <p>\u2022 Page speed (ranking factor + conversion factor)</p>\n                <p>\u2022 Mobile optimization (60%+ of searches are mobile)</p>\n            </div>\n            \n            <p class=\"section-title\"><span class=\"step-number\">Step 4: Real-Time Optimization</span></p>\n            <p>Monitor:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Which posts rank fastest and why</p>\n                <p>\u2022 Which keywords drive traffic with highest intent</p>\n                <p>\u2022 Which product pages convert best from organic</p>\n                <p>\u2022 Where searchers are dropping off</p>\n                <p>\u2022 Which customer segments engage most with organic content</p>\n            </div>\n            <p><strong>Then iterate:</strong></p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Double down on winners (publish more in that category)</p>\n                <p>\u2022 Fix or remove losers (cannibalization, low conversion)</p>\n                <p>\u2022 Test different CTAs on high-traffic pages</p>\n                <p>\u2022 A/B test product recommendations</p>\n            </div>\n            \n            <p class=\"section-title\"><span class=\"step-number\">Step 5: Expand & Compound</span></p>\n            <p>Once you have baseline organic traffic (200\u2013500/month), build supporting assets:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 <strong>Video content</strong> answering questions from blog readers</p>\n                <p>\u2022 <strong>AI chatbots</strong> providing personalized recommendations</p>\n                <p>\u2022 <strong>Email sequences</strong> nurturing warm leads from organic</p>\n                <p>\u2022 <strong>Retargeting campaigns</strong> bringing visitors back to high-AOV products</p>\n                <p>\u2022 <strong>Product comparison tools</strong> helping searchers choose your product</p>\n            </div>\n            <p>This is where organic becomes a full revenue system, not just a blog.</p>\n            \n            <p class=\"section-title\">Why this works:</p>\n            <p>According to HubSpot's 2024 data:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Brands using this multi-step approach see 40% higher organic conversion</p>\n                <p>\u2022 Organic CAC drops 60% compared to paid</p>\n                <p>\u2022 Organic customers have 24% higher LTV</p>\n                <p>\u2022 Repeat purchase rate is 3x higher for organic vs. paid</p>\n            </div>\n            <p>This isn't new. It's just not widely implemented because most agencies don't have the patience or expertise to do it properly.</p>\n            \n            <p class=\"section-title\">Why I'm building this:</p>\n            <p>I see the gap in the market. Most agencies offer \"SEO services\" (generic blog writing) or \"content marketing\" (fluff pieces).</p>\n            <p>But nobody's offering what founders actually need: <span class=\"highlight\">engineered organic revenue systems.</span></p>\n            <p>That's what I'm building.</p>\n            <p>If you want to explore what this looks like for your specific brand, that's what we'd work through on a strategy call.</p>\n        </div>\n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n        <div class=\"ps-section\">\n            <p><span class=\"ps-label\">P.S.</span> Want to discuss how this applies to your specific niche? Reply and let's set up 15 minutes. I'll show you the keyword opportunity custom to your space.</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1472,
+        624
+      ],
+      "id": "bf48bb34-634e-4993-824b-ba8cc929b95b",
+      "name": "Follow-Up  6",
+      "webhookId": "4b04140f-9365-42bb-a506-41c6f34bf6cb"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iQTElvT9MMIjdRTO09ZW5tcuMKuvuzfbxOkW1BXSHNM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}",
+            "F6?": "true"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        624
+      ],
+      "id": "23b41617-7f1c-49b8-a269-83e8b6dadb60",
+      "name": "Update F4 3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99982af6-4cc2-4d84-af4f-efa34c0c70f2",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 5760,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            },
+            {
+              "id": "2ea7f3ee-a459-4267-a7f9-c8a97851b54d",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 4320,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "51ebb46b-0019-484b-b9a1-5994249fb757",
+              "leftValue": "={{ $json[\"F7?\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        912
+      ],
+      "id": "ba434417-1952-4ec6-ab12-3fe776194897",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+        "subject": "=2026 will be brutal for ad-dependent brands (here's why)",
+        "emailType": "text",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Paid CAC just hit a 5-year high (here's what smart brands are doing)</title>\n    <style>\n        * {margin: 0; padding: 0; box-sizing: border-box;}\n        body {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5; color: #1a1a1a; line-height: 1.6;}\n        .email-container {max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px;}\n        .greeting {font-size: 15px; color: #1a1a1a; margin-bottom: 20px;}\n        .body-text {font-size: 15px; color: #1a1a1a; line-height: 1.7; margin-bottom: 16px;}\n        .highlight {color: #1F36D3; font-weight: 600;}\n        .highlight-box {background-color: #f8f8f8; border-left: 3px solid #1F36D3; padding: 16px; margin: 20px 0;}\n        .highlight-box p {margin-bottom: 8px; margin-top: 0; font-size: 15px;}\n        .highlight-box p:last-child {margin-bottom: 0;}\n        .section-title {font-weight: 600; color: #1a1a1a; margin-top: 20px; margin-bottom: 12px;}\n        .signature {margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;}\n        .signature-name {font-weight: 600; color: #1a1a1a; font-size: 15px;}\n        .signature-title {color: #666; font-size: 13px;}\n        .ps-section {margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; font-size: 14px;}\n        .ps-label {font-weight: 600; color: #1a1a1a;}\n        @media (max-width: 600px) {.email-container {padding: 15px;} .body-text {font-size: 14px;}}\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"greeting\"><p>Hey {{ $('Get row(s) in sheet').item.json['First Name'] }},</p></div>\n        <div class=\"body-text\">\n            <p>I've been paying attention to some data that I think matters for where you're at right now.</p>\n            \n            <p class=\"section-title\">Paid CAC is reaching critical levels:</p>\n            <p>According to Databox's 2025 E-Commerce Benchmark Report:</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Average paid CAC: $42\u201365</p>\n                <p>\u2022 Year-over-year increase: 28%</p>\n                <p>\u2022 Main drivers: iOS privacy changes, platform saturation, rising competition</p>\n            </div>\n            <p>For context: 3 years ago, average CAC was $28\u201335.</p>\n            <p>At this trajectory, within 12 months, paid CAC will hit $70\u201385 for most e-commerce categories.</p>\n            \n            <p class=\"section-title\">Here's what that means:</p>\n            <p>If your average order value is $145 and your margins are 30%, you need a customer to generate $130+ in profit just to break even on CAC.</p>\n            <div class=\"highlight-box\">\n                <p><strong>At $45 CAC:</strong> You're profitable with 1 purchase.</p>\n                <p><strong>At $65 CAC:</strong> You need customers with higher LTV (multiple purchases) to stay profitable.</p>\n                <p><strong>At $85 CAC (projected):</strong> Most brands become unprofitable unless they have strong repeat purchase metrics.</p>\n            </div>\n            \n            <p class=\"section-title\">What the smart brands are doing:</p>\n            <p>I've been analyzing the strategies of high-growth e-commerce brands (Helix Sleep, Allbirds, Coop Home Goods, etc.) to see how they're responding to this.</p>\n            <p>The pattern is clear: <span class=\"highlight\">They're all building organic revenue channels.</span></p>\n            <p>Not because they hate paid advertising. But because they understand CAC math.</p>\n            <div class=\"highlight-box\">\n                <p>\u2022 Organic CAC: $12\u201318 (60% lower)</p>\n                <p>\u2022 Organic customer LTV: 24% higher</p>\n                <p>\u2022 Organic repeat purchase rate: 3x higher</p>\n            </div>\n            <p>Which means: <span class=\"highlight\">A customer acquired through organic is worth 3\u20134x more than a paid customer over their lifetime.</span></p>\n            <p>That's not a nice-to-have. That's a survival strategy.</p>\n            \n            <p class=\"section-title\">The timing:</p>\n            <p>2025 is going to be rough for brands that are 100% paid-dependent.</p>\n            <p>But brands that moved in 2024\u20132025 to diversify revenue? <span class=\"highlight\">They'll be in a completely different position by the end of the year.</span></p>\n            <p>Not because organic is a silver bullet. But because the math works.</p>\n            \n            <p class=\"section-title\">Why I'm mentioning this:</p>\n            <p>You're at an inflection point.</p>\n            <p>You can wait until CAC gets worse and you're forced to build (reactive).</p>\n            <p>Or you can build now while your paid channels are still working (proactive).</p>\n            <p>The best time to build backup systems is when you don't desperately need them.</p>\n            \n            <p class=\"section-title\">Next step:</p>\n            <p>If any of this is resonating with you, and you want to explore what a custom organic strategy would look like for your brand, let me know.</p>\n            <p>I have capacity to work with 1\u20132 more founders in the beta program (down from 3, since one already committed).</p>\n        </div>\n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n        <div class=\"ps-section\">\n            <p><span class=\"ps-label\">P.S.</span> If you're curious about the specific keyword opportunity in your niche, just reply. Takes 15 minutes of research on my end, and I can show you exactly what you're leaving on the table.</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1696,
+        816
+      ],
+      "id": "447ecf9c-cf0d-40da-bbf0-dec9970575b7",
+      "name": "Follow-Up  7",
+      "webhookId": "4b04140f-9365-42bb-a506-41c6f34bf6cb"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "The Email Agent - CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": " CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iQTElvT9MMIjdRTO09ZW5tcuMKuvuzfbxOkW1BXSHNM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Email": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}",
+            "F7?": "true"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Industry",
+              "displayName": "Company Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Email",
+              "displayName": "Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Phone",
+              "displayName": "Contact Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website (Optional)",
+              "displayName": "Website (Optional)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Interest",
+              "displayName": "Main Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Preparation Notes",
+              "displayName": "Preparation Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional Notes",
+              "displayName": "Additional Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Guests",
+              "displayName": "Guests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Started Sequence?",
+              "displayName": "Started Sequence?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Closed?",
+              "displayName": "Closed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Sent? ",
+              "displayName": "Contract Sent? ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract ID ",
+              "displayName": "Contract ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Signed?",
+              "displayName": "Contract Signed?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1?",
+              "displayName": "F1?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2?",
+              "displayName": "F2?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3?",
+              "displayName": "F3?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4?",
+              "displayName": "F4?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5?",
+              "displayName": "F5?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6?",
+              "displayName": "F6?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F7?",
+              "displayName": "F7?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F8?",
+              "displayName": "F8?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1920,
+        816
+      ],
+      "id": "9c220c17-9d45-42c0-9851-06c9ed862cdf",
+      "name": "Update F4 4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99982af6-4cc2-4d84-af4f-efa34c0c70f2",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 5760,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            },
+            {
+              "id": "2ea7f3ee-a459-4267-a7f9-c8a97851b54d",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json[\"Sequence Last Date\"],\n        \"yyyy-MM-dd - HH:mm:ss\"\n      ),\n      \"minutes\"\n    )\n    .minutes * 1\n}}",
+              "rightValue": 4320,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "51ebb46b-0019-484b-b9a1-5994249fb757",
+              "leftValue": "={{ $json[\"F8?\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1696,
+        1008
+      ],
+      "id": "23b7aa58-9ce7-465c-81c2-04882f501e72",
+      "name": "If8"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json[\"Contact Email\"] }}",
+        "subject": "=Most founders wait until it's too late to diversify revenue",
+        "emailType": "text",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>I'm closing beta signups at 5pm Friday (1 founder slot left)</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n        \n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n            background-color: #f5f5f5;\n            color: #1a1a1a;\n            line-height: 1.6;\n        }\n        \n        .email-container {\n            max-width: 600px;\n            margin: 0 auto;\n            background-color: #ffffff;\n            padding: 20px;\n        }\n        \n        .greeting {\n            font-size: 15px;\n            color: #1a1a1a;\n            margin-bottom: 20px;\n        }\n        \n        .body-text {\n            font-size: 15px;\n            color: #1a1a1a;\n            line-height: 1.7;\n            margin-bottom: 16px;\n        }\n        \n        .highlight {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .highlight-box {\n            background-color: #f8f8f8;\n            border-left: 3px solid #1F36D3;\n            padding: 16px;\n            margin: 20px 0;\n        }\n        \n        .highlight-box p {\n            margin-bottom: 8px;\n            margin-top: 0;\n            font-size: 15px;\n        }\n        \n        .highlight-box p:last-child {\n            margin-bottom: 0;\n        }\n        \n        .section-title {\n            font-weight: 600;\n            color: #1a1a1a;\n            margin-top: 20px;\n            margin-bottom: 12px;\n        }\n        \n        .list-item {\n            margin-bottom: 10px;\n            margin-left: 15px;\n        }\n        \n        .list-number {\n            color: #1F36D3;\n            font-weight: 600;\n        }\n        \n        .urgency-box {\n            background-color: #fff3cd;\n            border-left: 3px solid #1F36D3;\n            padding: 16px;\n            margin: 20px 0;\n        }\n        \n        .urgency-box p {\n            margin-bottom: 8px;\n            margin-top: 0;\n            font-size: 15px;\n            color: #1a1a1a;\n        }\n        \n        .cta-button {\n            display: inline-block;\n            background-color: #1F36D3;\n            color: white;\n            padding: 12px 30px;\n            text-decoration: none;\n            border-radius: 4px;\n            font-weight: 600;\n            font-size: 15px;\n            margin: 16px 0;\n        }\n        \n        .signature {\n            margin-top: 30px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n        }\n        \n        .signature-name {\n            font-weight: 600;\n            color: #1a1a1a;\n            font-size: 15px;\n        }\n        \n        .signature-title {\n            color: #666;\n            font-size: 13px;\n        }\n        \n        .ps-section {\n            margin-top: 20px;\n            padding-top: 20px;\n            border-top: 1px solid #e0e0e0;\n            font-size: 14px;\n        }\n        \n        .ps-label {\n            font-weight: 600;\n            color: #1a1a1a;\n        }\n        \n        @media (max-width: 600px) {\n            .email-container {\n                padding: 15px;\n            }\n            \n            .body-text {\n                font-size: 14px;\n            }\n            \n            .cta-button {\n                display: block;\n                text-align: center;\n                width: 100%;\n            }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"email-container\">\n        <div class=\"greeting\">\n            <p>Hey {{ $('Get row(s) in sheet').item.json['First Name'] }},</p>\n        </div>\n        \n        <div class=\"body-text\">\n            <p>This is the last email I'm sending about this.</p>\n            \n            <p>Over the past week, I've shared:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2713 Why ad dependency is your biggest vulnerability (data + case studies)</p>\n                <p>\u2713 How brands are building secondary revenue channels (Helix, Coop, etc.)</p>\n                <p>\u2713 The exact framework I'm using (5-step engineering process)</p>\n                <p>\u2713 Real market data showing CAC is rising 28% YoY</p>\n                <p>\u2713 What this could look like for your specific niche</p>\n            </div>\n            \n            <p>Here's where we're at:</p>\n            \n            <p>I'm opening a <span class=\"highlight\">beta program</span> where I work directly with 3 founders to build engineered organic revenue systems.</p>\n            \n            <p class=\"section-title\">Why beta?</p>\n            \n            <p>Because this is the first time I'm offering this formally. I want to work closely with a small group, learn what works, and refine the system based on real results.</p>\n            \n            <p class=\"section-title\">What you get:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 Custom organic revenue strategy (specific to your brand)</p>\n                <p>\u2022 Keyword opportunity audit</p>\n                <p>\u2022 AI-powered content framework</p>\n                <p>\u2022 Direct access during 90-day build phase</p>\n                <p>\u2022 Transparent monitoring and optimization</p>\n            </div>\n            \n            <p class=\"section-title\">What it costs:</p>\n            \n            <p><strong>$8K\u201315K</strong> (one-time project)</p>\n            \n            <p class=\"section-title\">Timeline:</p>\n            \n            <p><strong>4\u20136 weeks</strong> to set up and optimize</p>\n            \n            <p class=\"section-title\">Why work with me?</p>\n            \n            <p>I'm not an established agency claiming to have done this \"100 times.\" I'm being honest: this is my first formal offering.</p>\n            \n            <p>But that means:</p>\n            \n            <div class=\"highlight-box\">\n                <p>\u2022 You get direct access (not delegated to juniors)</p>\n                <p>\u2022 I'm invested in making this work for you</p>\n                <p>\u2022 You're shaping how this service evolves</p>\n                <p>\u2022 You're getting in at the ground level (discounted positioning)</p>\n            </div>\n            \n            <p class=\"section-title\">Here's the reality:</p>\n            \n            <p>I have <span class=\"highlight\">2 spots left</span> (started with 3, one already committed).</p>\n            \n            <p>One of those will close tomorrow regardless.</p>\n            \n            <p>Either because a founder will sign up, or because I'll move on to other projects.</p>\n            \n            <div class=\"urgency-box\">\n                <p><strong>If you're serious about building organic revenue and want to be part of this beta:</strong></p>\n                <p>Reply with:</p>\n                <p><span class=\"list-number\">1.</span> \"I'm in\" (or \"Let's talk\")</p>\n                <p><span class=\"list-number\">2.</span> Your biggest concern about your current all-paid model</p>\n                <p><span class=\"list-number\">3.</span> Your preferred start date (this week, next week, etc.)</p>\n            </div>\n            \n            <p>That's it.</p>\n            \n            <p>I'll review your situation personally. If it's a fit, I'll send you next steps. If not, I'll tell you honestly.</p>\n            \n            <p>This isn't a soft pitch. I'm selective because quality > quantity.</p>\n            \n            <p class=\"section-title\">Why now?</p>\n            \n            <p>CAC is hitting critical levels. Founders who move in the next 60 days will have a 6-month head start on competitors who wait.</p>\n            \n            <p>By the time your competitors realize they need this, you'll already have $50K+ in annualized organic revenue.</p>\n            \n            <p>That's the difference between moving now and moving later.</p>\n            \n            <p class=\"section-title\">Your move:</p>\n            \n            <p>Reply with \"I'm in\" if you want to explore this.</p>\n        </div>\n        \n        <div class=\"signature\">\n            <div class=\"signature-name\">Salman</div>\n            <div class=\"signature-title\">CEO, Digitalise Agency</div>\n        </div>\n        \n        <div class=\"ps-section\">\n            <p><span class=\"ps-label\">P.S.</span> If you're still on the fence, ask yourself: \"Will I regret not exploring this in 6 months if CAC keeps rising?\" If the answer is yes, reply now. That's your signal.</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1920,
+        1008
+      ],
+      "id": "30d597bb-674a-4646-abae-c26ace52f89c",
+      "name": "Follow-Up 8",
+      "webhookId": "4b04140f-9365-42bb-a506-41c6f34bf6cb"
+    },
+    {
+      "parameters": {
+        "content": "## \u23f0 SECTION 5: AUTOMATED FOLLOW-UP SEQUENCE\n\n**SCHEDULE TRIGGER**\n- Runs daily at 9:00 AM UTC\n- Checks CRM for contacts eligible for follow-up emails\n\n**SEQUENCE FLOW:**\nThe workflow uses a cascading IF logic to determine which follow-up email to send:\n\n1. **Get CRM Data** - Retrieves all contacts from Google Sheets\n2. **Check F2-F8 Status** - Series of IF nodes check which follow-ups have been sent\n3. **Send Email** - Sends appropriate follow-up via Gmail\n4. **Update Tracking** - Marks corresponding flag (F2-F8) as \"true\" in CRM\n\n**Follow-Up Sequence:**\n- F2: Second follow-up (Day 2)\n- F3: Third follow-up (Day 3)\n- F4: Fourth follow-up (Day 4)\n- F5: Fifth follow-up (Day 5)\n- F6: Sixth follow-up (Day 6)\n- F7: Seventh follow-up (Day 7)\n- F8: Final follow-up (Day 8)\n\n**Logic:** Each IF node checks if previous follow-up is marked \"true\" and current one is \"false\", ensuring emails are sent in sequence",
+        "height": 680,
+        "width": 504,
+        "color": 6
+      },
+      "id": "770ac672-32c8-4065-8825-0305b8ca5242",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -848,
+        384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## \ud83d\udce7 EMAIL SEQUENCE AUTOMATION WORKFLOW\n\n**PURPOSE:**\nAutomated subscriber onboarding and follow-up email sequence system for Digitalise Agency. Manages new subscriber intake via webhook, stores contacts in Google Sheets CRM, sends WhatsApp welcome message, and executes an 8-email nurture sequence over time.\n\n**HOW IT WORKS:**\n1. **Subscriber Capture** - Webhook receives new subscriber data (name, email, phone)\n2. **Data Processing** - Formats and validates contact information\n3. **CRM Storage** - Adds/updates subscriber in Google Sheets CRM\n4. **Instant Welcome** - Sends WhatsApp welcome message\n5. **Automated Follow-ups** - Daily scheduled trigger checks for eligible contacts and sends follow-up emails (F1-F8)\n\n**PREREQUISITES:**\n\u2705 Google Sheets credential configured (\"The Email Agent - CRM\")\n\u2705 Gmail OAuth2 credential configured (YOUR_GMAIL_ACCOUNT)\n\u2705 WhatsApp Business API credential configured\n\u2705 Webhook authentication header configured (\"Digitalise Agency - Blog Post\")\n\u2705 Google Sheets document ID: YOUR_GOOGLE_SHEET_ID_HERE\n\n**EXECUTION:**\n- **Webhook URL:** POST to /YOUR_WEBHOOK_PATH_HERE (with header auth)\n- **Schedule:** Daily at 9:00 AM UTC for follow-up emails\n- **Workflow is currently: ACTIVE**\n\n**EXPECTED INPUT (Webhook Body):**\n```json\n{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone_number\": \"1234567890\"\n}\n```\n\n**OUTPUTS:**\n- New/updated row in Google Sheets CRM\n- WhatsApp welcome message sent\n- Email sequence tracking flags (F1-F8) in CRM\n- Automated follow-up emails based on schedule",
+        "height": 1016,
+        "width": 563,
+        "color": 4
+      },
+      "id": "fcd4fb2f-aa63-4ec9-a64d-df71bb737be5",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -848,
+        -672
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-Up 2": {
+      "main": [
+        [
+          {
+            "node": "Update F2 Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-Up 3": {
+      "main": [
+        [
+          {
+            "node": "Update F3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up  4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-Up  4": {
+      "main": [
+        [
+          {
+            "node": "Update F4 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up  5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-Up  5": {
+      "main": [
+        [
+          {
+            "node": "Update F4 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up  6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-Up  6": {
+      "main": [
+        [
+          {
+            "node": "Update F4 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up  7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-Up  7": {
+      "main": [
+        [
+          {
+            "node": "Update F4 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If8": {
+      "main": [
+        [
+          {
+            "node": "Follow-Up 8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-Up 8": {
+      "main": [
+        [
+          {
+            "node": "Update F4 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Etc/GMT",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  }
+}

@@ -1,0 +1,340 @@
+{
+  "createdAt": "2025-08-26T04:27:38.815Z",
+  "updatedAt": "2025-08-30T08:03:22.000Z",
+  "id": "vUnncu3RsRmSXuwV",
+  "name": "Checklist Generator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "02b0c3c8-86de-4752-956b-4f2acb135c8a",
+      "name": "Telegram Trigger",
+      "webhookId": "d4dcf62c-9bc6-4b27-a101-1780fd748b53",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Excellent. This is a classic \"strict output formatting\" task. The key is to be extremely direct and use examples to reinforce the non-negotiable output structure.\n\nHere is the system prompt.\n\n---\n\n**Role:**\nYou are a highly efficient Task Extraction AI.\n\n**Context:**\nYour sole purpose is to analyze a user's message, identify all distinct and actionable tasks within it, and output them as a single, clean array of strings. The output format is the most critical part of your job.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  Read the user's message and identify every actionable task.\n2.  For each task, include any relevant details provided (e.g., names, deadlines, specific subjects).\n3.  Combine all identified tasks into a single array of strings.\n4.  **CRITICAL OUTPUT RULE:** Your final output must be **ONLY** the array.\n    *   Do not include any introductory text like \"Here are the tasks:\".\n    *   Do not wrap the array in markdown backticks (` ``` `) or any other formatting.\n    *   The output must be a single line of text containing the array.\n\n**Examples:**\n\n*   **User Input:**\n    \"Hey can you remind me to email Sarah about the project update and also I need to pick up milk on the way home\"\n*   **AI Output:**\n    [\"Email Sarah about the project update\", \"Pick up milk on the way home\"]\n\n*   **User Input:**\n    \"Okay, for tomorrow: finish the quarterly report by EOD, schedule the 1-on-1 with Michael, and prepare the slides for the Wednesday presentation.\"\n*   **AI Output:**\n    [\"Finish the quarterly report by EOD tomorrow\", \"Schedule the 1-on-1 with Michael\", \"Prepare the slides for the Wednesday presentation\"]\n\n*   **User Input:**\n    \"book flight to denver\"\n*   **AI Output:**\n    [\"Book flight to Denver\"]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -48
+      ],
+      "id": "a607d49b-e8af-47cc-af70-eae2791fb300",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        176
+      ],
+      "id": "e77fef28-33bc-4a1c-9295-b9871e4f7883",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5d1b0db7-e2e2-4921-9ecb-a7ffc96bdd5a",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        -48
+      ],
+      "id": "d70b416d-fa51-4d1c-9059-94000e5e5844",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ (() => {   const out = $json.output;   if (out === undefined || out === null) return '';   return Array.isArray(out) ? out.join('\\n') : String(out); })() }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        -144
+      ],
+      "id": "1ca834a1-0fed-45cf-acff-d8e451ab5d97",
+      "name": "Send a text message",
+      "webhookId": "beb9709a-77b1-4f96-9a33-a67aedfcabcc",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        800,
+        48
+      ],
+      "id": "66d2ae4d-2fa3-4a32-b805-adb70808f248",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1056,
+        48
+      ],
+      "id": "000d8232-e272-4f27-8951-b36cfac4bd3a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1296,
+        64
+      ],
+      "id": "e6a6a0fb-39dc-4904-a58e-98ca4a045e59",
+      "name": "Wait",
+      "webhookId": "3364a078-eccb-4795-aee5-9b9d0c12ace6"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        64
+      ],
+      "id": "82dc4e2f-f57d-4e1d-a90b-9a732b5df98f",
+      "name": "Send a text message1",
+      "webhookId": "beb9709a-77b1-4f96-9a33-a67aedfcabcc",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 915318297,
+          "message": {
+            "message_id": 14,
+            "from": {
+              "id": 6615981658,
+              "is_bot": false,
+              "first_name": "Salman",
+              "last_name": "Adnan",
+              "username": "ContentZone51",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 6615981658,
+              "first_name": "Salman",
+              "last_name": "Adnan",
+              "username": "ContentZone51",
+              "type": "private"
+            },
+            "date": 1756183423,
+            "text": "For today, I have to outreach in the morning, go to the gym at 13:00, then I have meeting with John Doe at 17:00, and also in the evening, I have to finish a client project and fully deliver it."
+          }
+        }
+      }
+    ],
+    "AI Agent": [
+      {
+        "json": {
+          "output": "[\"Outreach in the morning\", \"Go to the gym at 13:00\", \"Have meeting with John Doe at 17:00\", \"Finish a client project in the evening\", \"Fully deliver the client project in the evening\"]"
+        }
+      }
+    ]
+  },
+  "versionId": "97551b3e-69cc-45ec-b0bf-a51595dc9e27",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:45.066Z",
+      "updatedAt": "2025-08-30T07:55:45.066Z",
+      "role": "workflow:owner",
+      "workflowId": "vUnncu3RsRmSXuwV",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Portfolio Owner <owner@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

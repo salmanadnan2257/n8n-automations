@@ -1,0 +1,9 @@
+External services and credentials this workflow's nodes call. None of these are present in workflow.json (the export has no `credentials` blocks at all), so every one below has to be created and attached manually in n8n after import.
+
+- **Google Sheets OAuth2**: used by "Read a Google Sheets File," "Update Google Sheets with Content Insights," "Get the content from Google Sheets," and "Google Sheets" (in the seed sub-flow) to read the company/URL list and write Topical Summary, Graph Summary, Name, URL, and Category columns back.
+- **Google Docs OAuth2**: used by the "Google Docs" node to append the final synthesized report (AI advice and generated questions) into a specific Google Doc.
+- **InfraNodus API (HTTP Bearer Auth)**: used by "InfraNodus GraphRAG Content Enhancer," "InfraNodus AI Advice," and "InfraNodus Question Generator" to call `https://infranodus.com/api/v1/graphAndAdvice` for topical summaries, graph summaries, AI advice, and gap-based questions. Requires an InfraNodus account and API token.
+- **Perplexity API (HTTP Bearer Auth)**: used by "Perplexity Research" to call `https://api.perplexity.ai/chat/completions` (model `sonar-pro`) to generate a list of companies for a given market niche. Only reachable through the disabled form-trigger sub-flow.
+- **OpenAI API**: used by the "OpenAI" node (`@n8n/n8n-nodes-langchain.openAi`, model `gpt-4o-mini`) to reformat Perplexity's response into strict JSON before it is split into rows. Only reachable through the disabled form-trigger sub-flow.
+
+No API keys, tokens, or other secret values were embedded in the workflow JSON. The Google Sheet and Google Doc IDs referenced in the nodes point to a specific external account's documents and are not credentials, but they are also not generic placeholders; anyone reusing this workflow needs to replace them with their own Sheet and Doc.

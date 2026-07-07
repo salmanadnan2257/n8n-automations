@@ -1,0 +1,755 @@
+{
+  "createdAt": "2025-07-27T01:42:04.906Z",
+  "updatedAt": "2025-09-03T09:13:01.000Z",
+  "id": "GUomYJZ1zkfsul0D",
+  "name": "Book Available Time",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/users/me",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calendlyApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accpet",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        0
+      ],
+      "id": "f7be92ea-0c68-49d8-9d97-c79813a23f9d",
+      "name": "user_uri",
+      "credentials": {
+        "calendlyApi": {
+          "id": "he9KCFXAJO24SZqN",
+          "name": "salmanadnan0206"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/event_types?user=https://api.calendly.com/users/5cd1a454-40f3-42b6-94ca-bbf2186cb9cc",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calendlyApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accpet",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -608,
+        0
+      ],
+      "id": "543059df-5181-4d5b-8a75-1b5cc5a1faf2",
+      "name": "event_uri",
+      "credentials": {
+        "calendlyApi": {
+          "id": "he9KCFXAJO24SZqN",
+          "name": "salmanadnan0206"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getTimeBetweenDates",
+        "startDate": "={{ $('Initial').item.json.current_time }}",
+        "endDate": "={{ $('Initial').item.json.time_there }}",
+        "units": [
+          "hour"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        368
+      ],
+      "id": "54c52aa4-3c3c-44dc-9e97-94bfaff659ba",
+      "name": "Hours Difference"
+    },
+    {
+      "parameters": {
+        "operation": "addToDate",
+        "magnitude": "={{ $('Initial').item.json.booking_time }}",
+        "timeUnit": "hours",
+        "duration": "={{ $json.timeDifference.hours * -1 }}",
+        "outputFieldName": "new_time",
+        "options": {
+          "includeInputFields": true
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        368
+      ],
+      "id": "bf5f0df7-5057-4a20-a438-e95d73ecdb90",
+      "name": "Add Hours Difference"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        464
+      ],
+      "id": "57927700-e3a3-419c-8537-0396e255b620",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/event_type_available_times",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "https://api.calendly.com/event_types/a16f34c0-98a8-46f3-a168-38354db7b14a"
+            },
+            {
+              "name": "start_time",
+              "value": "={{ $json.start_time }}"
+            },
+            {
+              "name": "end_time",
+              "value": "={{ $json.end_time }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accpet",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        992
+      ],
+      "id": "4ff0b87e-14f0-4f93-98b7-3564b9492e37",
+      "name": "Get Available Times - Calendly",
+      "credentials": {
+        "calendlyApi": {
+          "id": "he9KCFXAJO24SZqN",
+          "name": "salmanadnan0206"
+        },
+        "calApi": {
+          "id": "n9oWXEF0ClbiLTFZ",
+          "name": "hutrw005 n8n-booking"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df3b46b5-a9d8-4742-ac05-670b039ddece",
+              "name": "booking_time",
+              "value": "={{ $json.body.booking_time }}",
+              "type": "string"
+            },
+            {
+              "id": "174a54e9-fd84-4f82-a576-f1b172f2e564",
+              "name": "time_there",
+              "value": "={{ $json.body.current_time }}",
+              "type": "string"
+            },
+            {
+              "id": "ede07734-2e5b-40cf-8adb-24268897b63a",
+              "name": "current_time",
+              "value": "={{ $now.setZone('UTC').toFormat(\"yyyy-MM-dd'T'HH:mm:ss\") + 'Z' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        368
+      ],
+      "id": "70ed5780-787d-4892-b945-2da2b0cc76b5",
+      "name": "Initial"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1e2935f-025e-418b-b212-666fa734fa40",
+              "name": "booking_time",
+              "value": "={{ DateTime.fromISO($json.new_time).plus({ minutes: 30 }).startOf('hour').toUTC().toISO({ suppressMilliseconds: false, includeOffset: false }) }}",
+              "type": "string"
+            },
+            {
+              "id": "3c6cd735-b59e-42ac-b630-08879a29a2a1",
+              "name": "time_there",
+              "value": "={{ $('Initial').item.json.time_there }}",
+              "type": "string"
+            },
+            {
+              "id": "239681b5-0e20-42cf-977d-7433201ef64c",
+              "name": "current_time",
+              "value": "={{ $('Initial').item.json.current_time }}",
+              "type": "string"
+            },
+            {
+              "id": "fbf7458b-480a-4350-982f-b1d4a8dac2ea",
+              "name": "name",
+              "value": "={{ $('Webhook').item.json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "b50ba094-ef11-4da5-baaf-a64e325f87d0",
+              "name": "email",
+              "value": "={{ $('Webhook').item.json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "01b79d59-cfcb-496d-a4ee-7e5f43f31c83",
+              "name": "phone_number",
+              "value": "={{ $('Webhook').item.json.body.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "c8a205a7-6c26-47f2-a04a-5abc7a2eda79",
+              "name": "reason",
+              "value": "={{ $('Webhook').item.json.body.reason }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        368
+      ],
+      "id": "a5d791f4-3714-4b6e-b5d7-5c9a00c7a5a9",
+      "name": "Set Date & Time"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0b822450-698c-4718-b154-14193aa285bb",
+              "name": "status",
+              "value": "={{ $json.error.cause.status }}",
+              "type": "number"
+            },
+            {
+              "id": "ab35b98f-e719-4984-b42c-eac2141748ad",
+              "name": "response",
+              "value": "fail",
+              "type": "string"
+            },
+            {
+              "id": "1f83538b-9db3-464e-b297-6775a3352c48",
+              "name": "error.description",
+              "value": "={{ $json.error.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        464
+      ],
+      "id": "7deb02c1-f98d-4f10-a8a9-6b9d18bdc42b",
+      "name": "Error Status"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6d0b2d40-fbd3-4b16-93ff-bffea4ed43a0",
+              "leftValue": "={{ $json.error.description }}",
+              "rightValue": "User either already has booking at this time or is not available",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        464
+      ],
+      "id": "b0c60cb0-c0ac-4f80-830d-ff67035738db",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab35b98f-e719-4984-b42c-eac2141748ad",
+              "name": "response",
+              "value": "success",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        272
+      ],
+      "id": "a5bedaf7-d709-4364-b327-87e79ef3bcdc",
+      "name": "Success Response"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cal.com/v2/slots/reservations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cal-api-version",
+              "value": "2024-09-04"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"eventTypeId\": 2926528,\n  \"slotStart\": \"{{ $('Set Date & Time').item.json.booking_time }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        720
+      ],
+      "id": "e2dda25f-c562-4c63-b59b-e2d35881cd59",
+      "name": "Reserve Time",
+      "retryOnFail": false,
+      "credentials": {
+        "calApi": {
+          "id": "n9oWXEF0ClbiLTFZ",
+          "name": "hutrw005 n8n-booking"
+        },
+        "httpHeaderAuth": {
+          "id": "HLUuodPuBlxg6VEu",
+          "name": "hutrw005 n8n-booking"
+        }
+      },
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cal.com/v2/bookings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cal-api-version",
+              "value": "2024-08-13"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"attendee\": {\n    \"language\": \"en\",\n    \"name\": \"{{ $json.name }}\",\n    \"timeZone\": \"GMT+0\",\n    \"email\": \"{{ $json.email }}\",\n    \"phoneNumber\": \"{{ $json.phone_number }}\"\n  },\n  \"start\": \"{{ $json.booking_time }}\",\n  \"eventTypeId\": 2926528,\n  \"bookingFieldsResponses\": {\n    \"business-name\": \"Compare with Phone Number\",\n    \"website\": \"https://example.com\",\n    \"reason\": \"{{ $json.reason }}\"\n  },\n  \"metadata\": {},\n  \"location\": {\n    \"type\": \"integration\",\n    \"integration\": \"google-meet\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        368
+      ],
+      "id": "428324a3-82fc-4e38-bf23-e77b91d3981d",
+      "name": "Book Time",
+      "credentials": {
+        "calApi": {
+          "id": "n9oWXEF0ClbiLTFZ",
+          "name": "hutrw005 n8n-booking"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"response\": \"{{ $json.response }}\",\n  \"error\": \"None\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        272
+      ],
+      "id": "6df51e21-7a58-44b4-961e-fb428bacd05f",
+      "name": "Respond Success"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"response\": \"{{ $json.response }}\",\n  \"error\": {{ JSON.stringify($json.error.description) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        464
+      ],
+      "id": "ce7697b6-1148-4483-a770-c590aa898761",
+      "name": "Respond Fail"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d0e7896a-a1b4-4d19-b76c-c47c6eca9487",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        288
+      ],
+      "id": "c8a65ae3-91b4-4c34-9e92-904d967c4199",
+      "name": "Webhook",
+      "webhookId": "d0e7896a-a1b4-4d19-b76c-c47c6eca9487"
+    }
+  ],
+  "connections": {
+    "user_uri": {
+      "main": [
+        [
+          {
+            "node": "event_uri",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hours Difference": {
+      "main": [
+        [
+          {
+            "node": "Add Hours Difference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Hours Difference": {
+      "main": [
+        [
+          {
+            "node": "Set Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Initial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initial": {
+      "main": [
+        [
+          {
+            "node": "Hours Difference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Book Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond Fail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Fail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Response": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserve Time": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Book Time": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Initial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Etc/UTC",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "user_uri": [
+      {
+        "json": {
+          "resource": {
+            "avatar_url": null,
+            "created_at": "2023-10-10T08:58:01.677724Z",
+            "current_organization": "https://api.calendly.com/organizations/51a33cf0-4cda-4dff-b38c-d097ecf1792b",
+            "email": "YOUR_EMAIL@example.com",
+            "locale": "en",
+            "name": "Salman Adnan",
+            "resource_type": "User",
+            "scheduling_url": "https://calendly.com/salman-adnan",
+            "slug": "salman-adnan",
+            "time_notation": "12h",
+            "timezone": "Asia/Karachi",
+            "updated_at": "2025-07-26T11:27:07.665221Z",
+            "uri": "https://api.calendly.com/users/5cd1a454-40f3-42b6-94ca-bbf2186cb9cc"
+          }
+        }
+      }
+    ],
+    "event_uri": [
+      {
+        "json": {
+          "collection": [
+            {
+              "active": true,
+              "admin_managed": false,
+              "booking_method": "instant",
+              "color": "#8247f5",
+              "created_at": "2023-10-10T09:06:59.675209Z",
+              "custom_questions": [
+                {
+                  "answer_choices": [],
+                  "enabled": true,
+                  "include_other": false,
+                  "name": "Please share anything that will help prepare for our meeting.",
+                  "position": 0,
+                  "required": false,
+                  "type": "text"
+                }
+              ],
+              "deleted_at": null,
+              "description_html": "<p>Digitalise Agency</p>",
+              "description_plain": "Digitalise Agency",
+              "duration": 15,
+              "duration_options": null,
+              "internal_note": null,
+              "kind": "solo",
+              "locale": "en",
+              "locations": [
+                {
+                  "kind": "google_conference"
+                }
+              ],
+              "name": "Appointment with Salman Adnan",
+              "pooling_type": null,
+              "position": 0,
+              "profile": {
+                "name": "Salman Adnan",
+                "owner": "https://api.calendly.com/users/5cd1a454-40f3-42b6-94ca-bbf2186cb9cc",
+                "type": "User"
+              },
+              "scheduling_url": "https://calendly.com/salman-adnan/digitalise-agency",
+              "secret": false,
+              "slug": "digitalise-agency",
+              "type": "StandardEventType",
+              "updated_at": "2025-06-30T16:55:18.391175Z",
+              "uri": "https://api.calendly.com/event_types/a16f34c0-98a8-46f3-a168-38354db7b14a"
+            }
+          ],
+          "pagination": {
+            "count": 1,
+            "next_page": null,
+            "next_page_token": null,
+            "previous_page": null,
+            "previous_page_token": null
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "15dd60d7-6375-4bca-99d1-48dd6376bab5",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.091Z",
+      "updatedAt": "2025-08-30T07:55:44.091Z",
+      "role": "workflow:owner",
+      "workflowId": "GUomYJZ1zkfsul0D",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Project Owner <YOUR_EMAIL@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

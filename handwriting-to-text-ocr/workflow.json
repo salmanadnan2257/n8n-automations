@@ -1,0 +1,184 @@
+{
+  "createdAt": "2025-08-31T03:02:33.305Z",
+  "updatedAt": "2025-09-06T03:15:42.000Z",
+  "id": "7O3WtElgTVZC8Nym",
+  "name": "Handwriting -> Text",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fb07ea58-64e4-443c-8d19-4ac957aa8cee",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5190d7ef-e022-4925-8ecf-08463954cb7b",
+      "name": "Webhook",
+      "webhookId": "fb07ea58-64e4-443c-8d19-4ac957aa8cee"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b5c9e7e8-f9cd-4dd0-87b8-d1a61f3f736b",
+              "name": "b64",
+              "value": "={{ $json.body.url.split(\",\")[1] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "8decff81-fb6c-4429-904c-57adc9b9c1dd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "b64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e9fb381e-a01f-4dac-8ceb-4464d40ae8f3",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Your are an expert handwriting to text converter.\n\nFrom the image attached, convert the text to handwriting. And return only the \"text\" converted from the \"handwriting\" in the picture.\n\nNo markdown, no backticks, no unnecessary text, ONLY the converted text.",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "60480447-b92b-441a-b0d8-e4b3d0075d89",
+      "name": "Analyze image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"text\": {{ JSON.stringify($json.content.parts[0].text) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        832,
+        0
+      ],
+      "id": "a0981305-12dd-4c8f-9bf0-a673d465120f",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "0ce1c53f-66e2-44c8-9796-dc6a456be5c1",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-31T03:02:33.344Z",
+      "updatedAt": "2025-08-31T03:02:33.344Z",
+      "role": "workflow:owner",
+      "workflowId": "7O3WtElgTVZC8Nym",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Workflow Owner <owner@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

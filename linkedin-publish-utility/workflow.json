@@ -1,0 +1,143 @@
+{
+  "name": "Linkedin Publish",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "##  Publish to LinkedIn\n\nSetup\n1. Instructions to set it up\nhttps://www.youtube.com/watch?v=BpHw_U_UJkY\n",
+        "height": 208,
+        "width": 416,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -48
+      ],
+      "id": "8a68475a-17cc-4798-8289-00ad84c49fbb",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        96
+      ],
+      "id": "4e948191-6a5f-45fc-a390-1fd8e7bdb37c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1r2mFxWE4es3l0v3YcXP9BiPEbnmo8Vov",
+          "mode": "list",
+          "cachedResultName": "1.mainsq.jpg",
+          "cachedResultUrl": "https://drive.google.com/file/d/1r2mFxWE4es3l0v3YcXP9BiPEbnmo8Vov/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        96
+      ],
+      "id": "dffbb980-45b8-4b42-ab2a-e8f604148f38",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ieXudam8oqbqlfYR",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "Testing Linkedin is Easy with n8n ",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "9449d1a2-02ae-4040-9bb3-5cfd43b1cff9",
+      "name": "Create a personal post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "yQGyy1SGRr3OhkE2",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "postAs": "organization",
+        "text": "Testing Linkedin is Easy with n8n ",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        448,
+        192
+      ],
+      "id": "85c1b65b-35c7-4a9e-980b-201e86ea0175",
+      "name": "Create a company post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "yQGyy1SGRr3OhkE2",
+          "name": "LinkedIn account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Create a personal post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a company post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "766e3da5-2317-421d-adf5-bcc326bb4b6e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "111f412403b625758d0806bc55c03dbccbae1bcf7a54e9530308aeb34db387b5"
+  },
+  "id": "dey9a5UrwSgIi0PN",
+  "tags": []
+}

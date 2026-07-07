@@ -1,0 +1,712 @@
+{
+  "createdAt": "2025-07-26T11:29:35.663Z",
+  "updatedAt": "2025-09-03T08:41:03.000Z",
+  "id": "dn9t3Chl26GFg90w",
+  "name": "Get Available Times",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/users/me",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calendlyApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accpet",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        -160
+      ],
+      "id": "163c3b7a-f98c-4e59-9846-0dd69a1f4bfa",
+      "name": "user_uri",
+      "credentials": {
+        "calendlyApi": {
+          "id": "he9KCFXAJO24SZqN",
+          "name": "salmanadnan0206"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/event_types?user=https://api.calendly.com/users/5cd1a454-40f3-42b6-94ca-bbf2186cb9cc",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calendlyApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accpet",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -96,
+        -160
+      ],
+      "id": "d836dc17-71fd-4da3-bb19-2719875d2fa5",
+      "name": "event_uri",
+      "credentials": {
+        "calendlyApi": {
+          "id": "he9KCFXAJO24SZqN",
+          "name": "salmanadnan0206"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df3b46b5-a9d8-4742-ac05-670b039ddece",
+              "name": "start_time",
+              "value": "={{ $now.setZone('UTC').plus(2, 'days').toFormat(\"yyyy-MM-dd\") + 'T00:00:00Z' }}",
+              "type": "string"
+            },
+            {
+              "id": "6e0eefd9-48dc-4f74-950f-c237e035be37",
+              "name": "end_time",
+              "value": "={{ $now.setZone('UTC').plus(5, 'days').toFormat(\"yyyy-MM-dd\") + 'T00:00:00Z' }}",
+              "type": "string"
+            },
+            {
+              "id": "174a54e9-fd84-4f82-a576-f1b172f2e564",
+              "name": "time_there",
+              "value": "={{ $json.body.current_time }}",
+              "type": "string"
+            },
+            {
+              "id": "ede07734-2e5b-40cf-8adb-24268897b63a",
+              "name": "current_time",
+              "value": "={{ $now.setZone('UTC').toFormat(\"yyyy-MM-dd'T'HH:mm:ss\") + 'Z' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        208
+      ],
+      "id": "8c580954-eba9-4a02-845a-ed7b971dd092",
+      "name": "Set Date and Time"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "collection",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        352,
+        208
+      ],
+      "id": "569a569c-5fa4-40ed-ac65-62ea67a7037a",
+      "name": "Split Out",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "new_time",
+              "renameField": true,
+              "outputFieldName": "all_times"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        208
+      ],
+      "id": "18c89599-469f-4492-a0ee-77ddf983373d",
+      "name": "Aggregate",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        2528,
+        208
+      ],
+      "id": "25c8a430-2dda-4a50-94bd-588f8b4d951e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "getTimeBetweenDates",
+        "startDate": "={{ $('Set Date and Time').item.json.current_time }}",
+        "endDate": "={{ $('Set Date and Time').item.json.time_there }}",
+        "units": [
+          "hour"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        560,
+        208
+      ],
+      "id": "e2117889-971c-4aec-8f67-f29af36915f6",
+      "name": "Hours Difference"
+    },
+    {
+      "parameters": {
+        "operation": "addToDate",
+        "magnitude": "={{ $('Split Out').item.json.start_time }}",
+        "timeUnit": "hours",
+        "duration": "={{ $json.timeDifference.hours }}",
+        "outputFieldName": "new_time",
+        "options": {
+          "includeInputFields": true
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        784,
+        208
+      ],
+      "id": "10ebdd9b-ea87-479a-b60b-65f5023dbc51",
+      "name": "Add Hours Difference",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getTimeBetweenDates",
+        "startDate": "={{ $('Set Date and Time').item.json.current_time }}",
+        "endDate": "={{ $('Set Date and Time').item.json.time_there }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        208
+      ],
+      "id": "48af94cd-223c-4e21-b642-b718426c3f8b",
+      "name": "Days Difference"
+    },
+    {
+      "parameters": {
+        "operation": "addToDate",
+        "magnitude": "={{ $('Set Date and Time').item.json.start_time }}",
+        "duration": "={{ $json.timeDifference.days.floor() }}",
+        "outputFieldName": "new_date",
+        "options": {
+          "includeInputFields": true
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        208
+      ],
+      "id": "76140ad2-5b8a-4907-90e1-133c1e4eded1",
+      "name": "Add Days Difference"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.new_date }}",
+        "format": "custom",
+        "customFormat": "cccc",
+        "outputFieldName": "day",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        208
+      ],
+      "id": "498c20c7-f164-4624-9222-6400f0002a21",
+      "name": "Get Day"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        304
+      ],
+      "id": "79e3c535-93af-487e-9618-1c24b3c82c41",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Retrieve the custom hours to add\nconst hoursToAdd = $('Hours Difference').item.json.timeDifference.hours;\n\n// Access the raw HTTP response structure\nconst rawWrapper = $('Get Available Times - Cal.com').item.json;\n\n// The actual payload is inside an array [{ data: { ... }, status: ... }]\nconst raw = Array.isArray(rawWrapper) && rawWrapper[0]?.data\n  ? rawWrapper[0].data\n  : rawWrapper.data || {};\n\n// Prepare result container\nconst result = [];\n\n// Iterate over each date key in the 'data' dictionary\nfor (const dateKey of Object.keys(raw)) {\n  const arr = raw[dateKey];\n  if (!Array.isArray(arr)) continue;\n\n  // For each object in the array, shift the start value if present\n  for (const obj of arr) {\n    if (obj.start) {\n      const dt = new Date(obj.start);\n      const shifted = new Date(dt.getTime() + hoursToAdd * 60 * 60 * 1000);\n      // Push formatted ISO string (use shifted if you need Date obj)\n      result.push(shifted);\n    }\n  }\n}\n\nreturn {\n  json: {\n    \"adjusted_result\": result\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        208
+      ],
+      "id": "ef2e7c69-7b59-4408-83c9-c04b0b3ad594",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "url": "https://api.calendly.com/event_type_available_times",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "https://api.calendly.com/event_types/a16f34c0-98a8-46f3-a168-38354db7b14a"
+            },
+            {
+              "name": "start_time",
+              "value": "={{ $json.start_time }}"
+            },
+            {
+              "name": "end_time",
+              "value": "={{ $json.end_time }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accpet",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        560
+      ],
+      "id": "2f8255f0-f62b-439b-b109-c8ef5f7646c3",
+      "name": "Get Available Times - Calendly",
+      "credentials": {
+        "calendlyApi": {
+          "id": "he9KCFXAJO24SZqN",
+          "name": "salmanadnan0206"
+        },
+        "calApi": {
+          "id": "n9oWXEF0ClbiLTFZ",
+          "name": "hutrw005 n8n-booking"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.cal.com/v2/slots",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "eventTypeId",
+              "value": "2926528"
+            },
+            {
+              "name": "start",
+              "value": "={{ $json.start_time }}"
+            },
+            {
+              "name": "end",
+              "value": "={{ $json.end_time }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "cal-api-version",
+              "value": "2024-09-04"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        128,
+        208
+      ],
+      "id": "92e00b4f-edf4-495e-acc0-3c1427933efb",
+      "name": "Get Available Times - Cal.com"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f379f3b3-00f9-4795-a0f2-ab14ec75167f",
+              "name": "reference",
+              "value": "={{ $('Set Date and Time').item.json.start_time.toDateTime().format('yyyy-MM-dd') }} is {{ $('Get Day').item.json.day }}",
+              "type": "string"
+            },
+            {
+              "id": "970fa0e2-6b6a-4bc4-8926-3a6c9bde779f",
+              "name": "adjusted_result",
+              "value": "={{ $('Code').item.json.adjusted_result }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2112,
+        208
+      ],
+      "id": "25fe912a-b234-4aa0-88ed-cb21f6dc7f66",
+      "name": "Return Variables"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "be87ef2b-ad3b-4cbc-a400-fbe21c9a8bad",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        128
+      ],
+      "id": "a630c535-56b4-4745-9f9b-a38c9d1765bd",
+      "name": "Webhook1",
+      "webhookId": "be87ef2b-ad3b-4cbc-a400-fbe21c9a8bad"
+    }
+  ],
+  "connections": {
+    "user_uri": {
+      "main": [
+        [
+          {
+            "node": "event_uri",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Date and Time": {
+      "main": [
+        [
+          {
+            "node": "Get Available Times - Cal.com",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "event_uri": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Hours Difference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Days Difference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hours Difference": {
+      "main": [
+        [
+          {
+            "node": "Add Hours Difference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Hours Difference": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Days Difference": {
+      "main": [
+        [
+          {
+            "node": "Add Days Difference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Days Difference": {
+      "main": [
+        [
+          {
+            "node": "Get Day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Day": {
+      "main": [
+        [
+          {
+            "node": "Return Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Date and Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Available Times - Calendly": {
+      "main": [
+        []
+      ]
+    },
+    "Get Available Times - Cal.com": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return Variables": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Set Date and Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Etc/GMT",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "user_uri": [
+      {
+        "json": {
+          "resource": {
+            "avatar_url": null,
+            "created_at": "2023-10-10T08:58:01.677724Z",
+            "current_organization": "https://api.calendly.com/organizations/51a33cf0-4cda-4dff-b38c-d097ecf1792b",
+            "email": "YOUR_EMAIL@example.com",
+            "locale": "en",
+            "name": "Salman Adnan",
+            "resource_type": "User",
+            "scheduling_url": "https://calendly.com/salman-adnan",
+            "slug": "salman-adnan",
+            "time_notation": "12h",
+            "timezone": "Asia/Karachi",
+            "updated_at": "2025-07-26T11:27:07.665221Z",
+            "uri": "https://api.calendly.com/users/5cd1a454-40f3-42b6-94ca-bbf2186cb9cc"
+          }
+        }
+      }
+    ],
+    "event_uri": [
+      {
+        "json": {
+          "collection": [
+            {
+              "active": true,
+              "admin_managed": false,
+              "booking_method": "instant",
+              "color": "#8247f5",
+              "created_at": "2023-10-10T09:06:59.675209Z",
+              "custom_questions": [
+                {
+                  "answer_choices": [],
+                  "enabled": true,
+                  "include_other": false,
+                  "name": "Please share anything that will help prepare for our meeting.",
+                  "position": 0,
+                  "required": false,
+                  "type": "text"
+                }
+              ],
+              "deleted_at": null,
+              "description_html": "<p>Digitalise Agency</p>",
+              "description_plain": "Digitalise Agency",
+              "duration": 15,
+              "duration_options": null,
+              "internal_note": null,
+              "kind": "solo",
+              "locale": "en",
+              "locations": [
+                {
+                  "kind": "google_conference"
+                }
+              ],
+              "name": "Appointment with Salman Adnan",
+              "pooling_type": null,
+              "position": 0,
+              "profile": {
+                "name": "Salman Adnan",
+                "owner": "https://api.calendly.com/users/5cd1a454-40f3-42b6-94ca-bbf2186cb9cc",
+                "type": "User"
+              },
+              "scheduling_url": "https://calendly.com/salman-adnan/digitalise-agency",
+              "secret": false,
+              "slug": "digitalise-agency",
+              "type": "StandardEventType",
+              "updated_at": "2025-06-30T16:55:18.391175Z",
+              "uri": "https://api.calendly.com/event_types/a16f34c0-98a8-46f3-a168-38354db7b14a"
+            }
+          ],
+          "pagination": {
+            "count": 1,
+            "next_page": null,
+            "next_page_token": null,
+            "previous_page": null,
+            "previous_page_token": null
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "9f64d673-8aae-4f2a-8c43-3fec933d90f5",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.069Z",
+      "updatedAt": "2025-08-30T07:55:44.069Z",
+      "role": "workflow:owner",
+      "workflowId": "dn9t3Chl26GFg90w",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Project Owner <YOUR_EMAIL@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

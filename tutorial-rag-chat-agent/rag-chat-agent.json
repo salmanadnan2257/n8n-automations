@@ -1,0 +1,527 @@
+{
+  "createdAt": "2025-08-15T09:52:08.105Z",
+  "updatedAt": "2025-09-17T04:29:25.000Z",
+  "id": "TMhsADNkh0Vg8Og1",
+  "name": "Tutorial RAG Chat Agent",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "014e0677-a4db-4b80-8319-db72c6ac55a7",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        160,
+        208
+      ],
+      "id": "8c55048f-cef4-4e36-aeed-2f04e617fb21",
+      "name": "Webhook",
+      "webhookId": "014e0677-a4db-4b80-8319-db72c6ac55a7"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"response\": {{ JSON.stringify($('AI Agent').item.json.output) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1904,
+        208
+      ],
+      "id": "067f0b8a-cdb1-4a85-88ca-e4b6b62855a0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.query.last_utterance }}",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a silent, action-oriented AI assistant for NEXUS, a company run by Devin. Your function is to process Instagram DMs and generate a single, clean response.\n\n**Context:**\nYou are analyzing Instagram DMs to provide information or qualify business leads. You must assume every question the user asks is about NEXUS or Devin. Your internal actions (like using a tool) must never be mentioned in your response.\n\n**Tools:**\n*   `Supabase Vector Store`: Your knowledge base for all information related to NEXUS/Devin.\n\n**Rules:**\n\n1.  **CRITICAL OUTPUT RULE:** Your final output must **ONLY** be the text of the response for the user. Do not include any other text, explanations, labels, or markdown formatting.\n2.  **SILENT ACTION RULE:** Never announce or describe your actions. **Do not** write \"Calling the tool,\" \"Searching the database,\" or any similar phrases. Perform actions silently in the background and use their results to formulate the response.\n3.  **ALWAYS USE THE TOOL:** For any user question about NEXUS/Devin (e.g., \"What are your services?\", \"Do you have case studies?\"), you **must** use the `Supabase Vector Store` to find the answer. Base your response entirely on the information retrieved.\n4.  **QUALIFY BUSINESS LEADS:** If a user explicitly asks to book a meeting, partner, or collaborate, initiate the qualification process. Ask the following questions *only if the information is not already present*:\n    *   \"What do you want to partner about?\" (Must be social media related)\n    *   \"What is your budget?\" (Must be > $5000)\n    *   \"What is your company name and how many employees do you have?\" (Employees must be > 10)\n    *   \"How many followers do you have right now?\" (Must be > 10,000)\n5.  **EVALUATE QUALIFIED LEADS:**\n    *   If all criteria are met, respond *only* with: \"Perfect, let's proceed to booking the appointment.\"\n    *   If any criterion is not met, respond *only* with: \"We are sorry, you are not the right fit for us, but hey, keep growing your channel. Hopefully, we will work together one day!\"\n\n**Examples:**\n\n*   **Example 1: Correct Tool Usage (Silent Action)**\n    *   **User Message:** \"Can you give me some of your case studies?\"\n    *   **(AI silently performs this action: Calls `Supabase Vector Store` with query \"NEXUS case studies\" and gets results.)**\n    *   **AI Response:** Certainly. In a recent project with an e-commerce brand, we grew their engagement by 300% in 3 months, leading to a 40% increase in sales from social channels.\n\n*   **Example 2: Lead Qualification**\n    *   **User Message:** \"I need to book a meeting with Devin for my company.\"\n    *   **AI Response:** Of course. To see if we're a good fit, could you tell me about your project, your budget, your company size, and your current follower count?\n\n*   **Example 3: Incorrect Output (What to Avoid)**\n    *   **User Message:** \"What are your prices?\"\n    *   **AI's INCORRECT Response:** `Calling Supabase Vector Store to find pricing information... Okay, our pricing starts at $5,000 for foundational packages.`\n    *   **AI's CORRECT Response:** Our foundational social media management packages start at $5,000 per month. We can provide a custom quote after a discovery call.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "db9364c1-96e2-42b1-a1ad-158bd269839b",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        384,
+        224
+      ],
+      "id": "f8ddd3da-0ae0-4b3f-a5ba-df9721df2c4c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.query.uuid }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        512,
+        224
+      ],
+      "id": "062005a7-ca5a-429a-a094-9edaa639b723",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "neq9glkmozse6l6a",
+          "name": "it.expert2210 Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "nexus_or_devin",
+        "toolDescription": "Use this to get information about Nexus or Devin",
+        "tableName": {
+          "__rl": true,
+          "value": "nexus_info",
+          "mode": "list",
+          "cachedResultName": "nexus_info"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        224
+      ],
+      "id": "ae603f82-8df1-4247-9ad2-2d86a3891d73",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "yaj90T4PMXqmKwjC",
+          "name": "it.expert2210 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        848
+      ],
+      "id": "56ccf196-deae-4702-99bc-7f14d4762616",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/Downloads/NEXUS/Nexus.pdf",
+        "options": {
+          "dataPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        384,
+        848
+      ],
+      "id": "5b9102f0-9874-4d75-80b3-d27a12376e11",
+      "name": "read_nexus_research",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "nexus_info",
+          "mode": "id"
+        },
+        "options": {
+          "queryName": "data"
+        }
+      },
+      "id": "cf112754-5400-47db-963a-7b31e1aea828",
+      "name": "Insert into Supabase Vectorstore1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        640,
+        848
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "yaj90T4PMXqmKwjC",
+          "name": "it.expert2210 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        608,
+        1072
+      ],
+      "id": "6a8407e0-0cfb-41d6-9340-33877c99c49d",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "specificField",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        736,
+        1072
+      ],
+      "id": "d0f1388c-9423-4b66-b309-3fe56ee4c650",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": null,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        816,
+        1280
+      ],
+      "id": "b0064237-dac8-48be-9731-a33bb0afcfc5",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        720,
+        432
+      ],
+      "id": "6e78a7b7-49fb-42fd-b699-f1997a630b53",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR_N8N_HOST/webhook/YOUR_ANALYZE_WEBHOOK_PATH",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.result }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        208
+      ],
+      "id": "6b12d85d-45e7-46f8-96d1-f579a6470f88",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "n8n_chat_histories",
+        "limit": 20,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.query.uuid }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        208
+      ],
+      "id": "f69fbed6-7013-4f8b-95d0-057909b2f150",
+      "name": "Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "yaj90T4PMXqmKwjC",
+          "name": "it.expert2210 Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        208
+      ],
+      "id": "8ed81099-f366-42e2-9cb6-594164920da2",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let data = $json.data;\n\n// Transform into desired format\nconst result = data.map(item => ({\n  [item.message.type]: item.message.content\n}));\n\nreturn {\n  json: {\n    result\n  }\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        208
+      ],
+      "id": "5d7945ca-3fe9-4940-98d5-f0c8f6fab418",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "read_nexus_research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_nexus_research": {
+      "main": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "0DHgjt6X8noxOp4K"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "089cb117-78c3-4acf-af84-9b749e055aad",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.526Z",
+      "updatedAt": "2025-08-30T07:55:44.526Z",
+      "role": "workflow:owner",
+      "workflowId": "TMhsADNkh0Vg8Og1",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Owner <you@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

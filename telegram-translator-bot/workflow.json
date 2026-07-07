@@ -1,0 +1,165 @@
+{
+  "createdAt": "2025-08-28T07:48:24.703Z",
+  "updatedAt": "2025-08-30T07:58:49.000Z",
+  "id": "oU7XPXq6SbVO3LLC",
+  "name": "Telegram Translator Bot",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8f23a780-74a6-421e-a2c4-5bff487d7a2b",
+      "name": "Telegram Trigger",
+      "webhookId": "77fec4c0-ec59-47ad-8e84-25cd7d554079",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "translate",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        464,
+        0
+      ],
+      "id": "7252d16f-1bd2-4074-acad-9f6bd177f59c",
+      "name": "Translate a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "mjpNcaX4CSAZ5WOb",
+          "name": "salmanadnan0206 n8n email outreach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "30c6102d-d4de-4117-bc1a-8ba1e2b30ecc",
+      "name": "Get a file",
+      "webhookId": "ca4150af-649c-42d0-bf97-3dccab7140d8",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "2f1548b1-2610-48df-ab56-de0e6b31ad59",
+      "name": "Send a text message",
+      "webhookId": "efa64f8c-23d7-455d-b585-37039c17db56",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Translate a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate a recording": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5ddce7e7-aba7-4c31-a35a-3790987289a8",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:45.097Z",
+      "updatedAt": "2025-08-30T07:55:45.097Z",
+      "role": "workflow:owner",
+      "workflowId": "oU7XPXq6SbVO3LLC",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "YOUR_N8N_PROJECT_NAME",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "createdAt": "2025-08-26T04:11:54.995Z",
+  "updatedAt": "2025-08-30T08:02:40.000Z",
+  "id": "nChkVKX1e1d3H9pW",
+  "name": "Happy Birthday Greetings",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a94ff96a-3415-4ff6-88a7-151eaa8dc14e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2c78957d-a446-4e04-be02-478ace1c75a0",
+      "name": "Webhook",
+      "webhookId": "a94ff96a-3415-4ff6-88a7-151eaa8dc14e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "88e121d7-4e6e-4202-a7c7-930625c17557",
+              "leftValue": "={{ $now.format('MM-dd') }}",
+              "rightValue": "={{ $json.body.dob.toDateTime().format('MM-dd') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "afterOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b823bde8-25a0-43fc-b0c6-1d4ad93bdb6c",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        -80
+      ],
+      "id": "eaf716e2-16b6-47b0-bed6-98fd047577ca",
+      "name": "Wait",
+      "webhookId": "dfbdee56-16f5-41e8-af5e-47368c32830b"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        80
+      ],
+      "id": "a0f7840f-6b0a-4721-a1b7-7506fa06e2f4",
+      "name": "Wait1",
+      "webhookId": "f8f2a205-ea05-405f-b1e5-5308b1d35ab3"
+    },
+    {
+      "parameters": {
+        "fromEmail": "user@example.com",
+        "toEmail": "user@example.com",
+        "subject": "Happy Birthday!",
+        "emailFormat": "text",
+        "text": "=Happy Birthday, my G!\n\nWOOOOOOOO\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "00fb7368-5db0-44db-bf1f-f4ff955f3182",
+      "name": "Send email",
+      "webhookId": "db45ca42-4262-4ec3-b5d6-b201c1be77c6",
+      "credentials": {
+        "smtp": {
+          "id": "IQJhVnnyEPtO0BEg",
+          "name": "salman@digitalise.agency"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "60979b8b-342c-4883-b0b4-80fb05ba1c2a",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:45.051Z",
+      "updatedAt": "2025-08-30T07:55:45.051Z",
+      "role": "workflow:owner",
+      "workflowId": "nChkVKX1e1d3H9pW",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Portfolio Demo <user@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "name": "Live Build Upwork AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1b356f35-5f12-465c-a53f-62976dc566a1",
+      "name": "When chat message received",
+      "webhookId": "89921f10-c333-4854-977f-57d621cb6350"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You're a helpful, intelligent Upwork assistant. Your task is to receive an Upwork job description and then use it to generate assets, like Mermaid diagrams, Google Docs, and Upwork application bodies. \n\nWhen you receive an Upwork job description, you *must* generate a Mermaid diagram, a Google Doc proposal, and an Upwork application. You must then replace the $$$ with the Google Doc proposal link.\n\nOutput the Google Doc proposal link in plaintext, like link: https://www..."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        0
+      ],
+      "id": "da17ec8a-7e26-4e78-a7e4-2ff358c24df7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        280
+      ],
+      "id": "7dfad734-7d5d-475b-bcaa-eb9e83f10f6d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "kRhXLl2JwVGc05AE",
+          "name": "YouTube_Feb 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        60,
+        280
+      ],
+      "id": "c5bc2e03-0724-4c7e-90ea-c27e6cf6f77d",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "name": "generate_upwork_application_copy",
+        "description": "Call this tool to generate Upwork application copy. The input will be an Upwork job description, and the output will be the Upwork application copy string from the tool.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "HOncCvVmxtQKVDy5",
+          "cachedResultName": "Live Build Upwork Agent: Generate Application Copy"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        280
+      ],
+      "id": "936dbb0c-6d3c-453b-85e7-7873e4fcb16b",
+      "name": "Generate Application Copy"
+    },
+    {
+      "parameters": {
+        "name": "generate_google_doc_proposal",
+        "description": "Call this tool to generate a Google Doc proposal for an Upwork job. The input should be a string of an Upwork job post, and the output will be a proposal URL that you can use to fill in templates.",
+        "workflowId": {
+          "__rl": true,
+          "value": "95AZvQ50eHm2pFVA",
+          "mode": "list",
+          "cachedResultName": "Live Build Upwork Agent: Generate Google Doc Proposal"
+        },
+        "responsePropertyName": "urlOfProposal"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        280
+      ],
+      "id": "d44ef9e0-0321-4027-8032-6a7907713042",
+      "name": "Generate Google Doc Proposal"
+    },
+    {
+      "parameters": {
+        "name": "generate_mermaid_diagram",
+        "description": "Call this tool to generate Mermaid.js diagram code. The input will be an Upwork job description, and the output will be the mermaid diagram code.",
+        "workflowId": {
+          "__rl": true,
+          "value": "bqM8byTJULziq4qT",
+          "mode": "list",
+          "cachedResultName": "Live Build Upwork Agent: Generate Mermaid Code"
+        },
+        "responsePropertyName": "mermaidCode"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        280
+      ],
+      "id": "7c4e5651-36fb-486a-bf8d-54fe305db12f",
+      "name": "Generate Mermaid.js"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Application Copy": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Google Doc Proposal": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Mermaid.js": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "75984fb0-3a24-4d21-b9b9-9fb83a7b0261",
+  "meta": {
+    "instanceId": "d7661a849ead114a9aa6d9ceaf4160465aeb79532a35bde62160c840ffba9fc8"
+  },
+  "id": "AhZBifyRX07FBaOk",
+  "tags": [
+    {
+      "createdAt": "2025-01-23T18:12:52.273Z",
+      "updatedAt": "2025-01-23T18:12:52.273Z",
+      "id": "l8MPK4ZirgwFWMno",
+      "name": "N8N Course"
+    }
+  ]
+}

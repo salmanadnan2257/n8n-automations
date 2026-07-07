@@ -1,0 +1,147 @@
+{
+  "createdAt": "2025-09-04T03:35:39.501Z",
+  "updatedAt": "2025-09-04T03:44:12.000Z",
+  "id": "ygzoETsTw0K689vR",
+  "name": "Website -> Screenshot",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e73ef7a2-a498-4ed0-8e42-119e4792aa62",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fbce560a-b8b0-4ea8-8345-e929581bafad",
+              "name": "url",
+              "value": "https://www.university.com/",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cacfa20a-cb13-4f0f-81ed-1adcb5ee79fb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.screenshotone.com/take?access_key=YOUR_API_KEY_HERE&url={{ $json.url }}&format=jpg&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=false&block_trackers=true&delay=30&timeout=60&authorization=Basic YOUR_API_KEY_HERE&headers=Content-Type: application/json&response_type=by_format&image_quality=80",
+        "options": {
+          "timeout": 50000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "49691272-8b01-465b-86e0-73561549b33a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "38651441-cc9e-4bea-a6eb-7409f65621ab",
+      "name": "Send a photo message",
+      "webhookId": "99c5e617-6160-495f-b2da-7f93a05d2972",
+      "credentials": {
+        "telegramApi": {
+          "id": "eZBj2895lix2am2E",
+          "name": "salmanadnan0206 minglobi "
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "75e65763-97d1-4e4a-95c7-426ba70acc09",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-09-04T03:35:39.507Z",
+      "updatedAt": "2025-09-04T03:35:39.507Z",
+      "role": "workflow:owner",
+      "workflowId": "ygzoETsTw0K689vR",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Workflow Owner <owner@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

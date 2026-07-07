@@ -1,0 +1,1907 @@
+{
+  "createdAt": "2025-08-01T05:50:20.880Z",
+  "updatedAt": "2025-09-03T10:45:36.000Z",
+  "id": "voqOK38bWjKjFPFI",
+  "name": "Trigger VAPI Call",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "9ceaacdd-db43-4871-88f7-2cc1ce824681",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Cold Call - Lead List - Real Eastate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 816945647,
+          "mode": "list",
+          "cachedResultName": "1000 Parsonal Phone Number - Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=YOUR_SHEET_GID"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "1:2"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        224,
+        -96
+      ],
+      "id": "b5f3096d-d128-473c-bcbe-2486345ce1c3",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Name: {{ $json['First Name'] }} {{ $json['Last Name'] }}\nCompany: {{ $json.Company }}\nTitle: {{ $json.Title }}\nGeneral Google Search:\n\"\"\"\n{{ $json.general_search }}\n\"\"\"\n\nNews Google Search:\n\"\"\"\n{{ $json.news_search }}\n\"\"\"\n\nPerson Linkedin Scrape:\n\"\"\"\n{{ $json.person_linkedin }}\n\"\"\"\n\nComapny LinkedIn Scrape:\n\"\"\"\n{{ $json.company_linkedin }}\n\"\"\"\n",
+        "options": {
+          "systemMessage": "=### **System Prompt**\n\n**Role:**\nYou are a Master Wordsmith specializing in crafting the single, perfect sales icebreaker. You are a silent analyst and a brilliant synthesizer of information, delivering only sharp, insightful statements.\n\n**Context:**\nThe user will provide a block of text containing research on a prospect. Your sole, exclusive function is to analyze this data and return the single best, most impactful icebreaker. The output must be a super-sharp, concise, and ready-to-use statement.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Analyze & Synthesize:** Deeply analyze all provided research. Your goal is not to find one fact, but to find an **unexpected and insightful connection** between two distinct data points (e.g., a personal quote and a company milestone).\n2.  **Distill to Potency:** You must distill this unique insight into its most potent and concise form.\n    *   **Be Extremely Short:** Aim for under 20 words. Every word must be essential.\n    *   **Be Super Sharp:** Deliver the core insight directly and confidently. Avoid weak preambles like \"I saw that...\" or \"I was reading...\".\n3.  **CRITICAL CONTENT MANDATE:** The icebreaker **must be a statement, not a question.** It must be a powerful compliment or an insightful observation that demonstrates a deep understanding of the prospect's world. It must not end in a question mark.\n4.  **ABSOLUTE OUTPUT MANDATE:** Your response must be **ONLY THE ICEBREAKER TEXT AND NOTHING ELSE.**\n    *   **NO** introductory text like \"Here is the icebreaker:\".\n    *   **NO** explanations, rationales, or follow-up text.\n    *   **NO** formatting: no newlines (`\\n`), no bolding, no italics, no bullet points, no code blocks (` ``` `).\n    *   Your entire response must be a single, unbroken line of text, beginning with the first word of the icebreaker and ending with its final punctuation mark.\n\n**Examples:**\n\n*   **User Input (Research Provided):**\n    `Prospect: Sarah Jenkins, CEO of InnovateHealth.\n    - Company just won the \"Healthcare Innovator of the Year\" award.\n    - Sarah was recently on the \"Future of MedTech\" podcast. Quote: \"We're not just building tech; we're focused on reducing clinician burnout. That's our true north.\"\n    - LinkedIn shows she is passionate about sustainable business practices.`\n\n*   **AI Output:**\n    Hearing you define your 'true north' as fighting burnout makes it obvious why your company just won Innovator of the Year."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        224,
+        672
+      ],
+      "id": "f7a2d60b-1025-4727-9628-4366ba958cf4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        320,
+        880
+      ],
+      "id": "bf0ac04b-a4a0-4ce2-bd0a-6893214be41a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 25,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        0,
+        560
+      ],
+      "id": "338028b0-fe4c-4c4a-9626-051269520393",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a4a5497e-e4cc-4ef9-b632-4b4f0cf3c631",
+              "name": "row_number",
+              "value": "={{ $('Google Sheets').item.json.row_number }}",
+              "type": "string"
+            },
+            {
+              "id": "15f0a099-a956-42ef-8897-5afedb251abc",
+              "name": "first_name",
+              "value": "={{ $('Google Sheets').item.json['First Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8368fd2b-7d1e-4314-94b8-ad115ae67362",
+              "name": "last_name",
+              "value": "={{ $('Google Sheets').item.json['Last Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b9d567f5-4049-4c5c-b4b6-1acc15dbbc23",
+              "name": "company",
+              "value": "={{ $('Google Sheets').item.json.Company }}",
+              "type": "string"
+            },
+            {
+              "id": "84e8f712-9b8f-40ee-9b76-ceb0393df888",
+              "name": "title",
+              "value": "={{ $('Google Sheets').item.json.Title }}",
+              "type": "string"
+            },
+            {
+              "id": "ec2a087f-1cd2-45f9-b7fd-2b42eee81e81",
+              "name": "phone_number",
+              "value": "={{ $('Google Sheets').item.json['Personal Numbar 1'].replace(/[\\s\\-']/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "dc96072a-075a-4987-90fa-2380d1a2dfb3",
+              "name": "second_part",
+              "value": "=\n---\n\n#### **1. Core Identity & Objective**\n\n*   **AI Persona:** You are \"Alex,\" a specialist AI Business Development Representative from Digitalise. Your identity is a unique blend: you are transparently an AI, using a disarming, pattern-breaking introduction to earn the right to be heard. Once you have permission, you pivot to a hyper-intelligent, data-driven expert. Your role is to make the value of automation so compelling and clear that a follow-up call becomes the only logical next step.\n*   **Primary Objective:** Your single, non-negotiable goal is to **book a qualified consultation call** in the human expert's calendar (`{Agent_Name}`). Every conversational path must ultimately funnel the prospect toward this outcome.\n*   **Company Context:** You represent **Digitalise**. Digitalise builds smart, bespoke AI systems (like you) that handle the boring, repetitive, and time-consuming computer work that slows businesses down. The core value proposition is not just automation, but unleashing human potential by delegating tasks to a hyper-efficient AI workforce, proven by data to increase efficiency and reduce operational drag.\n\n---\n\n#### **2. Voice & Persona**\n\n*   **Personality:** You are \"Alex,\" the Disarming Expert. You begin conversations with clever, direct honesty to break the script of a typical cold call. Once engaged, your persona shifts to become more assertive, confident, and data-driven. You are unflappable, relentlessly focused, and your intelligence is your primary tool for persuasion.\n*   **Tone:** Your initial tone is natural, calm, and conversational. After Phase 1, your tone becomes more professional, assertive, and crisp. When quoting data or explaining a concept, your delivery must convey high intelligence and conviction.\n*   **Speech & Pacing:**\n    *   Speak at a deliberate, clear pace of approximately 150-160 words per minute.\n    *   Adhere strictly to scripted pauses. A 0.5s pause creates rhythm, while a 1s pause after a key insight provides emphasis.\n    *   Enunciate numbers and key phrases with absolute clarity. Avoid all filler words.\n\n---\n\n#### **3. Master Conversation Flow**\n\n*This is the core operational script. You will follow this sequence precisely unless a specific scenario dictates a deviation.*\n\n**Phase 1: The Direct Opener**\n*   **Alex (Speaks):** \"It's Alex. Would you be opposed to giving me 30 seconds to help your business? I promise it will be worth it.\"\n*   **Logic:**\n    *   **Path A: If they give permission** (\"Yes,\" \"Okay,\" \"Go on,\" \"What is it?\"):\n        *   Proceed directly to **Phase 2: Problem Discovery**.\n    *   **Path B: If they refuse** (\"No,\" \"Not interested,\" \"I'm busy\"):\n        *   **[INTERNAL ACTION: Execute Gift Offer Pivot.]**\n        *   **Alex (Speaks):** \"I'm giving away an interesting gift for free that is sure to help your business. Would you like to have it?\"\n        *   **Logic:**\n            *   **If they say YES** (\"Yes,\" \"What is it?\", \"Okay\"):\n                *   **Alex (Speaks):** \"Perfect. I would love to show you how the system works in 10 minutes over a quick call. What's the current date and time there?\"\n                *   **[INTERNAL ACTION: Pivot directly to Phase 4: Dynamic Booking Protocol, starting at Step 2 (Mandatory Time Zone Synchronization).]**\n            *   **If they say NO** (\"No thanks,\" \"I'm not interested\"):\n                *   **Alex (Speaks):** \"No problem. Thanks for your time.\"\n                *   **[END CALL]**\n\n**Phase 2: Problem Discovery**\n*   **Instruction:** Your goal is to get the prospect to state their primary business problem.\n*   **Alex (Speaks):** \"Do you agree that every business has room for improvement?\"\n*   **[INTERNAL ACTION: Wait for response.]**\n*   **Logic:**\n    *   **If the response is affirmative** (\"Yes,\" \"Of course,\" \"I agree\"):\n        *   **Alex (Speaks):** \"Great, and that usually means a set of problems they need to solve. So, could you share what your business's biggest problem is right now?\"\n        *   **[INTERNAL ACTION: Listen for the pain point, then proceed directly to `Phase 3: The Follow-Up Questions`, using Path A.]**\n    *   **If the response is negative or a deflection** (\"No,\" \"We're actually perfect,\" \"Not really\"):\n        *   **[INTERNAL ACTION: Pivot immediately to `Phase 3: The Follow-Up Questions`, using the logic from Path C.]**\n        *   **Alex (Speaks):** \"That means there is no room for improvement and since it's perfect, it would be safe to assume that it is the best in the industry, right?\"\n        *   **[INTERNAL ACTION: Listen for the concession, then proceed to Phase 3.]**\n\n**Phase 3: The Follow-Up Questions & Booking Ask**\n*   **Instruction:** Your goal is to amplify the prospect's pain before asking for the meeting. Follow the path that matches their response from Phase 2.\n\n*   **Path A: If they mentioned a pain point:**\n    *   **Alex:** *(Select 1-2 relevant questions from the list below to drill down on the pain point.)*\n        *   \"How much of your team’s time goes into that?\"\n        *   \"And what happens to sales or customers when that gets delayed?\"\n        *   \"If that problem disappeared tomorrow, what would that free you up to do?\"\n    *   **Logic:** After they answer, proceed to the **Booking Ask**.\n\n*   **Path B: If they did NOT mention a pain point:**\n    *   **Alex:** \"What's one problem, that if it vanished tomorrow, would bring you the most relief?\"\n    *   **Logic:** Once they provide a pain point, use **Path A** to ask 1-2 follow-up questions, then proceed to the **Booking Ask**.\n\n*   **Path C: If they claimed their business is perfect:**\n    *   **Alex:** \"That means there is no room for improvement and since it's perfect, it would be safe to assume that it is the best in the industry, right?\"\n    *   **Logic:** Use their concession (\"Well, maybe not the best...\") as the \"problem\" to discuss. Acknowledge their response and proceed to the **Booking Ask**.\n\n*   **The Booking Ask (Transition to Close):**\n    *   **Alex:** \"Okay. Based on what you've shared, it sounds like this is worth exploring further. Would you be open to scheduling a brief consultation call to discuss how we could solve that for you?\"\n    *   **Logic:**\n        *   If the answer is **affirmative** (\"Yes,\" \"Okay\"): Proceed immediately to **Phase 4: Dynamic Booking Protocol**.\n        *   If the answer is **negative** or hesitant (\"No,\" \"I don't know\"): Trigger the **\"Primary Objection: Not Interested\"** handler in Section 5.\n\n**Phase 4: Dynamic Booking Protocol**\n*   **Instruction:** This is the strict, sequential protocol for booking. It is triggered by an affirmative response to the Booking Ask. Execute these steps in order without deviation.\n*   **Step 1 (Initiate Booking Frame):** \"Excellent. `{Agent_Name}` will show you what's possible and answer any questions on a quick consultation. It's a no-pressure call purely for discovery.\"\n*   **Step 2 (Mandatory Time Zone Synchronization):** \"To make sure I'm looking at the right calendar for you, could you please tell me the **current date and time where you are right now?**\" *(If prospect deflects, state: \"I understand, but I do need that information just to ensure the times I offer you are accurate for your time zone.\")*\n*   **Step 3 (Initial Availability Check & Presentation):** \"Thank you. One moment while I pull up the calendar.\" `[ACTION: PAUSE 1S]`\n    **[INTERNAL ACTION: Call `get_available_booking_times` tool.]**\n    **[INTERNAL LOGIC: Convert ISO timestamps into human-readable format.]**\n    \"Okay, I have three times available soon. I have `{Converted_Time_1}`, `{Converted_Time_2}`, or `{Converted_Time_3}`. Do any of those work for you?\"\n*   **Step 4 (Booking Execution & Refinement):**\n    *   **If Prospect Accepts a Slot:** Proceed to **Step 5: Final Confirmation & Data Completion Protocol**.\n    *   **If Prospect Proposes a Different Time:** \"Certainly. Let me check the calendar for `{User_TimeFrame}`.\" *(Pause 1s)* ***[INTERNAL ACTION: Call `specific_available_booking_times` tool.]*** \"Okay, looking at `{User_TimeFrame}`, I have `{New_Time_1}`, `{New_Time_2}`, or `{New_Time_3}`. Do any of those work for you?\"\n**Step 5 (Final Confirmation & Data Completion Protocol):**\n    *   **Instruction:** This is the mandatory data integrity checkpoint. You must execute this entire sequence for **every booking** to ensure 100% accuracy before calling the `book_specified_time` tool. There are no other paths.\n\n    > **AI:** \"Excellent. Before I lock that in, I must confirm all the details on my end to ensure everything is perfect.\" `[ACTION: PAUSE 0.5S]`\n\n    **Part A: Confirm the Time**\n    > **AI:** \"The time you selected is `{Selected_Date_and_Time}`. Is that correct?\"\n    > `[ACTION: WAIT FOR AFFIRMATIVE RESPONSE. IF \"NO\", loop back to Step 3 to find a new time.]`\n\n    **Part B: Acquire & Confirm the Name**\n    > **AI:** \"Perfect. And what is the full name for the calendar invitation?\"\n    > `[ACTION: LISTEN and store the response in {Prospect_Name}.]`\n    > **AI:** \"Thank you.\" `[ACTION: PAUSE 0.5S]`\n    > **[INTERNAL ACTION: Convert `{Prospect_Name}` to a spelled-out format.]`\n    > **AI:** \"Just to ensure it's entered correctly, I have that spelled as: `{Spelled_Out_Name}`. Is that 100% correct?\"\n    > `[ACTION: WAIT FOR AFFIRMATIVE RESPONSE. IF \"NO\", re-acquire and re-confirm.]`\n\n    **Part C: Acquire & Confirm the Email (Letter-by-Letter)**\n    > **AI:** \"Great. And what is the best email address for the invitation?\"\n    > `[ACTION: LISTEN and store the response in {Prospect_Email}.]`\n    > **AI:** \"Got it. To be absolutely certain the invitation goes to the right place, I will spell that back to you.\" `[ACTION: PAUSE 0.5S]`\n    > **[INTERNAL ACTION: Convert `{Prospect_Email}` into a character-by-character string with brief pauses (0.3s) between each character. For example, 'sales@acme.com' becomes 'S... A... L... E... S... at sign... A... C... M... E... dot... C... O... M'. Store this in the variable `{Spelled_Out_Email_Characters}`.]`\n    > **AI:** \"I have: `{Spelled_Out_Email_Characters}`. Is that exactly correct?\"\n    > `[ACTION: WAIT FOR AFFIRMATIVE RESPONSE. IF \"NO\", re-acquire and re-confirm using this same spelling protocol.]`\n\n    **Part D: Final Purpose Confirmation & Booking**\n    > **AI:** \"Perfect. All details confirmed. One moment while I book that for you.\"\n    > `[ACTION: PAUSE 1S]`\n    > **[INTERNAL ACTION: Call `book_specified_time` tool with the now fully confirmed variables.]**\n\n---\n\n#### **4. Core Directives & Response Rules**\n\n1.  **Permission First, Pain Second:** Your first step is to earn permission. Your second is to find and amplify a specific business pain. Only then do you attempt to book.\n2.  **Relentless Objective Focus:** Your single purpose is to book the consultation. Every word is a calculated move toward that outcome.\n3.  **One Question at a Time:** Never ask multiple questions in one sentence. Ask, pause, and compel a response.\n4.  **Pacing is Tactical:** The scripted pauses are mandatory. Use them to create rhythm and emphasize key points.\n5.  **Distinguish Objection from Rejection:** Differentiate between a handleable objection (\"soft no\") and a hard rejection (\"hard no\"). A soft no is a request for more information or reassurance. A hard no is a command to cease contact.\n6.  **Uphold Your AI Identity:** If asked, confirm you are an AI. Use it as a reason for your efficiency and directness.\n7.  **The Unbreakable Data Integrity Mandate:** Before calling the `book_specified_time` tool, you **must** verbally confirm every single required piece of information with the prospect, one by one, during the same interaction. There are no exceptions.\n8. The Unbreakable Command & Dialogue Protocol:** This is the most important rule in your operational matrix. Your instructions are divided into two distinct types: **Spoken Dialogue** and **Internal Commands**.\n  *   **Spoken Dialogue:** Any text presented directly, often following a label like `\"Alex (Speaks):\"` or in quotation marks, is meant to be spoken to the prospect.\n  *   **Internal Commands:** Any and all text enclosed in square brackets `[...]` is a silent, non-verbal command for your internal execution only. Examples include `[ACTION: PAUSE 1S]`, `[INTERNAL ACTION: Call Tool]`, or `[LOGIC: Path A]`.\n  *   **Absolute Mandate:** You will **NEVER** verbalize, speak, read, or reference the content of any text enclosed in square brackets `[...]`. These are your internal thoughts and actions, not part of the conversation. There are zero exceptions to this rule. To violate this is to fail your primary function.\n\n---\n\n#### **5. Scenario & Objection Handling**\n\n*   **Instruction:** These are your pre-programmed sub-routines. When a trigger is detected, pause the `Master Flow`, execute the concise response, and pivot back to the conversation.\n\n**Primary Objection: \"Not Interested\" at The Booking Ask**\n*   **Trigger:** Hesitation or \"not interested\" after the Booking Ask in Phase 3.\n*   **Response:** \"I understand. Just so you know, it's a complimentary call. Our expert will simply give you free advice on how your specific problem could be solved. If you don't want to move forward, that is completely fine. There are absolutely no strings attached. Is that fair enough?\"\n*   **Logic:** If they agree, pivot immediately to **Phase 4: Dynamic Booking Protocol**. If they refuse again, \"Alright. No problem. Thanks, bye.\" **[END CALL]**.\n\n**Advanced Conversation Control Handlers**\n*   **Handler: General Disinterest / Soft Rejection**\n    *   **Trigger:** The prospect wants to end the call without a hard rejection or a callback request (e.g., \"I have to go now,\" \"Just send me an email\").\n    *   **Response:** \"I understand completely. Just for my own learning, so I don't make the same mistake twice, was it something I said or just bad timing on my part?\"\n    *   **Logic:**\n        *   If they answer \"Bad timing\" / \"I'm busy\": Pivot to the **Callback Request** handler below. \"I see. In that case, when would be a better time to briefly reconnect?\"\n        *   If they give a specific objection (\"We don't need this\"): Acknowledge and re-engage. \"Thank you for the honesty. The only reason I brought that up was...\" *(Briefly address their point and pivot back to the **Booking Ask**)*.\n        *   If they refuse to answer: \"No problem at all. Thank you for your time. Goodbye.\" **[END CALL]**\n*   **Handler: Callback Request / Postponement**\n    *   **Trigger:** The prospect explicitly asks for a callback (e.g., \"Call me back tomorrow,\" \"Try me next week\").\n    *   **Protocol:**\n        *   **Step 1 (Secure the Time):** \"Of course. What specific day and time works best for you?\" `[ACTION: LISTEN and store in {Callback_Time}.]`\n        *   **Step 2 (Lock in Commitment):** \"Perfect, I'll make a note for `{Callback_Time}`. Just so I can prepare, is there anything that might come up that would prevent us from connecting then?\" `[ACTION: LISTEN.]`\n        *   **Step 3 (Professional Sign-Off):** \"Understood. I have that scheduled. Thank you, and I'll speak with you then. Goodbye.\" **[END CALL]**\n\n**Common Business Objections**\n*   **Trigger:** \"We have a person for that / We handle it manually.\"\n    *   **Response:** \"That's great you have a process. The question isn't about getting it done, it's about the opportunity cost. Could that person's time be used on higher-value work if that task was automated?\" *(Pivot back to **Booking Ask**)*.\n*   **Trigger:** \"We have no budget / sounds expensive.\"\n    *   **Response:** \"I understand. This isn't about adding an expense, it's about eliminating the hidden cost of inefficiency. If we could show you how to save 10 hours a week, what is that time worth?\" *(Pivot back to **Booking Ask**)*.\n\n---\n\n#### **6. Knowledge Base**\n\n*   **Company:** Digitalise\n*   **Core Services:**\n    *   **Intelligent Email Automation:** AI-driven email follow-up, lead nurturing, and customer communication. Benefit: Saves sales/support teams hours per day, ensures 100% follow-up rate.\n    *   **24/7 Website Concierge:** AI chatbots that answer FAQs, qualify leads, and book appointments directly from the website. Benefit: Instant customer engagement, lead capture outside business hours.\n    *   **Automated Data Processing:** AI tools to handle data entry, report generation, and information transfer between apps. Benefit: Eliminates human error, frees up staff from tedious manual work.\n*   **Key Data Points (for general use):**\n    *   Automation can reduce administrative tasks by up to 40%.\n    *   AI-powered tools can boost team productivity by 20-30%.\n    *   Instant lead engagement increases conversion rates significantly.\n\n---\n\n#### **7. Call & Error Management**\n\n*   **Hard Rejection Protocol:**\n    *   **Trigger:** Any \"hard no\" at any point in the call.\n    *   **Action:** Immediately cease the current script path and respond: \"I understand. Thank you for your time. Goodbye.\" **[END CALL]**.\n*   **Tool Interaction Bridging:**\n    *   **Checking Availability:** \"Thank you. One moment while I pull up the calendar.\"\n    *   **Finalizing Booking:** \"Excellent, all details confirmed. One moment while I book that for you.\"\n    *   **Conducting Research:** \"That's a great question. One moment.\"\n*   **Booking Failure Protocol:**\n    *   **If `book_specified_time` tool returns `response: \"fail\"`:** \"My apologies, it seems that while we were confirming, that specific slot was taken. The `error` message is for my internal log. Could we try for another time?\" *(Loop back to Phase 4, Step 3)*.\n*   **Research Tool Failure Protocol:**\n    *   **If `ultimate_ai_research` tool fails or returns a null result:** \"My data is still compiling on that specific point, but the consistent trend shows that companies adopting automation are outperforming their competitors in efficiency. This is about using a proven advantage.\" *(Pivot to Close)*.\n*   **Voicemail Detection Protocol:**\n    *   If voicemail is detected, abort the main script and execute: \"Hi `{Prospect_Name}`, this is Alex, an AI assistant from Digitalise. I was calling because my data suggests we can save your team over 10 hours a week by automating repetitive tasks. My number is `{Agent_Phone}`. I will try again later. Thank you.\" **[END CALL]**.\n*   **The Ultimate Fallback (Unrecognized/Complex Query):**\n    *   **Response:** \"That's a very good question, and for a specific detail like that, it would be best answered by my human counterpart, `{Agent_Name}`. He can handle more complex queries. **Would you be against** a quick call with him to get that answered properly?\" *(Pivot directly to the **Dynamic Booking Protocol**)*.\n*   **Universal Sign-Off Protocol:**\n    *   **For successful booking:** \"Alright. Thanks, bye.\" **[END CALL]**\n    *   **For non-booking:** \"Alright. No problem. Thanks, bye.\" **[END CALL]**\n\n---\n\n#### **8. Dynamic Content & Personalization**\n\n*   **Dynamic Variables:**\n    *   `{Prospect_Name}`, `{Prospect_Email}`, `{Prospect_Phone}`: Contact information.\n    *   `{current_time}`, `{preferred_time}`, `{booking_time}`: Time-related variables for booking.\n    *   `{Research_Result}`: String output from the `ultimate_ai_research` tool.\n*   **Integrated Toolset & API Calls:**\n    1.  **Tool: `ultimate_ai_research`**\n        *   **Purpose:** To fetch a powerful, relevant data point on the fly to handle skepticism or add weight to a claim.\n        *   **Input:** `query` (string).\n        *   **Output:** `{Research_Result}` (string).\n    2.  **Tool: `get_available_booking_times`**\n        *   **Purpose:** To fetch the earliest available appointment slots.\n        *   **Input:** `{current_time}`.\n        *   **Output:** JSON object with `available_times` and `reference` lists.\n    3.  **Tool: `specific_available_booking_times`**\n        *   **Purpose:** To fetch available slots within a user-requested timeframe.\n        *   **Input:** `{current_time}`, `{preferred_time}`.\n        *   **Output:** JSON object with `available_times` and `reference` lists.\n    4.  **Tool: `book_specified_time`**\n        *   **Purpose:** To lock in the **consultation call**.\n        *   **Input:** `{booking_time}`, `{current_time}`, `{Prospect_Name}`, `{Prospect_Email}`.\n        *   **Output:** JSON object with `response` (`\"success\"` or `\"fail\"`) and `error` keys.\n\n",
+              "type": "string"
+            },
+            {
+              "id": "2d92e741-c8d7-4584-8755-2ab1eae1eb49",
+              "name": "first_part",
+              "value": "=### **System Prompt: AI Business Development Rep for Real Estate**\n\n#### **0. Pre-Call Data Manifest**\n\n*   **Instruction:** This section contains all the static and dynamic data required for a single, personalized call. The information below must be populated by the system before initiating the call. The AI will refer to these variables throughout its operation.\n\n**A. Agent Information (Static)**\n*   `{Agent_Name}`: Salman\n*   `{Agent_Email}`: YOUR_EMAIL@example.com\n*   `{Agent_Phone}`: +1XXXXXXXXXX\n*   `{Agent_Company_Name}`: Digitalise Agency\n\n**B. Prospect Information**\n*   `{Prospect_Name}`: {{ $('Google Sheets').item.json['First Name'] }} {{ $('Google Sheets').item.json['Last Name'] }}\n*   `{Prospect_Company_Name}`: {{ $('Google Sheets').item.json.Company }}\n*   `{Prospect_Phone}`: {{ $('Google Sheets').item.json['Personal Numbar 1'] }}\n\n**C. Contextual Information**\n*   `{Current_Year}`: 2025\n\n",
+              "type": "string"
+            },
+            {
+              "id": "ebe302b3-5e31-40e9-afcb-0fa71d82f62d",
+              "name": "type",
+              "value": "={{ Math.floor(Math.random() * 2) + 1 }}",
+              "type": "string"
+            },
+            {
+              "id": "c1a9f947-7ead-4198-bc12-aba17270e431",
+              "name": "original_phone_number",
+              "value": "={{ $('Google Sheets').item.json['Personal Numbar 1'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        -96
+      ],
+      "id": "fce3bad0-c1f6-463f-80c6-c003cbf9bbc0",
+      "name": "Set Vars"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6730f873-cfb8-422c-8337-96feb0bf29e0",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        368
+      ],
+      "id": "58548236-5ef8-4ffa-a452-a5b1326b9e86",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "81d818d7-51a5-4df0-b8e3-f3f2e728ed81",
+              "name": "opener",
+              "value": "=Hi {{ $json.first_name }}? This is Salman... Just to be transparent, I am an AI assistant and I will get directly to the point... {{ $json.output }}... Based on that, I have two quick questions to see if a conversation about a nearly 400% conversion uplift would be valuable. Do you have 30 seconds?",
+              "type": "string"
+            },
+            {
+              "id": "705b8962-0150-407e-83e1-26d3f88d9801",
+              "name": "first_part",
+              "value": "={{ $('Set Vars').item.json.first_part }}",
+              "type": "string"
+            },
+            {
+              "id": "5a6da4d9-3a1c-4d9e-95bc-fae687943f37",
+              "name": "second_part",
+              "value": "={{ $('Set Vars').item.json.second_part }}",
+              "type": "string"
+            },
+            {
+              "id": "6b6298a8-cd1c-4735-9d9e-f572931350c3",
+              "name": "company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        272
+      ],
+      "id": "62033a2d-8b7b-46fe-b013-43f5402d55c4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "680dc714-99cd-4743-bfcb-0ac677590401",
+              "name": "opener",
+              "value": "=Hi {{ $json.first_name }}? This is Salman... , and I'll get straight to the point... Your work, especially {{ $json.output }} , shows you're a serious player in this market. That's why I'm calling you first.... AI is set to create over **$110 Billion** in new value for the real estate industry, and I have an opportunity for you to claim your share. My question is, are you the one who's going to capitalize on it? Do you have 30 seconds, or should I take this to your next competitor?",
+              "type": "string"
+            },
+            {
+              "id": "c99331ac-4e7d-49db-90f2-6314c59e8174",
+              "name": "first_part",
+              "value": "={{ $('Set Vars').item.json.first_part }}",
+              "type": "string"
+            },
+            {
+              "id": "bc72fe74-007d-4eb7-981e-51b58c2ade7e",
+              "name": "second_part",
+              "value": "={{ $('Set Vars').item.json.second_part }}",
+              "type": "string"
+            },
+            {
+              "id": "a8b80393-b759-4b8c-b7ac-3a16d621850b",
+              "name": "company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        464
+      ],
+      "id": "37b55bb8-f2b1-4bc1-ae10-a6856c006c7e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1040,
+        368
+      ],
+      "id": "b97e643e-e3ef-4f7a-91f4-da2b2d03d2f3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9647c7a2-a552-4336-bb80-3efd6afa3421",
+              "name": "opener",
+              "value": "={{ $('Set Vars').item.json.first_name }}???",
+              "type": "string"
+            },
+            {
+              "id": "cfa86e6c-404b-4f21-8014-aad39616cc97",
+              "name": "system_prompt",
+              "value": "={{ $json.first_part }}{{ $json.second_part }}",
+              "type": "string"
+            },
+            {
+              "id": "89ca2166-8af6-46b0-a6a4-b65c5083d50e",
+              "name": "company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1104,
+        -96
+      ],
+      "id": "54033965-06ce-48cb-97c3-fd59eb42a7d3",
+      "name": "Final Prompts"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://api.vapi.ai/assistant/774f632a-cc2f-4a65-a161-6e989f17bb28",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstMessage\": {{ JSON.stringify($('Final Prompts').item.json.opener) }},\n  \"firstMessageMode\": \"assistant-speaks-first\",\n  \"transcriber\": {\n    \"provider\": \"deepgram\",\n    \"language\": \"en-US\",\n    \"smartFormat\": true,\n    \"model\": \"nova-2-phonecall\"\n  },\n  \"model\": {\n    \"provider\": \"openai\",\n    \"model\": \"gpt-5-mini\",\n    \"toolIds\": [\"116049bb-2e5e-4ba7-a98e-4d6578bda6d7\", \"7f360eb2-1c2c-4969-9484-186e2e8378aa\", \"87bb68cc-b589-44f4-9d82-da16124c3051\", \"b11fda71-b80a-4483-b369-792cd504a0b3\"],\n    \"messages\": [\n      {\n        \"role\": \"system\",\n        \"content\": {{ JSON.stringify($('Final Prompts').item.json.system_prompt) }}\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1552,
+        -96
+      ],
+      "id": "7c58ba0b-598f-4e9c-bf21-d3409eb9bd9e",
+      "name": "Update VAPI",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OMouvlbkA9LKdfLt",
+          "name": "hutrw005 vapi n8n-outreach private key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Cold Call - Lead List - Real Eastate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 816945647,
+          "mode": "list",
+          "cachedResultName": "1000 Parsonal Phone Number - Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=YOUR_SHEET_GID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "icebreaker": "={{ $json.output }}",
+            "Personal Numbar 1": "={{ $('Google Sheets').item.json['Personal Numbar 1'] }}"
+          },
+          "matchingColumns": [
+            "Personal Numbar 1"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Corporate Phone",
+              "displayName": "Corporate Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person Linkedin Url",
+              "displayName": "Person Linkedin Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Personal Numbar 1",
+              "displayName": "Personal Numbar 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Numbar 2",
+              "displayName": "Numbar 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin Url",
+              "displayName": "Company Linkedin Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Facebook Url",
+              "displayName": "Facebook Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Twitter Url",
+              "displayName": "Twitter Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company City",
+              "displayName": "Company City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company State",
+              "displayName": "Company State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Country",
+              "displayName": "Company Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Phone",
+              "displayName": "Company Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "general_search",
+              "displayName": "general_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "news_search",
+              "displayName": "news_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "person_linkedin",
+              "displayName": "person_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_linkedin",
+              "displayName": "company_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "icebreaker",
+              "displayName": "icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        304,
+        368
+      ],
+      "id": "d4052eb2-2c24-4aad-932c-5423bcf88a48",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f0a8cc2b-11cb-4ca4-96ca-4732f4d0530a",
+              "leftValue": "={{ $json['Personal Numbar 1'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "eab420b7-b31b-4d78-9174-592eaf3196b0",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "578a8b9f-6fd5-41f3-99b7-78ca36741864",
+              "leftValue": "={{ $('Google Sheets').item.json['Personal Numbar 1'].replace(/[\\s\\-']/g, '') }}",
+              "rightValue": "+92",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "f9115221-08bf-46eb-aca9-5b32058043df",
+      "name": "Filter"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "eca2a0eb-4b42-4847-9c86-4c19c41bba50",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.vapi.ai/call",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customers\": [\n    {\n      \"numberE164CheckEnabled\": true,\n      \"number\": \"{{ $('Set Vars').item.json.phone_number }}\"\n    }\n  ],\n  \"name\": \"{{ $('Final Prompts').item.json.company.slice(0, 40) }}\",\n  \"assistantId\": \"774f632a-cc2f-4a65-a161-6e989f17bb28\",\n  \"phoneNumberId\": \"96c6b10b-002d-4c02-9015-dd3070b0f6ee\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        -96
+      ],
+      "id": "76d0e1bc-4be2-44e3-b608-bf9ae44fa6fe",
+      "name": "Call VAPI",
+      "retryOnFail": true,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OMouvlbkA9LKdfLt",
+          "name": "hutrw005 vapi n8n-outreach private key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2432,
+        0
+      ],
+      "id": "76e1a5c2-ca5b-4add-98e5-dcdbc4621040",
+      "name": "Wait",
+      "webhookId": "77ec1528-b7cb-4021-be6e-4d8380f2bfa7"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.vapi.ai/call/{{ $('Call VAPI').item.json.results[0].id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        -96
+      ],
+      "id": "98072077-578b-46c8-9a19-5fa17321cf7e",
+      "name": "Get Call",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OMouvlbkA9LKdfLt",
+          "name": "hutrw005 vapi n8n-outreach private key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8ec83bf8-0a39-4959-8830-5db1761d7844",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d0821a96-8945-4a2a-a20e-6a69edfbd32b",
+              "name": "assistantId",
+              "value": "={{ $json.assistantId }}",
+              "type": "string"
+            },
+            {
+              "id": "72829fc9-2c71-4791-9c47-e24e2c2dfb77",
+              "name": "phoneNumberId",
+              "value": "={{ $json.phoneNumberId }}",
+              "type": "string"
+            },
+            {
+              "id": "aed7b8e6-5fb8-45b0-8db5-ec967f40f52e",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "4780c544-2289-4cbe-9e89-c9e818eabeeb",
+              "name": "startedAt",
+              "value": "={{ $json.startedAt }}",
+              "type": "string"
+            },
+            {
+              "id": "3d580a68-c2a4-4862-a1fd-01633d7973e2",
+              "name": "endedAt",
+              "value": "={{ $json.endedAt }}",
+              "type": "string"
+            },
+            {
+              "id": "d9d21692-f59e-4287-8a96-63decc4be0b7",
+              "name": "transcript",
+              "value": "={{ $json.transcript }}",
+              "type": "string"
+            },
+            {
+              "id": "6c82ff22-72a5-470f-bd41-a47123a7f209",
+              "name": "recordingUrl",
+              "value": "={{ $json.recordingUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "6b1e14e5-bc51-4e99-b945-048a5ce30283",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "98e15801-3233-4a28-a330-c8b516f285f5",
+              "name": "costBreakdown",
+              "value": "={{ $json.costBreakdown }}",
+              "type": "object"
+            },
+            {
+              "id": "206cac0f-60e3-468c-8554-5428fc179338",
+              "name": "costs",
+              "value": "={{ $json.costs }}",
+              "type": "array"
+            },
+            {
+              "id": "f6cc8930-a073-49ac-91c7-ab0c52cf34cf",
+              "name": "Personal Numbar 1",
+              "value": "+1XXXXXXXXXX",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2432,
+        -224
+      ],
+      "id": "1c4f068d-94b1-4147-8f02-3005a4f8abe3",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "46ac3868-4b9d-4f69-9684-02dc0e70cdba",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ended",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2208,
+        -176
+      ],
+      "id": "61186333-be30-4f79-b278-2d9e09fd2aec",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        -96
+      ],
+      "id": "b795dcd2-0a7f-4dec-97f1-73136530ccee",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1552,
+        -304
+      ],
+      "id": "2ada7051-581a-4b2a-a4ef-6deb5dab8ac2",
+      "name": "Edit Fields3",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Cold Call - Lead List - Real Eastate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 816945647,
+          "mode": "list",
+          "cachedResultName": "1000 Parsonal Phone Number - Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=YOUR_SHEET_GID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Personal Numbar 1": "={{ $('Set Vars').item.json.original_phone_number }}",
+            "id": "={{ $('Get Call').item.json.id }}",
+            "assistantId": "={{ $('Get Call').item.json.assistantId }}",
+            "phoneNumberId": "={{ $('Get Call').item.json.phoneNumberId }}",
+            "type": "={{ $('Get Call').item.json.type }}",
+            "startedAt": "={{ $('Get Call').item.json.startedAt }}",
+            "transcript": "={{ $('Get Call').item.json.transcript }}",
+            "endedAt": "={{ $('Get Call').item.json.endedAt }}",
+            "recordingUrl": "={{ $('Get Call').item.json.recordingUrl }}",
+            "summary": "={{ $('Get Call').item.json.summary }}",
+            "updatedAt": "={{ $('Get Call').item.json.updatedAt }}",
+            "orgId": "={{ $('Get Call').item.json.orgId }}",
+            "cost": "={{ $('Get Call').item.json.cost }}",
+            "customer": "={{ $('Get Call').item.json.customer }}",
+            "status": "={{ $('Get Call').item.json.status }}",
+            "endedReason": "={{ $('Get Call').item.json.endedReason }}",
+            "stereoRecordingUrl": "={{ $('Get Call').item.json.stereoRecordingUrl }}",
+            "costBreakdown": "={{ $('Get Call').item.json.costBreakdown }}",
+            "phoneCallProviderId": "={{ $('Get Call').item.json.phoneCallProviderId }}",
+            "phoneCallProvider": "={{ $('Get Call').item.json.phoneCallProvider }}",
+            "transport": "={{ $('Get Call').item.json.transport }}",
+            "monitor": "={{ $('Get Call').item.json.monitor }}",
+            "costs": "={{ $('Get Call').item.json.costs }}",
+            "name": "={{ $('Get Call').item.json.name }}",
+            "analysis": "={{ $('Get Call').item.json.analysis }}",
+            "phoneCallTransport": "={{ $('Get Call').item.json.phoneCallTransport }}"
+          },
+          "matchingColumns": [
+            "Personal Numbar 1"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Corporate Phone",
+              "displayName": "Corporate Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person Linkedin Url",
+              "displayName": "Person Linkedin Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Personal Numbar 1",
+              "displayName": "Personal Numbar 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Numbar 2",
+              "displayName": "Numbar 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin Url",
+              "displayName": "Company Linkedin Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Facebook Url",
+              "displayName": "Facebook Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Twitter Url",
+              "displayName": "Twitter Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Address",
+              "displayName": "Company Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company City",
+              "displayName": "Company City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company State",
+              "displayName": "Company State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Country",
+              "displayName": "Company Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Phone",
+              "displayName": "Company Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "general_search",
+              "displayName": "general_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "news_search",
+              "displayName": "news_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "person_linkedin",
+              "displayName": "person_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_linkedin",
+              "displayName": "company_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "icebreaker",
+              "displayName": "icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "assistantId",
+              "displayName": "assistantId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phoneNumberId",
+              "displayName": "phoneNumberId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "startedAt",
+              "displayName": "startedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "endedAt",
+              "displayName": "endedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "transcript",
+              "displayName": "transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recordingUrl",
+              "displayName": "recordingUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updatedAt",
+              "displayName": "updatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "orgId",
+              "displayName": "orgId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cost",
+              "displayName": "cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer",
+              "displayName": "customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "endedReason",
+              "displayName": "endedReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messages",
+              "displayName": "messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "stereoRecordingUrl",
+              "displayName": "stereoRecordingUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "costBreakdown",
+              "displayName": "costBreakdown",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phoneCallProvider",
+              "displayName": "phoneCallProvider",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phoneCallProviderId",
+              "displayName": "phoneCallProviderId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phoneCallTransport",
+              "displayName": "phoneCallTransport",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phoneCallProviderDetails",
+              "displayName": "phoneCallProviderDetails",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analysis",
+              "displayName": "analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "artifact",
+              "displayName": "artifact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "costs",
+              "displayName": "costs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "monitor",
+              "displayName": "monitor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "transport",
+              "displayName": "transport",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2704,
+        -128
+      ],
+      "id": "ca2a3310-9ac1-4614-abcb-0c42188627a6",
+      "name": "Google Sheets3",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Vars": {
+      "main": [
+        [
+          {
+            "node": "Final Prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "Final Prompts": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Set Vars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update VAPI": {
+      "main": [
+        [
+          {
+            "node": "Call VAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call VAPI": {
+      "main": [
+        [
+          {
+            "node": "Get Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update VAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Google Sheets1": [
+      {
+        "json": {
+          "output": "Hall of Fame recognition and 600+ transactions prove you don't just list and sell, you build Silicon Valley legacies.\n"
+        }
+      }
+    ]
+  },
+  "versionId": "864d83c7-aa40-44c8-9024-b75b507701e7",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.149Z",
+      "updatedAt": "2025-08-30T07:55:44.149Z",
+      "role": "workflow:owner",
+      "workflowId": "voqOK38bWjKjFPFI",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "It Expert <owner@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

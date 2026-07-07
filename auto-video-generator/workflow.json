@@ -1,0 +1,502 @@
+{
+  "createdAt": "2025-06-06T10:50:35.090Z",
+  "updatedAt": "2025-06-06T10:50:40.000Z",
+  "id": "Gc5yLahvs9ovzEo9",
+  "name": "Auto Video Generator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        60,
+        60
+      ],
+      "id": "35adae3f-af3f-47b1-8f0c-779c54588775",
+      "name": "When clicking \u2018Test workflow\u2019"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-8b-latest",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        740,
+        240
+      ],
+      "id": "3c291bc7-8643-4b7c-80dc-4e6b72c8af4f",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19nx_HATU5i1qf3hUmPH6pqvp2C-PJ_SuBw1Wqf8vIhQ",
+          "mode": "list",
+          "cachedResultName": "V3 | POV Video AI Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19nx_HATU5i1qf3hUmPH6pqvp2C-PJ_SuBw1Wqf8vIhQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19nx_HATU5i1qf3hUmPH6pqvp2C-PJ_SuBw1Wqf8vIhQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        280,
+        60
+      ],
+      "id": "53faafe8-11c1-423c-b38c-30ebf299038d",
+      "name": "video_data_from_sheets"
+    },
+    {
+      "parameters": {
+        "jsCode": "const itemsList = items;\nconst randomIndex = Math.floor(Math.random() * itemsList.length);\nreturn [itemsList[randomIndex]];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        60
+      ],
+      "id": "02df64f1-ada7-4236-aecf-c5f0caf7e507",
+      "name": "pick_random"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=",
+        "options": {
+          "systemMessage": "=Real Estate AI Agents before generating the caption\n\nThis is my niche for the sentences you create AI Agents\n\nWrite a short motivational caption that always starts with: POV:\n\nSpeak directly to the reader using \u201cyou.\u201d\nMake the first half about a moment of freedom, rest, or success.\nMake the second half about what was achieved in [your niche] while they weren\u2019t working.\n\nUse numbers when possible (e.g. 5K views, 10 sales, 3 clients).\n\nRules:\n\nMax 90 characters total\n\nMax 45 characters per line\n\nDo NOT use line breaks or newline characters\n\nDo NOT use quotation marks\n\nDo NOT use emojis, hashtags, or filler words\n\nOutput as a single plain text string \u2014 no formatting\n\nExamples:\n\nPOV: You relaxed all day and still gained 3 new clients in [your niche]\n\nPOV: You skipped the gym and made 5 sales in [your niche]\n\nPOV: You went out and your blog hit 10K views in [your niche]\n\nNow write the caption:\n\nFormat:\nPOV: You [freedom/success] while your [system/process] got [result] in [your niche]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        720,
+        60
+      ],
+      "id": "3088e19c-9b7c-4edd-b1f4-33dc0288d1ac",
+      "name": "generate_overlay_text",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "## Step 1",
+        "height": 380,
+        "width": 1100,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0e07930d-11f2-4a25-a0d1-2369910414a1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "const choices = $node[\"Generate Overlay Text\"].json.choices;\n\nconst raw = Array.isArray(choices) && choices.length > 0\n  ? choices[0].message.content || \"\"\n  : \"\";\n\nconst text = raw\n  .replace(/\\n/g, ' ')\n  .replace(/[\"']/g, '')\n  .trim();\n\nlet splitIndex = text.lastIndexOf(' ', 45);\nif (splitIndex === -1) splitIndex = 45;\n\nconst line1 = text.slice(0, splitIndex).trim();\nconst line2 = text.slice(splitIndex).trim();\n\nreturn [\n  {\n    json: {\n      line1,\n      line2\n    }\n  }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        60,
+        480
+      ],
+      "id": "d89112d2-cbc3-4168-ba83-6cfcc55d9da0",
+      "name": "split_text_for_overlay"
+    },
+    {
+      "parameters": {
+        "content": "## Step 2",
+        "height": 260,
+        "width": 1100,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        400
+      ],
+      "id": "4b21282d-3b8e-4fe9-8df4-ea273d1c099a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.creatomate.com/v1/renders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"template_id\": \"9e32d419-f064-409e-9334-36b2270c9b61\",\n  \"output_format\": \"mp4\",\n  \"modifications\": {\n    \"Video-1.source\": \"{{ $('Pick Random Template').item.json.video_url }}\",\n    \"Text-1.text\": \"{{ $json.line1 }}\",\n    \"Text-2.text\": \"{{ $json.line2 }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        480
+      ],
+      "id": "38548a7f-d9fe-42c2-80c0-81942bca91c9",
+      "name": "render_creatomate"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        500,
+        480
+      ],
+      "id": "0e9805c5-e02c-489d-8612-38988c1cbd87",
+      "name": "Wait",
+      "webhookId": "7e3a6d15-d825-4f65-866a-df4fde191516"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.creatomate.com/v1/renders/{{ $node[\"render_creatomate\"].json[\"id\"] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        480
+      ],
+      "id": "4249a09e-7c23-49cd-9588-75f12a121a7d",
+      "name": "get_render_status"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"instagram\": \"2865\",\n  \"youtube\": \"3415\",\n  \"tiktok\": \"3415\",\n  \"facebook\": \"3415\",\n  \"facebook_page_id\": \" \",\n  \"threads\": \"3415\",\n  \"twitter\": \"3415\",\n  \"linkedin\": \"3415\",\n  \"pinterest\": \"3415\",\n  \"pinterest_board_id\": \" \",\n  \"bluesky\": \"3415\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        60,
+        780
+      ],
+      "id": "91b83eed-87d3-493b-8e00-b60b85fb8ca1",
+      "name": "set_blotato_ids"
+    },
+    {
+      "parameters": {
+        "content": "## Step 3",
+        "height": 260,
+        "width": 1100,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        700
+      ],
+      "id": "9d96a7b0-b3d2-4515-b8e9-8a3b877538cb",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "YOUR_BLOTATO_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $('Get Render Status').item.json.url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        780
+      ],
+      "id": "726d71d6-576f-43c5-a70b-b7e14e7c3427",
+      "name": "ready_video_blotato"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1988aba1-fca9-44a8-86d3-6a10fd9da085",
+              "name": "instagram",
+              "value": "={{ $('set_blotato_ids').item.json.instagram }}",
+              "type": "string"
+            },
+            {
+              "id": "b57a111b-11ca-4008-9a0f-4eeb04bd3662",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "d1d183f8-962a-4f11-9f60-af8f69ce2375",
+              "name": "captions",
+              "value": "={{ $('video_data_from_sheets').item.json.captions }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        780
+      ],
+      "id": "30434cad-7e30-494d-88cb-295781bea1f3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "YOUR_BLOTATO_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"instagram\"\n    },\n    \"content\": {\n      \"text\": \"hello\",\n      \"platform\": \"instagram\",\n      \"mediaUrls\": [\"{{ $json.url }}\"]\n    },\n    \"accountId\": {{ $json.instagram }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        780
+      ],
+      "id": "da7c42ab-bacc-4eb8-85a2-6565abee06c0",
+      "name": "social_app_posts"
+    }
+  ],
+  "connections": {
+    "When clicking \u2018Test workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "video_data_from_sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate_overlay_text",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "video_data_from_sheets": {
+      "main": [
+        [
+          {
+            "node": "pick_random",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pick_random": {
+      "main": [
+        [
+          {
+            "node": "generate_overlay_text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate_overlay_text": {
+      "main": [
+        [
+          {
+            "node": "split_text_for_overlay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split_text_for_overlay": {
+      "main": [
+        [
+          {
+            "node": "render_creatomate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "render_creatomate": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "get_render_status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_render_status": {
+      "main": [
+        [
+          {
+            "node": "set_blotato_ids",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set_blotato_ids": {
+      "main": [
+        [
+          {
+            "node": "ready_video_blotato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ready_video_blotato": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "social_app_posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "83eabcfa-6786-451f-ad94-eb4d90f8610d",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:42.743Z",
+      "updatedAt": "2025-08-30T07:55:42.743Z",
+      "role": "workflow:owner",
+      "workflowId": "Gc5yLahvs9ovzEo9",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "YOUR_WORKSPACE_NAME",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

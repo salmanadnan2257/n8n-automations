@@ -1,0 +1,438 @@
+{
+  "createdAt": "2025-06-08T12:59:46.839Z",
+  "updatedAt": "2025-09-18T09:31:03.000Z",
+  "id": "sgMmmCzemVYfaE93",
+  "name": "Instagram Reel Analyzer",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Instagram reel scraper",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Instagram Usernames",
+              "placeholder": "@ahmedd",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "How many reels would you like scraped",
+              "fieldType": "number",
+              "placeholder": "10",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d7867150-5ac3-4be9-b816-7ab8d67bc936",
+      "name": "On form submission1",
+      "webhookId": "6ad0792d-dcf8-4133-8ca9-9cdc571e8236"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        224
+      ],
+      "id": "33ade591-20a3-40dd-b0b5-a2a3420a4246",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5vTTvH71VhElZzmm",
+          "name": "haseebadnan9999"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/apify~instagram-reel-scraper/run-sync-get-dataset-items?token=YOUR_APIFY_API_TOKEN_HERE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"resultsLimit\": {{ $json['How many reels would you like scraped'] }},\n  \"username\": [\n    \"{{ $json['Instagram Usernames'] }}\"\n  ]\n}",
+        "options": {}
+      },
+      "id": "5b3eb178-fadb-4111-9451-b91cbdf9d2e8",
+      "name": "Extract Reels",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sync.api.cloudconvert.com/v2/jobs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_CLOUDCONVERT_API_TOKEN_HERE"
+            },
+            {
+              "name": "Content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tasks\": {\n    \"import-my-file\": {\n      \"operation\": \"import/url\",\n      \"url\": \"{{ $json.videoUrl }}\"\n    },\n    \"convert-my-file\": {\n      \"operation\": \"convert\",\n      \"input\": \"import-my-file\",\n      \"input_format\": \"mp4\",\n      \"output_format\": \"mp3\"\n    },\n    \"export-my-file\": {\n      \"operation\": \"export/url\",\n      \"input\": \"convert-my-file\"\n    }\n  },\n  \"redirect\": true\n} ",
+        "options": {}
+      },
+      "id": "158153f7-ef1c-4a18-87d5-562a60bf4ba5",
+      "name": "Get Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "cc76cb5e-9fb1-47c5-9b63-0067a1b461c9",
+      "name": "Video -> Text",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.5,
+      "position": [
+        640,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mjpNcaX4CSAZ5WOb",
+          "name": "salmanadnan0206 n8n email outreach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Instagram Content Analyzer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Account": "={{ $('On form submission1').item.json['Instagram Usernames'] }}",
+            "Transcript": "={{ $json.text }}",
+            "Caption": "={{ $('Extract Reels').item.json.caption }}",
+            "Views": "={{ $('Extract Reels').item.json.videoPlayCount }}",
+            "Likes": "={{ $('Extract Reels').item.json.likesCount }}",
+            "Comments": "={{ $('Extract Reels').item.json.commentsCount }}",
+            "Video": "={{ $('Extract Reels').item.json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Account",
+              "displayName": "Account",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Video",
+              "displayName": "Video",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        832,
+        0
+      ],
+      "id": "4b4732c4-0ded-4e57-9aef-3956f6df1f7c",
+      "name": "Store Video's Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=AI Prompt: Instagram Reel Performance Analysis & Optimization Strategy\n\n1. Input Data:\n\nViews:\n{{ $json.Views }}\nLikes:\n{{ $json.Likes }}\nComments:\n{{ $json.Comments }}\nVideo Transcription:\n{{ $json.Transcript }}\nCaption: \n{{ $json.Caption }}\n\nYou are my content strategist. take this data and tell me what we can do better for the video",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "b7359abe-ee21-4b3a-bd4a-7512ba77d224",
+      "name": "Generate Insights"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Instagram Content Analyzer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1056537559,
+          "mode": "list",
+          "cachedResultName": "Insights",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit#gid=1056537559"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Breakdown": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "Breakdown"
+          ],
+          "schema": [
+            {
+              "id": "Breakdown",
+              "displayName": "Breakdown",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1408,
+        0
+      ],
+      "id": "9e73d525-cf81-48b1-8137-fd87e9b843b0",
+      "name": "Store Insights",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "Extract Reels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Insights",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Reels": {
+      "main": [
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video": {
+      "main": [
+        [
+          {
+            "node": "Video -> Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video -> Text": {
+      "main": [
+        [
+          {
+            "node": "Store Video's Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Video's Data": {
+      "main": [
+        [
+          {
+            "node": "Generate Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Insights": {
+      "main": [
+        [
+          {
+            "node": "Store Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d5763177-1c65-4500-98ed-7c73bfb194e9",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:43.042Z",
+      "updatedAt": "2025-08-30T07:55:43.042Z",
+      "role": "workflow:owner",
+      "workflowId": "sgMmmCzemVYfaE93",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "It Expert <YOUR_EMAIL_HERE>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

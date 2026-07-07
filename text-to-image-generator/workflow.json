@@ -1,0 +1,197 @@
+{
+  "createdAt": "2025-07-08T01:34:41.334Z",
+  "updatedAt": "2025-07-08T02:04:44.000Z",
+  "id": "bAQrMqIpNR4ESKJr",
+  "name": "Text -> Image",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Join our team!",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "placeholder": "Your full name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "placeholder": "Your full email",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Submit"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ac63b03d-3e14-4eea-b204-4155f8286ee7",
+      "name": "On form submission",
+      "webhookId": "d7d489af-b624-4a51-95dc-1270a89c688a"
+    },
+    {
+      "parameters": {
+        "template": {
+          "__rl": true,
+          "value": "7165f24b-b71e-45b8-8842-a18bbcd69f43",
+          "mode": "list",
+          "cachedResultName": "Welcome Team"
+        },
+        "layers": {
+          "layer": [
+            {
+              "layerName": "your-name",
+              "text": "={{ $('On form submission').item.json['Full Name'] }}",
+              "color": "#FF0000",
+              "background": "#FFC801",
+              "border_color": "#000000"
+            }
+          ]
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-templated.templated",
+      "typeVersion": 1,
+      "position": [
+        260,
+        0
+      ],
+      "id": "d81fb88f-ec25-4f24-a721-2fbd0ee17357",
+      "name": "Templated",
+      "credentials": {
+        "templatedApi": {
+          "id": "ZoJThvVX77KfHuXE",
+          "name": "it.expert2210"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "YOUR_SENDER_EMAIL_HERE",
+        "toEmail": "YOUR_RECIPIENT_EMAIL_HERE",
+        "subject": "Welcome to the Team",
+        "emailFormat": "text",
+        "text": "=Welcome {{ $('On form submission').item.json['Full Name'] }},\nHere is your welcome card {{ $('Templated').item.json.render_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "f42e8698-f234-47bd-a808-dad803f02e65",
+      "name": "Send Email",
+      "webhookId": "35c8a078-55f0-4bc1-a120-d0a56aac1df0",
+      "credentials": {
+        "smtp": {
+          "id": "IlFPZE6DV4eBOJUi",
+          "name": "YOUR_SMTP_CREDENTIAL_NAME_HERE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "fromEmail": "YOUR_SENDER_EMAIL_HERE",
+        "toEmail": "YOUR_RECIPIENT_EMAIL_HERE",
+        "subject": "Welcome to the Team",
+        "message": "=Welcome {{ $('On form submission').item.json['Full Name'] }},\nHere is your welcome card {{ $('Templated').item.json.render_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        0
+      ],
+      "id": "09a48fad-b669-4ac7-8adf-6d48d8369f18",
+      "name": "Send Email1",
+      "webhookId": "1ba63cf1-cd73-424a-829e-8c7f7226a8fb",
+      "credentials": {
+        "smtp": {
+          "id": "IlFPZE6DV4eBOJUi",
+          "name": "YOUR_SMTP_CREDENTIAL_NAME_HERE"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Templated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Templated": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "fb682896-3044-4482-8cad-d19e9b8a2f63",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:43.757Z",
+      "updatedAt": "2025-08-30T07:55:43.757Z",
+      "role": "workflow:owner",
+      "workflowId": "bAQrMqIpNR4ESKJr",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "It Expert <YOUR_EMAIL_HERE>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,698 @@
+{
+  "name": "YouTube Agent - Starter Template",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {
+          "responseFormat": "json_object"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -400
+      ],
+      "id": "dda6e9ce-f3a3-4f99-85f2-441f88ff3fd2",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "TaWDoejOPVBkpogk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "channelId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel_ID', ``, 'string') }}",
+        "part": [
+          "snippet",
+          "statistics",
+          "id",
+          "status"
+        ]
+      },
+      "type": "n8n-nodes-base.youTubeTool",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -400
+      ],
+      "id": "0d1246f7-253d-4edf-8db1-f4d6effe82f3",
+      "name": "Get a channel in YouTube",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "Z18kaKxyBfKftaMB",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "returnAll": true,
+        "filters": {
+          "channelId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel_ID', ``, 'string') }}",
+          "publishedAfter": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Published_After', ``, 'string') }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTubeTool",
+      "typeVersion": 1,
+      "position": [
+        64,
+        -400
+      ],
+      "id": "ac2e40a8-b362-4af1-b99c-c0f2d603050d",
+      "name": "Get many videos in YouTube",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "Z18kaKxyBfKftaMB",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -512
+      ],
+      "id": "26660923-2604-4604-846e-3298dd09752e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1N1r3-wTQhhco18zmFWwPPwpyv5BgI3iXfpVAIHt4c_E",
+          "mode": "list",
+          "cachedResultName": "YouTube Channel Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1N1r3-wTQhhco18zmFWwPPwpyv5BgI3iXfpVAIHt4c_E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Channels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1N1r3-wTQhhco18zmFWwPPwpyv5BgI3iXfpVAIHt4c_E/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -352,
+        -624
+      ],
+      "id": "910cc249-b881-4c26-8705-837122b85b0b",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "J1Uwu27G6cxmCBMv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"channel_name\": \"\",\n\"channel_id\": \"\",\n\"channle_statistic\": {\n\"views\": 10,\n\"subscribers\": 10,\n\"videos\": 10\n},\n \"videos\": [\n{\n\"id\": \"\",\n\"title\": \"\",\n\"publishedAt\": \"date in ISO format\"\n}\n]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        -400
+      ],
+      "id": "02b40619-12aa-4dd3-9d71-34753fe64c0d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Find the videos and their stats for the channel {{ $json['Channel ID'] }}\nstarting from {{ $json['Last Visited'] || $now.minus(2,'weeks').toISO() }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a YouTube research agent.\n\nYour task is to get video and channel statistic for a given channel.\n\nOutput your result as JSON in the following format:\n{\n\"channle_statistic\": {\n\"views\": number,\n\"subscribers\": number,\n\"videos\": number\n}\n \"videos\": [\n{\n\"id\": \"\",\n\"title\": \"\",\n\"publishedAt\": \"date in ISO format\"\n}\n]\n}",
+          "maxIterations": 20
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        -624
+      ],
+      "id": "55b906e1-7662-45c7-940e-b40372b01d15",
+      "name": "Channel Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=[Pass video Id and short instructions here]",
+        "options": {
+          "systemMessage": "=[Role] \n\n[Mission and Context]\n\n[Steps/Guidance]\n\n[Output]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        -624
+      ],
+      "id": "43d7b19e-f944-4604-90b9-74a3ec217088",
+      "name": "Video Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        416,
+        -624
+      ],
+      "id": "14cc5bb6-2f2a-4a3c-8c2d-7b9d0255aef1",
+      "name": "Remove Duplicates1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1N1r3-wTQhhco18zmFWwPPwpyv5BgI3iXfpVAIHt4c_E",
+          "mode": "list",
+          "cachedResultName": "YouTube Channel Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1N1r3-wTQhhco18zmFWwPPwpyv5BgI3iXfpVAIHt4c_E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Channels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1N1r3-wTQhhco18zmFWwPPwpyv5BgI3iXfpVAIHt4c_E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Channel ID": "={{ $('Get row(s) in sheet').item.json[\"Channel ID\"] }}",
+            "Subscribers": "={{ $json.output.channle_statistic.subscribers }}",
+            "Total Views": "={{ $json.output.channle_statistic.views }}",
+            "Videos": "={{ $json.output.channle_statistic.videos }}",
+            "Growth (Subscribers)": "={{ $json.output.channle_statistic.subscribers - $('Get row(s) in sheet').item.json.Subscribers }}",
+            "Growth (Videos)": "={{ $json.output.channle_statistic.videos - $('Get row(s) in sheet').item.json.Videos }}",
+            "Growth (Views)": "={{ $json.output.channle_statistic.views - $('Get row(s) in sheet').item.json['Total Views'] }}",
+            "Last Visited": "={{ $now.format('yyyy-MM-dd') }}"
+          },
+          "matchingColumns": [
+            "Channel ID"
+          ],
+          "schema": [
+            {
+              "id": "Channel ID",
+              "displayName": "Channel ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Videos",
+              "displayName": "Videos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subscribers",
+              "displayName": "Subscribers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Total Views",
+              "displayName": "Total Views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Growth (Subscribers)",
+              "displayName": "Growth (Subscribers)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Growth (Videos)",
+              "displayName": "Growth (Videos)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Growth (Views)",
+              "displayName": "Growth (Views)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Visited",
+              "displayName": "Last Visited",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        272,
+        -816
+      ],
+      "id": "741a480f-221a-42c8-8187-58f8c8fb1752",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "J1Uwu27G6cxmCBMv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.videos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -624
+      ],
+      "id": "503a6392-08c5-42ef-8dd9-11d27c915b7b",
+      "name": "Split Out Videos"
+    },
+    {
+      "parameters": {
+        "content": "## 🎓 YouTube Competitor Research Agent\n\nThis is a powerful AI Agentic workflow designed to automatically monitor competitor YouTube channels, analyze their new videos, and generate fresh video ideas for you based on audience feedback (comments).\n\n### 🛠️ Prerequisites & Setup\n\n1.  **Google Sheets:** You MUST connect to your Google Sheets document named **\"YouTube Channel Tracker\"** (or change the document link in the `Get row(s) in sheet` node).\n2.  **Credentials:**\n    *   **Google Sheets Account:** Set up credentials for Google Sheets.\n    *   **YouTube Account:** Set up credentials for [YouTube](https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/) and enable YouTube Data API.\n    *   **OpenAI Account:** Set up credentials for OpenAI.\n3.  **Trigger:** The workflow is currently set to run in two ways:\n    *   **Manually:** By clicking the `Execute workflow` button (uses the **Manual Trigger** node).\n    *   **Scheduled:** You can enable the **Schedule Trigger** to run the workflow automatically (e.g., once a week).",
+        "height": 544,
+        "width": 480,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1360,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "918808a2-90cd-44c2-bbe3-2df7ea7042d0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                6
+              ]
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -624,
+        -720
+      ],
+      "id": "9ebdfd9c-ccf1-4556-9e58-db3fb9b70ff8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## Set up API Keys\n- [OpenAI](https://platform.openai.com/settings/organization/api-keys)\n- [YouTube Data API](https://console.cloud.google.com/apis/dashboard), [YouTube OAuth](https://console.cloud.google.com/apis/credentials)\n- Sheets",
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -992,
+        -304
+      ],
+      "typeVersion": 1,
+      "id": "2b8421a3-ebee-4a84-a29c-3ba17160fb2f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Agent 1: Channel Agent (The AI Brain)\n\nThe **Channel Agent** uses the YouTube nodes (Get Channel / Get Videos) to find new videos since the `Last Visited` date.\n\n\n**Modify Here If:** If the Agent's behavior is incorrect, you can adjust the **System Message** within the **Channel Agent** to change its task.",
+        "height": 256,
+        "width": 544,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -256,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "9da4a334-8e8d-4287-995f-efa9eec750cd",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "This node pulls the list of channels (and their `Last Visited` date) from your Google Sheet's **'Channels'** tab.",
+        "height": 288,
+        "width": 224,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        -752
+      ],
+      "typeVersion": 1,
+      "id": "35ba65ef-492b-43da-bb96-1be3f2ecad11",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "This node updates your Google Sheet with the latest Channel Stats and calculates the recent growth.",
+        "height": 288,
+        "width": 208,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        208,
+        -960
+      ],
+      "typeVersion": 1,
+      "id": "8fc46348-8ce3-48eb-ba56-1fbb06fa43d3",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Agent 2: The Video Agent\n\nThe **Video Agent** will take each new video  and perform in-depth research.\n\nThe Agent Should Have:\n- Brain (Instructions set in the system prompt)\n- Tools:\n-- Get Video Details\n-- Get Video Comments\n-- Save to Google Sheets\n- Output Structure (optional)",
+        "height": 432,
+        "width": 336,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        -928
+      ],
+      "typeVersion": 1,
+      "id": "acd79e1c-28b9-4da3-9150-31b5c86451f1",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "Note: \nAlways include clear field descriptions inside Tools to guide the agent and specify the expected data format.",
+        "height": 128,
+        "width": 320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        544,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "412990c8-f1f0-469f-b0a4-bada8b90e765",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "### Send a message: \nsend an email with the compiled list of new video ideas.",
+        "height": 288,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1216,
+        -768
+      ],
+      "typeVersion": 1,
+      "id": "6b47a337-29e2-42f4-8fc3-3efa43d4b656",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "The Agent's mission is defined in its **System Message**. This is where you can set:\n    *   The goal (e.g., prioritize pain points vs. suggestions).\n    *   What information is extracted (e.g., sentiment, specific ideas).",
+        "height": 176
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        848,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "d50016b7-756c-4225-9a20-47d4d000fc5d",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "### AI Model",
+        "width": 160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "a885a2b0-2072-4517-9fc9-414121ff3d5e",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "### Tool: Get YouTube Video",
+        "width": 160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        544,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "18c598cf-be07-45be-bb2e-6e74ed26c293",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "### Tool: Get Video Comments\n\n[Get Comments API Reference](https://developers.google.com/youtube/v3/docs/commentThreads/list)",
+        "width": 160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "d2c684e9-2de8-433a-a5fa-07161b3d3211",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "### Tool: Save Video to Google Sheet",
+        "width": 160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        896,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "1c66a2ae-f5c0-45f2-9800-45ccb5472552",
+      "name": "Sticky Note13"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Channel Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a channel in YouTube": {
+      "ai_tool": [
+        [
+          {
+            "node": "Channel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many videos in YouTube": {
+      "ai_tool": [
+        [
+          {
+            "node": "Channel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Channel Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Channel Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Channel Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out Videos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Remove Duplicates1": {
+      "main": [
+        [
+          {
+            "node": "Video Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Videos": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "34739a0b-8dca-4ff6-88eb-728e7f86b14e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f217a28194885dd36aca2f1796bacc7a845178a0a03785783475e891d29d9a58"
+  },
+  "id": "LSABzHKmgOKF5Jc7",
+  "tags": []
+}

@@ -1,0 +1,441 @@
+{
+  "name": "FB Ad Creative Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        0
+      ],
+      "id": "f8b08467-b1d2-4107-bacc-8b7072066fd1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## Create G Drive Folder",
+        "height": 240,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -540
+      ],
+      "id": "262c04e6-2a62-441d-a2dd-5d279af9ad3a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9f6b967b-f2c7-478f-8d07-b2e9c85efbee",
+              "name": "g_drive_folder_id",
+              "value": "YOUR_GDRIVE_FOLDER_ID_HERE",
+              "type": "string"
+            },
+            {
+              "id": "8957b742-6aee-4349-8523-48d2fbc68863",
+              "name": "",
+              "value": "Spin this ad so that it features bright a blue, stylized, ultra-maximalism design. If there is any text on the page, replace it with something like \"Get your AI Automation today\" or \"Get your systems optimized today\". If there are any assets on the page, leave them as-is. Add a company name, Acme Automation Co, in the bottom-right hand corner, along with a little stylized mouse pointer icon.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        20,
+        0
+      ],
+      "id": "1abda7bb-99e6-4449-ae5d-ed82010a897a",
+      "name": "g_drive_folder_id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/curious_coder~facebook-ads-library-scraper/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"count\": 20,\n    \"scrapeAdDetails\": false,\n    \"scrapePageAds.activeStatus\": \"all\",\n    \"urls\": [\n        {\n            \"url\": \"https://web.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&is_targeted_country=false&media_type=all&q=automation&search_type=keyword_unordered\",\n            \"method\": \"GET\"\n        }\n    ]\n}",
+        "options": {
+          "timeout": 100000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "fb1b659a-ea8c-4a28-9f19-304a6170755f",
+      "name": "scrape_fb_ads",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "n72Pu8QCFQ67hjl7",
+          "name": "apify - innocentdecentperson9"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2487b37b-7e16-4e39-8d48-2215b4da049b",
+              "leftValue": "={{ $json.snapshot.images[0].original_image_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        0
+      ],
+      "id": "bcc9be00-7a04-4e33-907a-d22d122131b5",
+      "name": "filter_images"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.snapshot.images[0].original_image_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        0
+      ],
+      "id": "41e7bed6-954f-4cf6-8265-012bc15691b0",
+      "name": "download_static_images"
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        620,
+        0
+      ],
+      "id": "521adf95-b9ec-4ec0-957d-0a73d52d935c",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "YOUR_GDRIVE_FOLDER_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "PPC Thievery",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/YOUR_GDRIVE_FOLDER_ID_HERE"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1060,
+        0
+      ],
+      "id": "37e458b8-64f7-4faa-93f1-6851a19bd73f",
+      "name": "upload_files",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "plNo6tmBbcjd5ubS",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "PPC Thievery",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -120,
+        -460
+      ],
+      "id": "1f8bb236-e766-41aa-8f86-1f9f50c5f89f",
+      "name": "create_folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "plNo6tmBbcjd5ubS",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "What's in this image? Describe it extremely comprehensively. Leave nothing out...",
+        "imageUrls": "={{ $('upload_files').item.json.webContentLink }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1500,
+        0
+      ],
+      "id": "6e036876-4462-4b90-9592-821432962f65",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "mjpNcaX4CSAZ5WOb",
+          "name": "salmanadnan0206 n8n email outreach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1280,
+        0
+      ],
+      "id": "d562b425-68e0-465e-8a66-86baeb854a43",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "plNo6tmBbcjd5ubS",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You're a helpful, intelligent prompt rewriting assistant. You help rewrite prompts.",
+              "role": "system"
+            },
+            {
+              "content": "=I've generated an image description. I want you to take that image description and then give me a simple \"change request\" prompt I can use to tell an AI image editor what changes to make.\nReturn your output in the following JSON format:\n{\"variants\":[\"First change request\", \"Second change request\", \"Third change request\",\n\"etc\"]}\n\nRules:\n- Your task is to generate *new* change suggestions that we will later feed into an image generation model.\nChanges you can make: font style (serif, sans-serif, display), font size, font leading, font tracking, font color, saturation, brightness, background color, background patterns, design style (flat, minimalistic, sleek, photoreal, etc-go nuts here), colors of assets on the page, swapping one asset for another that is more related to the change request.\n- Make these changes reasonable-we want to stick to the source pretty closely. Do not suggest any meaningful changes to the placement of assets. We want the elements all in the exact same place in the image, so only ever suggest color, style, asset type, font type, or copy changes.\n- Use the provided company name in the change request-never the original company name. - Generate 3 change requests. No more, no less.\n- If the provided change request from the user is too short (i.e the image description features text that is longer), come up with your own copy in the variants so that the provided text and the text in the original image description is 1:1 length wise."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1720,
+        0
+      ],
+      "id": "2762c9f4-9269-4324-9cbd-931dfef3b17c",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "mjpNcaX4CSAZ5WOb",
+          "name": "salmanadnan0206 n8n email outreach"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "g_drive_folder_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "g_drive_folder_id": {
+      "main": [
+        [
+          {
+            "node": "scrape_fb_ads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "scrape_fb_ads": {
+      "main": [
+        [
+          {
+            "node": "filter_images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter_images": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "download_static_images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download_static_images": {
+      "main": [
+        [
+          {
+            "node": "upload_files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_folder": {
+      "main": [
+        []
+      ]
+    },
+    "upload_files": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1badc843-c497-40c0-a9fa-e98af213c09a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_N8N_INSTANCE_ID_HERE"
+  },
+  "id": "UWxvZlrFiO0SBeBH",
+  "tags": []
+}

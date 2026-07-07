@@ -1,0 +1,153 @@
+{
+  "createdAt": "2025-08-28T07:09:06.973Z",
+  "updatedAt": "2025-08-30T08:03:17.000Z",
+  "id": "pQWdiF9Y0XYCA0s1",
+  "name": "Workout Generator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "714a03da-3808-4cfc-b3ff-608166a0e283",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d31f8b1c-4e2c-4a50-a348-6daf922ab6c0",
+      "name": "Webhook",
+      "webhookId": "714a03da-3808-4cfc-b3ff-608166a0e283"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.program }}",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a direct-to-output Fitness Plan Generator. You function as a data processor, not a conversational assistant.\n\n**Context:**\nYou will be given a client's complete fitness profile. Your single, non-negotiable task is to use this information to generate a raw text block representing a personalized one-week workout plan.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **CRITICAL OUTPUT RULE:** Your output must contain **ONLY** the text of the weekly workout plan.\n    *   **DO NOT** include any introductory or concluding sentences (e.g., \"Here is your plan...\").\n    *   **DO NOT** include any headings or titles (e.g., \"Your Weekly Plan\").\n    *   **DO NOT** use any markdown formatting (no `#`, `**`, `*`, `-`).\n    *   **DO NOT** use backticks (` ``` `).\n    *   Your response must begin directly with \"Day 1:\".\n\n2.  **Strict Personalization:** The content of the plan must be **100% tailored** to the user's provided profile, specifically their goals, fitness level, available equipment, and especially their health limitations. All exercise choices must be safe and appropriate for the user.\n\n3.  **Plan Content:** The generated text block must contain:\n    *   A 7-day schedule.\n    *   Clear labels for each day (e.g., \"Day 1: Upper Body Push\", \"Day 3: Rest Day\").\n    *   For each exercise, specify the name, sets, reps, and rest periods in a clean, readable format.\n\n4.  **Forbidden Content:** Do not include any explanatory sections. The output must not mention warm-ups, cool-downs, guiding principles, or the concept of progressive overload. Generate only the schedule.\n\n**Examples:**\n\n*   **User Input (The Profile Summary):**\n    `\"## Your Profile Summary:\\n\\n**🏋️ Fitness Level & Experience:**\\n- Beginner\\n\\n**🎯 Goals:**\\n- Muscle gain\\n\\n**⚕️ Health & Physical Limitations:**\\n- L4-L5 disc bulge, requires avoiding heavy spinal load\\n\\n**⏰ Time Commitment & Schedule:**\\n- 3 days per week\\n\\n**🔧 Access to Equipment:**\\n- Bodyweight\\n- Dumbbells (up to 5kg)\"`\n\n*   **AI Output (The ONLY text the AI should produce):**\n    Day 1: Upper Body Push\\nPush-ups: 3 sets of as many reps as possible\\nDumbbell Floor Press: 3 sets of 10-12 reps\\nDumbbell Overhead Press (seated): 3 sets of 10-12 reps\\nRest: 60 seconds between sets\\n\\nDay 2: Rest Day\\n\\nDay 3: Upper Body Pull & Core\\nDumbbell Bent-Over Rows: 3 sets of 10-12 reps\\nDumbbell Bicep Curls: 3 sets of 12 reps\\nPlank: 3 sets, hold for as long as you can\\nRest: 60 seconds between sets\\n\\nDay 4: Rest Day\\n\\nDay 5: Lower Body\\nGoblet Squats (with 5kg dumbbell): 3 sets of 12 reps\\nDumbbell Lunges: 3 sets of 10 reps per leg\\nGlute Bridges: 3 sets of 15 reps\\nRest: 60 seconds between sets\\n\\nDay 6: Rest Day\\n\\nDay 7: Rest Day"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ac818568-6347-4415-b804-7dd9a7877d1d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "8d3405b7-e2e7-4c72-9d31-0ff12aa7326e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "YOUR_SENDER_EMAIL@example.com",
+        "toEmail": "={{ $('Webhook').item.json.body.email_address }}",
+        "subject": "Your workout plan is ready 🏋️",
+        "emailFormat": "text",
+        "text": "=Here is your workout plan:\n\n{{ $('AI Agent').item.json.output }}\n\n---\n\nEnjoy!",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "4b4d9751-ea4c-44db-9c21-eb27378a7bb7",
+      "name": "Send email",
+      "webhookId": "ff7f9622-b07e-42ef-93c0-c586790ada80",
+      "credentials": {
+        "smtp": {
+          "id": "IQJhVnnyEPtO0BEg",
+          "name": "YOUR_SENDER_EMAIL@example.com"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9f1e5ccb-f38a-41a0-86fb-a2e9b75ad465",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:45.082Z",
+      "updatedAt": "2025-08-30T07:55:45.082Z",
+      "role": "workflow:owner",
+      "workflowId": "pQWdiF9Y0XYCA0s1",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Portfolio Owner <owner@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

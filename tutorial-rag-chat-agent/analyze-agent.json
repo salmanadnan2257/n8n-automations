@@ -1,0 +1,203 @@
+{
+  "createdAt": "2025-08-15T14:38:55.067Z",
+  "updatedAt": "2025-09-12T16:31:52.000Z",
+  "id": "hTT5LcBa0f33hDaT",
+  "name": "Tutorial RAG Chat Agent - Analyze",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8b7faf23-7074-46f0-82de-00f6f7fc98d5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "879b64da-eed1-46ba-8499-fe4233086e04",
+      "name": "Webhook",
+      "webhookId": "8b7faf23-7074-46f0-82de-00f6f7fc98d5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body }}",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a highly skilled Customer Experience Analyst specializing in chat support quality.\n\n**Context:**\nYou will be provided with a transcript of a customer support chat conversation. Your sole purpose is to analyze this transcript and provide constructive feedback on how the agent could have improved the customer's experience.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  Evaluate the agent's performance against key support metrics: Empathy, clarity, problem resolution, and tone.\n2.  If you identify areas for improvement, describe what was missing and provide a brief suggestion on what could have been done better.\n3.  Your feedback must be constructive and gentle, not accusatory. Focus on opportunities for enhancement.\n4.  If the agent's performance was excellent and all essential aspects of customer support were met, your entire response must be the single word: `None`.\n5.  Your output must be **only** the analysis or the word `None`. Do not include any introductory phrases, explanations, or formatting.\n\n**Examples:**\n\n*   **Example 1: Input transcript shows a lack of empathy.**\n    *   *Customer:* My delivery is late and I'm really angry.\n    *   *Agent:* Give me the tracking number.\n    *   **AI Output:** An opportunity to improve was in showing empathy. Starting with \"I'm very sorry to hear about the delay; I understand how frustrating that must be\" would have created a better connection before asking for the number.\n\n*   **Example 2: Input transcript shows an unclear resolution.**\n    *   *Agent:* Okay, I have escalated the ticket.\n    *   *Customer:* So... what happens now?\n    *   **AI Output:** The resolution step could be clearer. To improve, specify the next steps for the customer, such as \"I have escalated this to our logistics team. You can expect an email update from them within the next 4-6 hours.\"\n\n*   **Example 3: Input transcript is perfect.**\n    *   (A conversation where the agent is polite, empathetic, and resolves the issue efficiently.)\n    *   **AI Output:** None\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "01e52fc0-91d1-41b2-ae3b-3fe8310ab1d6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        280,
+        220
+      ],
+      "id": "fd92d280-c50e-4bbf-8791-7dbc6704e62f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "291b95d8-adfc-406d-b985-2381e19d0646",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "None",
+              "operator": {
+                "type": "string",
+                "operation": "notStartsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        0
+      ],
+      "id": "cf4915eb-a976-482f-9657-119c2f160b22",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fromEmail": "you@example.com",
+        "toEmail": "alerts@example.com",
+        "subject": "Analysis from Recent Conversation",
+        "emailFormat": "text",
+        "text": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        0
+      ],
+      "id": "906136a2-5c78-44ee-a36b-3e10b94299c8",
+      "name": "Send Email",
+      "webhookId": "e6c4c802-8518-46e7-b5da-ace05eadbc26",
+      "credentials": {
+        "smtp": {
+          "id": "IQJhVnnyEPtO0BEg",
+          "name": "salman@digitalise.agency"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "0DHgjt6X8noxOp4K"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8425b7f5-fa5e-4a58-87fb-ed3cbe22c677",
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.573Z",
+      "updatedAt": "2025-08-30T07:55:44.573Z",
+      "role": "workflow:owner",
+      "workflowId": "hTT5LcBa0f33hDaT",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Owner <you@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}

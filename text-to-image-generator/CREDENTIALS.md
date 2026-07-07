@@ -1,0 +1,2 @@
+- Templated.io API key: used by the "Templated" node to authenticate against Templated.io and render the welcome card image from a stored template.
+- SMTP credentials (mail server host, port, username, password): used by the "Send Email" node to send the welcome email, and would be used by the disabled "Send Email1" node if it were ever enabled.

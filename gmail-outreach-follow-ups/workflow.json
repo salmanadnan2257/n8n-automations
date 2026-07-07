@@ -1,0 +1,3300 @@
+{
+  "name": "Outreach Gmail Follow-Ups",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        -16
+      ],
+      "id": "2ca1666d-33cd-4aca-8222-8973676a6a27",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        -16
+      ],
+      "id": "218bab65-fb5b-42c7-95c0-b3828bab94d4",
+      "name": "Get row(s) in sheet"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7834e86e-5d54-4b37-bf6d-a3967ee46176",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json['Name - Outreached - I'] }}",
+              "rightValue": "Gmail",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "fb14b959-de44-4cbf-82d4-d89341bec98c",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json['Name - Outreached - I'] }}",
+              "rightValue": "gmail",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "4f933cb1-1c78-4505-82ed-9f446387559d",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json['Name - Outreached - I'] }}",
+              "rightValue": "Salman",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        -16
+      ],
+      "id": "5dd90e2c-6737-400a-9f13-689e813f303b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "event": "rowUpdate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -352
+      ],
+      "id": "40e9ad3f-d714-4959-9b37-5292cfa90d17",
+      "name": "Google Sheets Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7834e86e-5d54-4b37-bf6d-a3967ee46176",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json['Name - Outreached - I'] }}",
+              "rightValue": "Gmail",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "fb14b959-de44-4cbf-82d4-d89341bec98c",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json['Name - Outreached - I'] }}",
+              "rightValue": "gmail",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -352
+      ],
+      "id": "7f958b25-5e14-4a8c-8b81-8b39787887e6",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0ebba299-74ba-4cef-89a7-93bd8f349b31",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json['Sequence Last Date'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        -352
+      ],
+      "id": "099b3dbc-aa17-4184-a2e7-6a6b05077fee",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Google Sheets Trigger').item.json.Name }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name - Outreached - I",
+              "displayName": "Name - Outreached - I",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile URL",
+              "displayName": "Profile URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Outreached",
+              "displayName": "Date Outreached",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Outreach",
+              "displayName": "F1 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Outreach",
+              "displayName": "F2 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Engaged - II",
+              "displayName": "Name - Engaged - II",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Engaged",
+              "displayName": "F1 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Engaged",
+              "displayName": "F2 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Engaged",
+              "displayName": "F3 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Engaged",
+              "displayName": "F4 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Primed - III",
+              "displayName": "Name - Primed - III",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Primed",
+              "displayName": "F1 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Primed",
+              "displayName": "F2 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Primed",
+              "displayName": "F3 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Primed",
+              "displayName": "F4 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5 - Primed",
+              "displayName": "F5 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6 - Primed",
+              "displayName": "F6 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Booked - IV",
+              "displayName": "Name - Booked - IV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile Link",
+              "displayName": "Profile Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Booked",
+              "displayName": "Date Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 Gmail",
+              "displayName": "F1 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 Gmail",
+              "displayName": "F2 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        -352
+      ],
+      "id": "b3b2982f-772f-4bd6-bf6f-26ba76b5bc7e",
+      "name": "Append or update row in sheet"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dbaf15af-6b7c-425f-94b2-82c76f2cff33",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json['F1 Gmail'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "aa82d043-5879-4cdb-b4ab-60d1d72309aa",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json['Sequence Last Date'],\n        \"yyyy-MM-dd - hh:mm:ss a\"\n      ),\n      \"minutes\"\n    )\n    .minutes\n}}",
+              "rightValue": 2160,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "83f11adb-9970-4da0-a415-362060060629",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json[\"F1 - Outreach\"] }}",
+              "rightValue": "Done",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        -80
+      ],
+      "id": "da3fca72-c80e-4c96-acab-4589c08c1f1d",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "=in:sent newer_than:7d to:{{ $('Get row(s) in sheet').item.json['Profile URL'] }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1024,
+        -128
+      ],
+      "id": "6904ccf3-f014-4fe3-b3fd-2346bd5b40f5",
+      "name": "Get many messages",
+      "webhookId": "6a015dc0-20ec-4291-aa00-fba952f84f01"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Get many messages').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ $('Get row(s) in sheet').item.json['F1 Gmail'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        -128
+      ],
+      "id": "88ec451c-ed0b-444b-be4d-0f66fed3b69f",
+      "name": "Reply to a message",
+      "webhookId": "5b459485-7723-4339-a8b1-b3411542640a"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Get row(s) in sheet').item.json['Name - Outreached - I'] }}",
+            "F1 - Outreach": "Done",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name - Outreached - I",
+              "displayName": "Name - Outreached - I",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile URL",
+              "displayName": "Profile URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Outreached",
+              "displayName": "Date Outreached",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Outreach",
+              "displayName": "F1 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F2 - Outreach",
+              "displayName": "F2 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Engaged - II",
+              "displayName": "Name - Engaged - II",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Engaged",
+              "displayName": "F1 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Engaged",
+              "displayName": "F2 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Engaged",
+              "displayName": "F3 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Engaged",
+              "displayName": "F4 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Primed - III",
+              "displayName": "Name - Primed - III",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Primed",
+              "displayName": "F1 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Primed",
+              "displayName": "F2 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Primed",
+              "displayName": "F3 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Primed",
+              "displayName": "F4 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5 - Primed",
+              "displayName": "F5 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6 - Primed",
+              "displayName": "F6 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Booked - IV",
+              "displayName": "Name - Booked - IV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile Link",
+              "displayName": "Profile Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Booked",
+              "displayName": "Date Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 Gmail",
+              "displayName": "F1 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 Gmail",
+              "displayName": "F2 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        -128
+      ],
+      "id": "e8c5b65d-7be2-4f6c-a65e-c92f1ca81451",
+      "name": "Append or update row in sheet1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dbaf15af-6b7c-425f-94b2-82c76f2cff33",
+              "leftValue": "={{ $json['F2 Gmail'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "aa82d043-5879-4cdb-b4ab-60d1d72309aa",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet').item.json['Sequence Last Date'],\n        \"yyyy-MM-dd - hh:mm:ss a\"\n      ),\n      \"minutes\"\n    )\n    .minutes\n}}",
+              "rightValue": 2160,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "726c94fb-c127-44a7-b9f3-4a3d52abf98f",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json[\"F1 - Outreach\"] }}",
+              "rightValue": "Done",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "d5820ef6-a0ad-48be-89fa-93b76cbf0c81",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json[\"F2 - Outreach\"] }}",
+              "rightValue": "Done",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        96
+      ],
+      "id": "af39cc15-240d-4790-a702-fa61fd17123c",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "=in:sent newer_than:7d to:{{ $('Get row(s) in sheet').item.json['Profile URL'] }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        96
+      ],
+      "id": "492c19e3-ca85-4c2d-8630-558ce1f76bb2",
+      "name": "Get many messages1",
+      "webhookId": "6a015dc0-20ec-4291-aa00-fba952f84f01"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Get many messages1').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ $('Get row(s) in sheet').item.json['F2 Gmail'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1472,
+        96
+      ],
+      "id": "2323ce3e-2147-4b67-8ae1-c2c8efb8af5c",
+      "name": "Reply to a message1",
+      "webhookId": "5b459485-7723-4339-a8b1-b3411542640a"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Get row(s) in sheet').item.json['Name - Outreached - I'] }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}",
+            "F2 - Outreach": "Done"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name - Outreached - I",
+              "displayName": "Name - Outreached - I",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile URL",
+              "displayName": "Profile URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Outreached",
+              "displayName": "Date Outreached",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Outreach",
+              "displayName": "F1 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Outreach",
+              "displayName": "F2 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name - Engaged - II",
+              "displayName": "Name - Engaged - II",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Engaged",
+              "displayName": "F1 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Engaged",
+              "displayName": "F2 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Engaged",
+              "displayName": "F3 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Engaged",
+              "displayName": "F4 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Primed - III",
+              "displayName": "Name - Primed - III",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Primed",
+              "displayName": "F1 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Primed",
+              "displayName": "F2 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Primed",
+              "displayName": "F3 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Primed",
+              "displayName": "F4 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5 - Primed",
+              "displayName": "F5 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6 - Primed",
+              "displayName": "F6 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Booked - IV",
+              "displayName": "Name - Booked - IV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile Link",
+              "displayName": "Profile Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Booked",
+              "displayName": "Date Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 Gmail",
+              "displayName": "F1 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 Gmail",
+              "displayName": "F2 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        96
+      ],
+      "id": "0271cb3c-615b-4074-b061-8d0bbf1c0fa9",
+      "name": "Append or update row in sheet2"
+    },
+    {
+      "parameters": {
+        "content": "## \ud83d\udce7 OUTREACH GMAIL FOLLOW-UPS AUTOMATION\n\n**PURPOSE:** Automatically sends follow-up emails to prospects via Gmail based on Google Sheets tracking data\n\n**HOW IT WORKS:**\n1. Two trigger modes: Schedule (periodic check) OR Real-time (sheet updates)\n2. Reads prospect data from Google Sheets\n3. Filters for Gmail-eligible contacts\n4. Sends appropriate follow-up messages (F1 or F2)\n5. Updates tracking timestamps in sheet\n\n**PREREQUISITES:**\n\u2713 Google Sheets OAuth credentials (salmanadnan0206)\n\u2713 Gmail OAuth credentials (salmanadnan0206)\n\u2713 Spreadsheet: \"Digitalise Prospecting- Skool / 2025\"\n\u2713 Sheet tab: \"December\"\n\n**TO EXECUTE:**\n- Auto-runs on schedule (default: hourly)\n- Auto-triggers on sheet row updates\n- Or click \"Execute Workflow\" for manual run\n\n**EXPECTED OUTPUTS:**\n- Follow-up emails sent via Gmail\n- Sheet updated with \"Sequence Last Date\" timestamp\n- F1/F2 Outreach columns marked \"Done\"",
+        "height": 540,
+        "width": 520,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        592
+      ],
+      "id": "2a6e1791-5449-45ef-a47a-a781958ebd76",
+      "name": "Sticky Note - Main Overview"
+    },
+    {
+      "parameters": {
+        "content": "## \ud83d\udd04 TRIGGER METHODS\n\n**Two ways to start workflow:**\n\n1\ufe0f\u20e3 **Schedule Trigger** (Top path)\n   - Runs on regular schedule\n   - Default: Every hour\n   - Processes all eligible rows\n\n2\ufe0f\u20e3 **Google Sheets Trigger** (Bottom path)\n   - Real-time response to sheet updates\n   - Activates when row data changes\n   - Immediate processing",
+        "height": 336,
+        "width": 340,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        592
+      ],
+      "id": "5f4b7e70-70bf-4a83-8087-e46da41dfd1d",
+      "name": "Sticky Note - Trigger Methods"
+    },
+    {
+      "parameters": {
+        "content": "## \ud83d\udcca DATA INPUT STAGE\n\n**Schedule Path:**\n- Gets ALL rows from December sheet\n- Passes to filter logic\n\n**Trigger Path:**\n- Receives SINGLE updated row\n- Immediately processes change",
+        "height": 436,
+        "width": 280,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        1456
+      ],
+      "id": "8135b538-fc71-46b0-8133-cc8114754dbc",
+      "name": "Sticky Note - Data Input"
+    },
+    {
+      "parameters": {
+        "content": "## \ud83c\udfaf FILTERING LOGIC\n\n**Schedule Path (If):**\nChecks if prospect was outreached via:\n- Contains \"Gmail\" OR\n- Equals \"gmail\" OR  \n- Equals \"Salman\"\n\n**Trigger Path (If1 \u2192 If2):**\n- If1: Same Gmail checks\n- If2: Ensures \"Sequence Last Date\" is EMPTY\n  (prevents duplicate follow-ups)",
+        "height": 444,
+        "width": 400,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        1440
+      ],
+      "id": "00d1a841-3847-479b-955a-ca8e1c9dd22e",
+      "name": "Sticky Note - Filtering Logic"
+    },
+    {
+      "parameters": {
+        "content": "## \u2705 INITIAL TIMESTAMP\n\n**Trigger Path Only:**\n\nWhen a new Gmail prospect is added:\n- Sets \"Sequence Last Date\" to NOW\n- Establishes baseline for follow-ups\n- Prevents immediate F1/F2 sends\n\n**Why?** Creates tracking foundation\nfor time-based follow-up sequences",
+        "height": 456,
+        "width": 300,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        1440
+      ],
+      "id": "c3ce865c-2bac-494c-9d64-7de69d9dd588",
+      "name": "Sticky Note - Initial Timestamp"
+    },
+    {
+      "parameters": {
+        "content": "## \ud83d\udd00 FOLLOW-UP ROUTING\n\n**If3 Decision:**\nDetermines which follow-up to send\n\n\u2705 **TRUE Path** \u2192 Send F1 Gmail\n- First follow-up message\n- Retrieved from sheet column \"F1 Gmail\"\n\n\u274c **FALSE Path** \u2192 Route to If4\n- Checks conditions for F2",
+        "height": 456,
+        "width": 300,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        1360
+      ],
+      "id": "78c53c4b-690a-46b1-8c30-a6c4624919d2",
+      "name": "Sticky Note - Follow-up Routing"
+    },
+    {
+      "parameters": {
+        "content": "## \ud83d\udce7 F1 FOLLOW-UP SEQUENCE\n\n**Get many messages:**\n- Searches Gmail for original thread\n- Finds conversation with prospect\n\n**Reply to a message:**\n- Sends F1 follow-up content\n- Replies to existing thread\n- Message text from sheet: \"F1 Gmail\" column\n\n**Append or update row in sheet1:**\n- Updates \"Sequence Last Date\" with timestamp\n- Marks \"F1 - Outreach\" as \"Done\"\n- Prevents duplicate F1 sends",
+        "height": 548,
+        "width": 744,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        752,
+        1184
+      ],
+      "id": "5bd7b049-0791-4ed3-9dc7-fdf08cbee70b",
+      "name": "Sticky Note - F1 Sequence"
+    },
+    {
+      "parameters": {
+        "content": "## \ud83d\udce7 F2 FOLLOW-UP SEQUENCE\n\n**If4 Decision:**\nChecks if F2 should be sent\n(Conditions determine eligibility)\n\n**Get many messages1:**\n- Retrieves original Gmail thread\n\n**Reply to a message1:**\n- Sends F2 follow-up content  \n- Message from \"F2 Gmail\" column\n\n**Append or update row in sheet2:**\n- Updates \"Sequence Last Date\"\n- Marks \"F2 - Outreach\" as \"Done\"\n- Completes tracking",
+        "height": 548,
+        "width": 840,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        1728
+      ],
+      "id": "30d47a17-de33-497b-ad29-0778542c495c",
+      "name": "Sticky Note - F2 Sequence"
+    },
+    {
+      "parameters": {
+        "content": "## \u2699\ufe0f CONFIGURATION NOTES\n\n**Customize These Settings:**\n\n1. **Schedule Frequency:**\n   Adjust \"Schedule Trigger\" interval\n\n2. **Follow-up Messages:**\n   Edit sheet columns \"F1 Gmail\" & \"F2 Gmail\"\n\n3. **Filtering Criteria:**\n   Modify If/If1 conditions for prospect selection\n\n4. **If3/If4 Logic:**\n   Define when F1 vs F2 should send\n   (Currently needs completion)\n\n5. **Google Sheets:**\n   Update document/sheet if using different source",
+        "height": 476,
+        "width": 360
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        592
+      ],
+      "id": "b9980596-6704-4ce2-b677-ea20b15dbe63",
+      "name": "Sticky Note - Configuration"
+    },
+    {
+      "parameters": {
+        "content": "## \u26a0\ufe0f IMPORTANT NOTES\n\n**Before Running:**\n- Ensure OAuth credentials are connected\n- Verify sheet structure matches expected columns\n- Test with single prospect first\n- Review F1/F2 message templates\n\n**Data Flow:**\nGoogle Sheets \u2192 Filter \u2192 Send Email \u2192 Update Sheet\n\n**Key Columns Used:**\n- Name - Outreached - I\n- F1 Gmail / F2 Gmail (message content)\n- Sequence Last Date (tracking)\n- F1/F2 - Outreach (completion flags)",
+        "height": 408,
+        "width": 380,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        96,
+        592
+      ],
+      "id": "bd13a5e1-0b07-4ce4-88c9-683661b68683",
+      "name": "Sticky Note - Important Notes"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        1680
+      ],
+      "id": "d7d3ab46-bb53-4f91-8614-f4900a48c995",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        1680
+      ],
+      "id": "d17c9631-d6c2-4ad8-9509-d94cfc8a9d63",
+      "name": "Get row(s) in sheet1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7834e86e-5d54-4b37-bf6d-a3967ee46176",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json['Name - Outreached - I'] }}",
+              "rightValue": "Gmail",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "fb14b959-de44-4cbf-82d4-d89341bec98c",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json['Name - Outreached - I'] }}",
+              "rightValue": "gmail",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "4f933cb1-1c78-4505-82ed-9f446387559d",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json['Name - Outreached - I'] }}",
+              "rightValue": "Salman",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        1680
+      ],
+      "id": "54f2b1b9-7bec-4b61-a634-8d278e46274e",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "event": "rowUpdate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        1728
+      ],
+      "id": "6777b762-b277-4e28-a020-f56e1ca95f57",
+      "name": "Google Sheets Trigger1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7834e86e-5d54-4b37-bf6d-a3967ee46176",
+              "leftValue": "={{ $('Google Sheets Trigger1').item.json['Name - Outreached - I'] }}",
+              "rightValue": "Gmail",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "fb14b959-de44-4cbf-82d4-d89341bec98c",
+              "leftValue": "={{ $('Google Sheets Trigger1').item.json['Name - Outreached - I'] }}",
+              "rightValue": "gmail",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -864,
+        1728
+      ],
+      "id": "07a0393d-7336-4ed6-9335-cdcfacc80d22",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0ebba299-74ba-4cef-89a7-93bd8f349b31",
+              "leftValue": "={{ $('Google Sheets Trigger1').item.json['Sequence Last Date'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        1728
+      ],
+      "id": "6fbe5302-6039-403d-97f9-708bf636c772",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Google Sheets Trigger1').item.json.Name }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name - Outreached - I",
+              "displayName": "Name - Outreached - I",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile URL",
+              "displayName": "Profile URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Outreached",
+              "displayName": "Date Outreached",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Outreach",
+              "displayName": "F1 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Outreach",
+              "displayName": "F2 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Engaged - II",
+              "displayName": "Name - Engaged - II",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Engaged",
+              "displayName": "F1 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Engaged",
+              "displayName": "F2 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Engaged",
+              "displayName": "F3 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Engaged",
+              "displayName": "F4 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Primed - III",
+              "displayName": "Name - Primed - III",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Primed",
+              "displayName": "F1 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Primed",
+              "displayName": "F2 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Primed",
+              "displayName": "F3 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Primed",
+              "displayName": "F4 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5 - Primed",
+              "displayName": "F5 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6 - Primed",
+              "displayName": "F6 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Booked - IV",
+              "displayName": "Name - Booked - IV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile Link",
+              "displayName": "Profile Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Booked",
+              "displayName": "Date Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 Gmail",
+              "displayName": "F1 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 Gmail",
+              "displayName": "F2 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -416,
+        1728
+      ],
+      "id": "18073f8d-f1df-48b8-950e-ba9531b39005",
+      "name": "Append or update row in sheet3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dbaf15af-6b7c-425f-94b2-82c76f2cff33",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json['F1 Gmail'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "aa82d043-5879-4cdb-b4ab-60d1d72309aa",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet1').item.json['Sequence Last Date'],\n        \"yyyy-MM-dd - hh:mm:ss a\"\n      ),\n      \"minutes\"\n    )\n    .minutes\n}}",
+              "rightValue": 2160,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "83f11adb-9970-4da0-a415-362060060629",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json[\"F1 - Outreach\"] }}",
+              "rightValue": "Done",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        1616
+      ],
+      "id": "7a766323-ea2f-4589-8cae-6f8382e3ea87",
+      "name": "If8"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "=in:sent newer_than:7d to:{{ $('Get row(s) in sheet1').item.json['Profile URL'] }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        896,
+        1568
+      ],
+      "id": "7a0d17ca-8a49-4a3f-a547-2a4c9be4358b",
+      "name": "Get many messages2",
+      "webhookId": "6a015dc0-20ec-4291-aa00-fba952f84f01"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Get many messages2').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ $('Get row(s) in sheet1').item.json['F1 Gmail'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        1568
+      ],
+      "id": "3f64f53a-3cfa-4e3c-abee-5b5a88e4f0e8",
+      "name": "Reply to a message2",
+      "webhookId": "5b459485-7723-4339-a8b1-b3411542640a"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Get row(s) in sheet1').item.json['Name - Outreached - I'] }}",
+            "F1 - Outreach": "Done",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name - Outreached - I",
+              "displayName": "Name - Outreached - I",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile URL",
+              "displayName": "Profile URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Outreached",
+              "displayName": "Date Outreached",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Outreach",
+              "displayName": "F1 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "F2 - Outreach",
+              "displayName": "F2 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Engaged - II",
+              "displayName": "Name - Engaged - II",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Engaged",
+              "displayName": "F1 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Engaged",
+              "displayName": "F2 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Engaged",
+              "displayName": "F3 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Engaged",
+              "displayName": "F4 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Primed - III",
+              "displayName": "Name - Primed - III",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Primed",
+              "displayName": "F1 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Primed",
+              "displayName": "F2 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Primed",
+              "displayName": "F3 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Primed",
+              "displayName": "F4 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5 - Primed",
+              "displayName": "F5 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6 - Primed",
+              "displayName": "F6 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Booked - IV",
+              "displayName": "Name - Booked - IV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile Link",
+              "displayName": "Profile Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Booked",
+              "displayName": "Date Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 Gmail",
+              "displayName": "F1 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 Gmail",
+              "displayName": "F2 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        1568
+      ],
+      "id": "5669e9b0-ab3c-4952-a227-b0484d315d5e",
+      "name": "Append or update row in sheet4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dbaf15af-6b7c-425f-94b2-82c76f2cff33",
+              "leftValue": "={{ $json['F2 Gmail'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "aa82d043-5879-4cdb-b4ab-60d1d72309aa",
+              "leftValue": "={{ \n  DateTime\n    .now()\n    .diff(\n      DateTime.fromFormat(\n        $('Get row(s) in sheet1').item.json['Sequence Last Date'],\n        \"yyyy-MM-dd - hh:mm:ss a\"\n      ),\n      \"minutes\"\n    )\n    .minutes\n}}",
+              "rightValue": 2160,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "726c94fb-c127-44a7-b9f3-4a3d52abf98f",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json[\"F1 - Outreach\"] }}",
+              "rightValue": "Done",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "d5820ef6-a0ad-48be-89fa-93b76cbf0c81",
+              "leftValue": "={{ $('Get row(s) in sheet1').item.json[\"F2 - Outreach\"] }}",
+              "rightValue": "Done",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        2144
+      ],
+      "id": "8fef6d5a-8b94-4412-bf11-3da36542b178",
+      "name": "If9"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "=in:sent newer_than:7d to:{{ $('Get row(s) in sheet1').item.json['Profile URL'] }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1136,
+        2144
+      ],
+      "id": "2291ce86-8c88-4f96-a3b6-a53e879d55ca",
+      "name": "Get many messages3",
+      "webhookId": "6a015dc0-20ec-4291-aa00-fba952f84f01"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Get many messages3').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ $('Get row(s) in sheet1').item.json['F2 Gmail'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        2144
+      ],
+      "id": "a51c5e9d-e07b-41eb-84aa-4c4e88f28e70",
+      "name": "Reply to a message3",
+      "webhookId": "5b459485-7723-4339-a8b1-b3411542640a"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Digitalise Prospecting- Skool / 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 688244843,
+          "mode": "list",
+          "cachedResultName": "December",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Get row(s) in sheet1').item.json['Name - Outreached - I'] }}",
+            "Sequence Last Date": "={{ $now.toFormat(\"yyyy-MM-dd '-' hh:mm:ss a\") }}",
+            "F2 - Outreach": "Done"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name - Outreached - I",
+              "displayName": "Name - Outreached - I",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile URL",
+              "displayName": "Profile URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Outreached",
+              "displayName": "Date Outreached",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Outreach",
+              "displayName": "F1 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Outreach",
+              "displayName": "F2 - Outreach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name - Engaged - II",
+              "displayName": "Name - Engaged - II",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Engaged",
+              "displayName": "F1 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Engaged",
+              "displayName": "F2 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Engaged",
+              "displayName": "F3 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Engaged",
+              "displayName": "F4 - Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Primed - III",
+              "displayName": "Name - Primed - III",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Engaged",
+              "displayName": "Date Engaged",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 - Primed",
+              "displayName": "F1 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 - Primed",
+              "displayName": "F2 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F3 - Primed",
+              "displayName": "F3 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F4 - Primed",
+              "displayName": "F4 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F5 - Primed",
+              "displayName": "F5 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F6 - Primed",
+              "displayName": "F6 - Primed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name - Booked - IV",
+              "displayName": "Name - Booked - IV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Profile Link",
+              "displayName": "Profile Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Booked",
+              "displayName": "Date Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tracked",
+              "displayName": "Tracked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F1 Gmail",
+              "displayName": "F1 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "F2 Gmail",
+              "displayName": "F2 Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence Last Date",
+              "displayName": "Sequence Last Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1584,
+        2144
+      ],
+      "id": "1190b142-82ea-471e-91ef-6e034a731bf5",
+      "name": "Append or update row in sheet5"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages1": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Get many messages1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If8": {
+      "main": [
+        [
+          {
+            "node": "Get many messages2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages2": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If9": {
+      "main": [
+        [
+          {
+            "node": "Get many messages3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages3": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message3": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  }
+}

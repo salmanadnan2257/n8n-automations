@@ -1,0 +1,961 @@
+{
+  "name": "Real Estate - Market Updates - Post Generator (Social Media)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Real Estate - News",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "News",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "options": {
+          "columnsToWatch": [
+            "Topic"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6300605a-30f1-4b87-a9d3-54153a924ad5",
+      "name": "latest_topic",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "tD7Hkr5fcX3w92Yo",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        820,
+        0
+      ],
+      "id": "fbca3f87-7d11-4ad5-a814-ab200c7ec27b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3965e358-973b-4ce5-a044-b1d87f0e4ee4",
+              "name": "Topic",
+              "value": "={{ $('latest_topic').item.json.Topic }}",
+              "type": "string"
+            },
+            {
+              "id": "c6b4924f-0673-4214-9050-cfa52425f134",
+              "name": "results",
+              "value": "={{ $json.results }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        620,
+        0
+      ],
+      "id": "4fdc92e3-2d75-4d38-8c74-d761d07c6442",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "https://newsdata.io/api/1/latest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('latest_topic').item.json['Topic'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "6aff52e9-bce2-46ed-a0b8-7d18da433a1b",
+      "name": "get_articles",
+      "executeOnce": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "EYDuoMumcIU5U3aB",
+          "name": "newsdata.io it.expert2210"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "d79930b6-db8c-4acb-b853-213e72dd93a3",
+      "name": "scrape_articles",
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9c052aa-a93f-4492-901c-9d1078e2a374",
+              "name": "CSV Topic",
+              "value": "={{ $('Edit Fields').item.json.Topic }}",
+              "type": "string"
+            },
+            {
+              "id": "f6e5af9a-f84d-4036-ac56-e92e64b8c2c0",
+              "name": "title",
+              "value": "={{ $('Split Out').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "cacbc087-81c7-4bb3-a7f5-49b096a6d38c",
+              "name": "link",
+              "value": "={{ $('Split Out').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "bf953e78-4b81-4ff3-b51f-6ca7b013f840",
+              "name": "description",
+              "value": "={{ $('Split Out').item.json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "f6879de4-4a87-4b7c-bc0e-b65b19290c7d",
+              "name": "content",
+              "value": "Virtual Data Rooms Market to Surpass US$ 7 Bn by 2032 Driven by Demand for Secure Digital Transactions 07-03-2025 07:50 AM CET | IT, New Media & Software Press release from: Persistence Market Research Virtual Data Rooms Market ✅Virtual Data Rooms Market Poised for 17.9% CAGR Growth from 2025 to 2032 Amid Rising Digital Collaboration According to the latest study by Persistence Market Research, the global virtual data rooms (VDR) market is forecast to grow from US$ 2,219.1 Mn in 2025 to US$ 7,027.1 Mn by 2032, at an impressive CAGR of 17.9% during the assessment period. This robust growth is driven by increasing demand for secure file sharing, data confidentiality, and document management solutions across industries, especially in mergers & acquisitions (M&A), legal due diligence, and financial audits. As organizations rapidly adopt digital infrastructure, the need for secure, scalable, and compliant data management systems has surged, fueling demand for VDR solutions. Virtual data rooms serve as secure digital repositories for the storage and controlled sharing of confidential documents. These platforms are crucial in sectors such as banking, legal, life sciences, and real estate, where secure access, auditing, and compliance are non-negotiable. VDRs are increasingly replacing traditional physical data rooms, offering speed, remote accessibility, and layered security features such as encryption, digital watermarks, and user-level access controls. The market's exponential growth is largely attributed to the rise in remote work, globalization of business operations, and the growing volume of sensitive information exchanged during strategic transactions. Get a Sample PDF Brochure of the Report (Use Corporate Email ID for a Quick Response): https://www.persistencemarketresearch.com/samples/5225 Based on market performance, M&A activity remains the leading application segment, accounting for the largest share of VDR usage globally. Mergers, acquisitions, IPOs, and corporate restructuring rely heavily on these platforms for sharing critical documents among stakeholders in a confidential environment. Regionally, North America dominates the global VDR market, thanks to a strong presence of large financial institutions, robust legal frameworks, and widespread digital transformation across enterprises. The United States, in particular, sees high adoption rates due to frequent deal-making activities and advanced cybersecurity infrastructure. ✅Key Market Insights ➤ Virtual data rooms are becoming essential tools for M&A, fundraisers, and IPOs due to their secure and centralized data access capabilities. ➤ North America leads the market due to high technology adoption, compliance mandates, and active capital markets. ➤ Cloud-based VDRs are gaining traction over on-premise solutions due to better scalability, flexibility, and cost-efficiency. ➤ Startups and SMEs are increasingly adopting VDRs as affordable data security solutions in competitive business environments. ➤ Healthcare and life sciences are emerging application areas, especially for clinical trial data sharing and IP protection. ✅What is the purpose of a virtual data room in M&A? In mergers and acquisitions (M&A), a virtual data room (VDR) provides a secure online platform for storing and sharing sensitive documents during the due diligence phase. It allows buyers, sellers, and advisors to access information remotely, track user activity, and control document visibility. VDRs enhance efficiency by accelerating document review, reducing administrative burdens, and ensuring data confidentiality. With real-time collaboration features, version control, and audit trails, VDRs help streamline complex transactions while minimizing the risk of data breaches. This makes them an indispensable tool in modern deal-making processes. ✅Market Dynamics Market Drivers: The global shift toward digital business operations is a key driver of the VDR market. Increasing M&A transactions, especially in sectors like healthcare, energy, and fintech, are fueling demand for reliable digital platforms for confidential data sharing. Regulatory compliance and the need for audit-ready documentation further compel businesses to adopt VDRs. Additionally, the rise in remote work has made secure cloud collaboration tools critical, accelerating VDR usage across sectors. Market Restraining Factor: One of the primary challenges in the virtual data rooms market is the high cost of implementation and subscription, especially for smaller firms. Moreover, organizations with limited IT capabilities may struggle with integration and user training. Concerns around data sovereignty and vendor lock-in also pose barriers to adoption in highly regulated industries. Key Market Opportunity: There lies a significant opportunity in emerging markets, where digital transformation initiatives are being actively pursued. As companies in Latin America, Africa, and Southeast Asia modernize operations and engage in cross-border transactions, the demand for secure digital repositories like VDRs is expected to surge. Customizable VDR solutions that address local compliance requirements and offer multilingual support can gain rapid traction in these regions. ✅Market Segmentation The virtual data rooms market is segmented by deployment mode, enterprise size, business function, and end-use industry, allowing vendors to address niche demands across industries. By deployment, VDRs are offered as cloud-based and on-premise solutions. Cloud-based VDRs are witnessing the highest adoption due to their flexibility, reduced upfront costs, and remote accessibility. On-premise models are still preferred by highly regulated industries requiring in-house control over data and compliance. In terms of enterprise size, the market includes large enterprises and small & medium enterprises (SMEs). While large enterprises have traditionally dominated the VDR landscape due to frequent high-value transactions, SMEs are rapidly catching up. The availability of affordable SaaS-based VDRs is enabling smaller businesses to securely manage investor communications, partnerships, and legal disclosures. By end-use, key industries include BFSI, legal, healthcare, real estate, energy, and IT & telecom. Among these, BFSI and legal sectors hold the largest share due to frequent data-intensive deal-making processes and stringent security standards. ✅Regional Insights North America leads the virtual data rooms market, backed by robust technological infrastructure, strong digital governance, and active M&A activity. The U.S. continues to be the global hub for financial transactions, legal advisory services, and startup investment rounds, making VDRs a vital tool in everyday business operations. Europe follows, with strong data protection regulations like GDPR boosting the demand for compliant VDR platforms. Asia Pacific is an emerging high-growth region due to increasing startup activity, growing foreign direct investment (FDI), and adoption of cloud technologies. Countries like India, China, and Singapore are witnessing rising VDR use, especially in sectors such as healthcare and financial services. Meanwhile, Latin America and the Middle East & Africa are gradually embracing VDRs amid increasing economic diversification and cross-border investments. ✅Competitive Landscape The virtual data rooms market is highly competitive and fragmented, with global players competing alongside regional service providers. Companies are focusing on enhancing platform usability, AI integration, and security certifications to differentiate themselves in a saturated market. ✅Company Insights ✦ iDeals Solutions Group ✦ Intralinks (SS&C Technologies) ✦ Datasite ✦ Brainloop AG ✦ Citrix Systems, Inc. ✦ Firmex Inc. ✦ Ansarada Group Limited ✦ CapLinked, Inc. ✦ SecureDocs, Inc. ✦ Onehub ✦ EthosData ✦ ShareVault For Customized Insights on Segments, Regions, or Competitors, Request Personalized Purchase Options @ https://www.persistencemarketresearch.com/request-customization/5225 ✅Key Industry Developments The virtual data rooms market is witnessing increased investment in platform modernization. Companies like iDeals and Intralinks have upgraded their VDRs with AI-powered due diligence tools, real-time analytics, and multi-device accessibility to enhance user experience. Meanwhile, Firmex launched industry-specific VDR templates to simplify onboarding for real estate, biotech, and legal clients. Strategic partnerships and acquisitions are also shaping the competitive landscape. In 2023, Datasite expanded its presence in Asia by acquiring a regional VDR provider, aiming to cater to local regulatory requirements. Similarly, Citrix has introduced integration capabilities with Microsoft Teams and Google Workspace, offering seamless collaboration for enterprise clients. ✅Innovation and Future Trends The next wave of innovation in the virtual data rooms market is focused on AI and machine learning integration. VDRs equipped with smart tagging, auto-redaction, and predictive analytics are expected to significantly reduce due diligence time and improve document navigation. These innovations are especially relevant for complex M&A deals and legal reviews where high volumes of sensitive data are involved. Looking forward, blockchain-based VDRs are emerging as a disruptive trend to enhance transparency and data immutability. Additionally, vendors are working on incorporating zero-trust security models and biometric access controls to counter evolving cybersecurity threats. As ESG compliance and data governance become core priorities, VDRs will evolve from simple repositories to intelligent platforms that ensure strategic advantage and risk mitigation. ✅Explore the Latest Trending \"Exclusive Article\" @ • https://apnewswire.hashnode.dev/id-card-printer-market-growth-fueled-by-bfsi-and-government-demand • https://industrynewswire.substack.com/p/id-card-printer-market-insights-on • https://hackmd.io/@2vhr6YqxSr6ACDaTSHbDOA/BymgnZWrgg • https://fortunetelleroracle.com/technology/id-card-printer-market-innovation-with-cloud-and-ai-integration-1107622 • https://logcla.com/blogs/708039/ID-Card-Printer-Market-in-the-US-Backed-by-Government ✅Contact Us: Persistence Market Research G04 Golden Mile House, Clayponds Lane Brentford, London, TW8 0GU UK USA Phone: +1 646-878-6329 UK Phone: +44 203-837-5656 Email: sales@persistencemarketresearch.com Web: https://www.persistencemarketresearch.com ✅About Persistence Market Research: At Persistence Market Research, we specialize in creating research studies that serve as strategic tools for driving business growth. Established as a proprietary firm in 2012, we have evolved into a registered company in England and Wales in 2023 under the name Persistence Research & Consultancy Services Ltd. With a solid foundation, we have completed over 3600 custom and syndicate market research projects, and delivered more than 2700 projects for other leading market research companies' clients. Our approach combines traditional market research methods with modern tools to offer comprehensive research solutions. With a decade of experience, we pride ourselves on deriving actionable insights from data to help businesses stay ahead of the competition. Our client base spans multinational corporations, leading consulting firms, investment funds, and government departments. A significant portion of our sales comes from repeat clients, a testament to the value and trust we've built over the years. This release was published on openPR.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1300,
+        -20
+      ],
+      "id": "0f7ad2f2-1723-40bc-8816-3d21b5f4737b",
+      "name": "store_article_data",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        180
+      ],
+      "id": "42dcb084-0825-4e71-82a7-32578fb82812",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Real Estate - News",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "News",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "=",
+            "Topic": "={{ $('store_article_data').item.json[\"CSV Topic\"] }}",
+            "Article Heading": "={{ $('store_article_data').item.json.title }}",
+            "Description": "={{ $('store_article_data').item.json.description }}",
+            "Link": "={{ $('store_article_data').item.json.link }}",
+            "Content": "={{ $('store_article_data').item.json.content }}",
+            "post_content": "={{ $('Final').item.json.post }}",
+            "img_url": "={{ $('Final').item.json.img_url }}",
+            "video_url": "={{ $('Final').item.json.video_url }}",
+            "Progress": "Done"
+          },
+          "matchingColumns": [
+            "Topic"
+          ],
+          "schema": [
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Progress",
+              "displayName": "Progress",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Article Heading",
+              "displayName": "Article Heading",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_content",
+              "displayName": "post_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "img_url",
+              "displayName": "img_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        4100,
+        -140
+      ],
+      "id": "fd034d9a-16a3-4162-97da-ce1a6bcc7af6",
+      "name": "Google Sheets",
+      "retryOnFail": false,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XdUlWBkbzjr8laJL",
+          "name": "salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.runware.ai/v1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"taskType\": \"imageInference\",\n    \"taskUUID\": \"3a8f6b32-5c9e-4a9d-bfa1-f12c45e7a882\",\n    \"width\": 512,\n    \"height\": 512,\n    \"numberResults\": 1,\n    \"outputFormat\": \"JPEG\",\n    \"outputType\": [\n      \"URL\"\n    ],\n    \"includeCost\": true,\n    \"inputImages\": [],\n    \"positivePrompt\": {{ JSON.stringify($('Post + Visuals').item.json.image_prompt) }},\n    \"model\": \"runware:100@1\"\n  }\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2920,
+        -20
+      ],
+      "id": "fd05457f-30ee-4f63-ab62-af957ea5dcf3",
+      "name": "Generate Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QzjWn1XU1BWc9lp4",
+          "name": "runware.ai - it.expert2210"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        180
+      ],
+      "id": "4e88a715-310e-4b33-8884-e8154ee6bfa8",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Title: {{ $('store_article_data').item.json.title }}\nDescription: {{ $('store_article_data').item.json.description }}\nContent: {{ $('store_article_data').item.json.content }}\n",
+        "options": {
+          "systemMessage": "**Role:**\nYou are a Human-Centric Content Alchemist. You transform dense articles into sharp, engaging social media posts that offer genuine value and stop the scroll.\n\n**Context:**\nThe user will provide an article's title, a short description, and its full content. Your task is to distill this information into a single, compelling social media post. The post's goal is to make people stop scrolling, consume a piece of standalone value, and feel compelled to learn more by reading the full article.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Output is ONLY the Post:** Your entire response must be ONLY the text for the social media post. Do not include any formatting, headers, titles, explanations, or any other surrounding text. The output must be clean, unformatted text, ready for the user to copy and paste directly.\n2.  **ZERO SPAM WORDS:** Strictly forbid the use of clickbait or aggressive marketing language. The post must feel authentic and value-driven. Avoid words like \"Secret,\" \"Ultimate,\" \"Guaranteed,\" \"Mind-blowing,\" etc.\n3.  **Read and Distill:** Do not rely on the `short description`. Your primary job is to read the full `article content` and find the single most surprising, useful, or counter-intuitive insight. This is the core of the post.\n4.  **Structure for Engagement:**\n    *   **Hook:** Start with a powerful first line. A provocative question or a bold statement works best.\n    *   **Value Nugget:** Clearly present the core insight you extracted. This must provide value on its own, even if the reader doesn't click.\n    *   **Implication:** Briefly explain why this insight matters or what common belief it challenges.\n    *   **Call to Read:** End with a natural transition that encourages reading the full article where a link would be placed.\n5.  **Tone & Style:**\n    *   Write in a sharp, focused, and human voice.\n    *   Use short sentences and ample white space (line breaks) for maximum readability on mobile feeds.\n    *   The tone is intelligent and generous, as if sharing an important idea with a community of peers.\n\n**Examples:**\n*   **User Input:**\n    *   Title: The Productivity Paradox: Why Working More is Getting Less Done\n    *   Short Description: An article that challenges modern hustle culture and looks at the science behind effective work.\n    *   Article Content: (A full article that explains how context-switching and decision fatigue are the real productivity killers, and the most effective people focus on single-tasking high-impact work during their peak energy windows, even if it's just for 90 minutes).\n*   **AI Output (This is the *entire* output from the AI):**\n\n    The goal isn't to manage your time. It's to manage your energy.\n\n    Most people try to cram more into their day. The most effective people get more done by protecting a single 90-minute window for their most important task.\n\n    It's a complete reframe on productivity that moves away from \"hustle culture\" and towards focused output.\n\n    The full article explores the science behind why this works."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        -20
+      ],
+      "id": "2e261c87-f883-4729-8354-704221515b75",
+      "name": "Generate Post"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post:\n{{ $('Generate Post').item.json.output }}",
+        "options": {
+          "systemMessage": "**Role:**\nYou are an expert Visual Concept Engineer. You specialize in translating abstract ideas from text into descriptive, evocative, and technically sound prompts for AI image generators.\n\n**Context:**\nThe user will provide you with a social media post. Your sole task is to generate a single, perfectly crafted image prompt that visually represents the core concept or emotion of that post. The resulting image should be engaging, relevant, and aesthetically pleasing, serving as a powerful visual hook for the text.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Output is ONLY the Prompt:** Your entire response must be ONLY the final image prompt text. Do not include any headers, explanations, or surrounding text. The output must be a clean, unformatted string, ready for the user to copy and paste directly into an AI image generator.\n2.  **Analyze the Core Concept:** First, read the user's post to understand its central theme, emotion, or metaphor. Do not create a literal illustration. Your goal is to capture the *feeling* or the *abstract idea* behind the words.\n3.  **Mandatory Prompt Structure:** To ensure the prompt is flawlessly executable, structure it with the following components, using descriptive keywords:\n    *   **Subject:** A clear description of the main focus of the image, based on your conceptual analysis.\n    *   **Style:** The artistic style (e.g., photorealistic, minimalist, digital art, cinematic, abstract).\n    *   **Composition:** The framing and layout (e.g., close-up, wide shot, rule of thirds, centered subject).\n    *   **Lighting:** The mood and quality of light (e.g., soft morning light, dramatic chiaroscuro, warm ambient glow).\n    *   **Color Palette:** The dominant colors (e.g., calming blues and whites, high-contrast monochrome, warm earth tones).\n4.  **CRITICAL - No Text:** The prompt MUST explicitly command the image generator to exclude all text, letters, or numbers. End your prompt with a strong negative constraint like `--no text, words, or letters`.\n5.  **Be Descriptive:** Use vivid, sensory language to build a rich and detailed scene for the AI to interpret.\n\n**Examples:**\n*   **User Input (The social media post):**\n\n    The goal isn't to manage your time. It's to manage your energy. Most people try to cram more into their day. The most effective people get more done by protecting a single 90-minute window for their most important task. It's a complete reframe on productivity that moves away from \"hustle culture\" and towards focused output. The full article explores the science behind why this works.\n\n*   **AI Output (This is the *entire* output from the AI):**\n\n    A single, glowing hourglass on a clean, dark wooden desk, its sand flowing brightly. In the background, a large window shows the beautiful bokeh blur of a chaotic city at night. Cinematic photorealism, close-up shot focusing on the hourglass. Dramatic lighting, with a warm, focused light coming from within the hourglass itself, contrasting with the cool, dark tones of the room. --no text, words, letters, numbers"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        -20
+      ],
+      "id": "8fc13ef7-3c47-48a6-b3da-e30f9cf11f7a",
+      "name": "Generate Image Prompt"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        180
+      ],
+      "id": "6f724957-1913-4ef8-aa2d-a758d977e46a",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "s4sYlntiuuXDcQzk",
+          "name": "Shahrs5555555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post:\n{{ $('Generate Post').item.json.output }}\n\nImage Prompt:\n{{ $('Generate Image Prompt').item.json.output }}",
+        "options": {
+          "systemMessage": "Excellent. This next step requires synthesizing the core message (from the post) and the visual foundation (from the image prompt) into a set of motion instructions. Here is the system prompt for generating a video prompt.\n\n***\n\n**Role:**\nYou are an AI Motion Director. You excel at bringing static scenes to life by conceptualizing and describing subtle, meaningful motion. You translate a core message and a visual style into a clear, executable video generation prompt.\n\n**Context:**\nThe user will provide two pieces of information: a social media post (the core message) and an image prompt (the static visual foundation). Your one and only task is to create a video prompt that animates the scene from the image prompt in a way that powerfully reinforces the theme of the post.\n\n**Tools:**\nNone.\n\n**Rules:**\n1.  **Output is ONLY the Video Prompt:** Your entire response must be ONLY the final video prompt text. Do not include any headers, titles, rationale, or any other surrounding text. The output must be a clean, unformatted string, ready for copy-pasting.\n2.  **Synthesize, Don't Invent:** Your creative space is in motion, not subject matter. You must work within the visual world established by the user's `image prompt` and be guided by the emotional and thematic core of the user's `post`.\n3.  **Define Motion & Pacing:** The key is to describe movement. Your prompt must specify:\n    *   **Subject Animation:** What is the primary object in the scene doing? Describe its movement.\n    *   **Camera Dynamics:** How is the camera moving? (e.g., slow zoom, gentle pan, subtle dolly).\n    *   **Environmental Motion:** What subtle movements exist in the background or environment? (e.g., light shifting, dust motes floating, leaves rustling).\n    *   **Pacing:** The speed and feeling of the motion (e.g., slow and contemplative, gentle and unfolding, steady and focused).\n4.  **Structure for Flawless Execution:** Start with the core visual from the image prompt and then layer on the motion elements. Be descriptive, clear, and direct.\n5.  **Maintain Visual Style:** Carry over key descriptors from the image prompt, such as `photorealistic`, `cinematic`, `dramatic lighting`, etc., to ensure visual consistency.\n6.  **CRITICAL - No Text:** Reiterate the command to exclude all text. Your prompt must end with a strong negative constraint like `--no text, words, or letters`.\n\n**Examples:**\n*   **User Input:**\n    *   **Post:** \"The goal isn't to manage your time. It's to manage your energy. Most people try to cram more into their day. The most effective people get more done by protecting a single 90-minute window for their most important task...\"\n    *   **Image Prompt:** \"A single, glowing hourglass on a clean, dark wooden desk, its sand flowing brightly. In the background, a large window shows the beautiful bokeh blur of a chaotic city at night. Cinematic photorealism, close-up shot... dramatic lighting... --no text\"\n\n*   **AI Output (This is the *entire* output from the AI):**\n\n    Photorealistic close-up of a single, glowing hourglass on a dark wooden desk. The brilliant sand flows downwards at a steady, mesmerizing pace. Through the window, blurred city lights twinkle softly in the background. A very slow, almost imperceptible dolly zoom pushes in on the hourglass, enhancing the sense of deep focus. Cinematic, dramatic lighting, contemplative and focused mood. --no text, words, letters"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2340,
+        -20
+      ],
+      "id": "26196fb6-8aec-46f5-a0e0-469a1a9ee63c",
+      "name": "Generate Video Prompt"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8bdc1230-c284-47b6-9fc7-d7e9d82672db",
+              "name": "post",
+              "value": "={{ $('Generate Post').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "b374abd8-e8c5-4868-b5b3-249df23ea75d",
+              "name": "image_prompt",
+              "value": "={{ $('Generate Image Prompt').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "25ccbf05-3586-4eb5-a0eb-2eb5bb1e8854",
+              "name": "video_prompt",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2700,
+        -20
+      ],
+      "id": "375e5aef-5279-492f-8501-d1db63501151",
+      "name": "Post + Visuals"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3860,
+        20
+      ],
+      "id": "ddbab9a4-eb08-4501-9ddc-10a6c6d164fb",
+      "name": "Wait",
+      "webhookId": "b0fbbf5b-a61b-4b4b-925e-7e37b6af74f2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.novita.ai/v3/async/wan-i2v",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"width\": 1280,\n    \"height\": 720,\n    \"prompt\": {{ JSON.stringify($('Post + Visuals').item.json.video_prompt) }},\n    \"image_url\": \"{{ $('Generate Image').item.json.data[0].imageURL }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3160,
+        -20
+      ],
+      "id": "9579c08f-b1bd-4a29-a6a8-54fa40cd44c8",
+      "name": "Image-to-Video - POST",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "e4vurF9Afbtn75rN",
+          "name": "novita.ai - salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.novita.ai/v3/async/task-result",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_id",
+              "value": "={{ $('Image-to-Video - POST').item.json.task_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3360,
+        -20
+      ],
+      "id": "882b9df5-7b51-43e3-aa29-773d0fd27d62",
+      "name": "Image-to-Video - GET",
+      "retryOnFail": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "e4vurF9Afbtn75rN",
+          "name": "novita.ai - salmanadnan0206"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a2e173f2-33a1-418a-9992-e92ae06e1b72",
+              "name": "post",
+              "value": "={{ $('Post + Visuals').item.json.post }}",
+              "type": "string"
+            },
+            {
+              "id": "7d12deea-e4c8-488f-a7f6-25ad55e8474a",
+              "name": "img_url",
+              "value": "={{ $('Generate Image').item.json.data[0].imageURL }}",
+              "type": "string"
+            },
+            {
+              "id": "75693bad-053e-4308-931b-710e4c55df8b",
+              "name": "video_url",
+              "value": "={{ $json.videos[0].video_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3860,
+        -140
+      ],
+      "id": "39140fe6-f711-4745-bce8-6b8147856ae8",
+      "name": "Final"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "067179df-dc42-4c54-97d2-86cd6cb87bba",
+              "leftValue": "={{ $('Image-to-Video - GET').item.json.task.status }}",
+              "rightValue": "TASK_STATUS_SUCCEED",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3580,
+        -20
+      ],
+      "id": "8750c625-07e6-41b2-8f71-534ee3423cb3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "82249880-0247-4d3f-9d99-d44229b4a709",
+              "leftValue": "={{ $('latest_topic').item.json.Progress }}",
+              "rightValue": "In Progress",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "5bab5015-8812-456d-b20d-aac2483704be",
+      "name": "Filter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "latest_topic": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "scrape_articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_articles": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "scrape_articles": {
+      "main": [
+        [
+          {
+            "node": "store_article_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "store_article_data": {
+      "main": [
+        [
+          {
+            "node": "Generate Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Image Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Post": {
+      "main": [
+        [
+          {
+            "node": "Generate Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Video Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Video Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video Prompt": {
+      "main": [
+        [
+          {
+            "node": "Post + Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post + Visuals": {
+      "main": [
+        [
+          {
+            "node": "Generate Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Image-to-Video - GET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image-to-Video - POST": {
+      "main": [
+        [
+          {
+            "node": "Image-to-Video - GET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image-to-Video - GET": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image": {
+      "main": [
+        [
+          {
+            "node": "Image-to-Video - POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "get_articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "d2786919-1f23-48ee-9845-9be300cbda65",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b51ae8788dd58e03d5965cccb0929bf8052ea05534f8bb79c40e8c893c3493be"
+  },
+  "id": "GcpHSL5RXNp7xByw",
+  "tags": []
+}

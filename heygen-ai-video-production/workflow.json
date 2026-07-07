@@ -1,0 +1,907 @@
+{
+  "name": "Demo Heygen - AI Avatar Video Maker",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "d5a576f4-9e03-428c-aa82-19f8dab643e6",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -1136,
+        144
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🎬 COMPLETE AI VIDEO PRODUCTION PIPELINE\n\n**REAL API INTEGRATIONS:**\n✅ Google Sheets - Script Management\n✅ ElevenLabs - AI Voice Synthesis  \n✅ HeyGen - AI Avatar Video Generation\n✅ FFmpeg API - Video Format Conversion\n✅ Submagic - Auto Captions & B-roll\n✅ Google Sheets - Results Tracking\n\n**Complete Flow:**\nFetch Scripts → Filter Unprocessed → Generate Voice → Upload Audio → Create Avatar Video → Poll Status → Crop to Vertical → Add Captions & Effects → Update Tracking Sheet\n\n**Setup Required:**\n- Google Sheets with columns: Topics, Scripts, Heygen Video, Final Video\n- ElevenLabs API Key\n- HeyGen API Key  \n- FFmpeg API Key\n- Submagic API Key",
+        "height": 480,
+        "width": 700,
+        "color": 4
+      },
+      "id": "cb631dd2-c5dd-4a0d-8dfa-07fdc66ed390",
+      "name": "Pipeline Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "8d5a95a8-7777-4546-9982-b9c49473a937",
+      "name": "1️⃣ Fetch All Scripts",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -864,
+        128
+      ],
+      "notes": "Reads all video scripts from Google Sheets"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "unprocessed-check",
+              "leftValue": "={{ $json['Final Video'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "763aa8e7-9ee4-4cb9-b2dd-5e9e6ea959fd",
+      "name": "2️⃣ Filter Unprocessed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        128
+      ],
+      "notes": "Only process videos that haven't been completed yet"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "000b43f9-4b04-4a55-b604-c66c8326c529",
+      "name": "3️⃣ Loop Through Scripts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -416,
+        128
+      ],
+      "notes": "Process each script one at a time"
+    },
+    {
+      "parameters": {
+        "content": "## 📝 SCRIPT RETRIEVAL & FILTERING",
+        "height": 384,
+        "width": 508
+      },
+      "id": "99191f97-491d-4fe5-92e3-fbf21071957f",
+      "name": "Stage 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "avatar-id",
+              "name": "avatar_id",
+              "type": "string",
+              "value": "8361563f2c914ace8ed2d048cbde8a4e"
+            },
+            {
+              "id": "script-text",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $('1️⃣ Fetch All Scripts').item.json.Scripts }}"
+            },
+            {
+              "id": "topic",
+              "name": "topic",
+              "type": "string",
+              "value": "={{ $('1️⃣ Fetch All Scripts').item.json.Topics }}"
+            },
+            {
+              "id": "row",
+              "name": "row_number",
+              "type": "number",
+              "value": "={{ $('1️⃣ Fetch All Scripts').item.json.row_number }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c4182f3b-8484-4148-be3f-a12e3a5fb1dd",
+      "name": "4️⃣ Prepare Avatar Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        64
+      ],
+      "notes": "Set avatar ID and extract script text for voice generation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "heygen-check",
+              "leftValue": "={{ $('1️⃣ Fetch All Scripts').item.json['Heygen Video'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "405c02f9-843d-498e-9d64-2485e85c82b1",
+      "name": "5️⃣ Check If Video Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        64
+      ],
+      "notes": "Skip voice generation if HeyGen video already exists"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "YOUR_VOICE_ID",
+          "mode": "id"
+        },
+        "text": "={{ $json.text }}",
+        "additionalOptions": {
+          "model": {
+            "__rl": true,
+            "value": "eleven_flash_v2_5",
+            "mode": "list",
+            "cachedResultName": "Eleven Flash v2.5"
+          },
+          "outputFormat": "mp3_44100_128",
+          "languageCode": "en",
+          "voiceSettings": "{\n  \"stability\": 0.8,\n  \"similarity_boost\": 1,\n  \"style\": 0,\n  \"use_speaker_boost\": true,\n  \"speed\": 1\n}"
+        },
+        "requestOptions": {}
+      },
+      "id": "e678cb94-6cca-4ead-903f-d2534acd3477",
+      "name": "6️⃣ Generate AI Voice",
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        256,
+        128
+      ],
+      "notes": "Convert script text to realistic AI voice using ElevenLabs"
+    },
+    {
+      "parameters": {
+        "content": "## 🎤 AI VOICE GENERATION",
+        "height": 336,
+        "width": 380
+      },
+      "id": "d0e66077-71af-4777-bfee-e61bc86eeac2",
+      "name": "Stage 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://upload.heygen.com/v1/asset",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "audio/mpeg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "1d0475d1-9460-4792-b5d4-e041baf0cff6",
+      "name": "7️⃣ Upload Audio to HeyGen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -992,
+        576
+      ],
+      "notes": "Upload the generated voice file to HeyGen's servers"
+    },
+    {
+      "parameters": {
+        "content": "## 🎥 VIDEO GENERATION",
+        "height": 336,
+        "width": 472,
+        "color": 3
+      },
+      "id": "69b176ef-c07d-47e0-8b9d-ac6709550e04",
+      "name": "Stage 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "1d2bcb6e-2bd3-4f89-807c-64b36ddd0112",
+      "name": "9️⃣ Wait for Processing",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        576
+      ],
+      "webhookId": "video-wait-webhook",
+      "notes": "Wait 10 seconds before checking video status"
+    },
+    {
+      "parameters": {
+        "url": "https://api.heygen.com/v1/video_status.get",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $('8️⃣ Create Avatar Video').first().json.data.video_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f8bb24ab-e0d0-4a34-9dc9-e174cd9aae3b",
+      "name": "🔟 Check Video Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        512
+      ],
+      "notes": "Poll HeyGen API to check if video is ready"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "status-completed",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "completed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2fff2f7d-f3af-4c42-9570-952db09e7de9",
+      "name": "1️⃣1️⃣ Is Video Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        576
+      ],
+      "notes": "Check if video generation is finished"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('1️⃣ Fetch All Scripts').item.json.row_number }}",
+            "Heygen Video": "={{ $json.data.video_url }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ]
+        },
+        "options": {}
+      },
+      "id": "a191172c-4f49-4e4f-a40b-6a8efe6c907d",
+      "name": "1️⃣2️⃣ Save HeyGen URL",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        128,
+        576
+      ],
+      "notes": "Update Google Sheet with raw HeyGen video URL"
+    },
+    {
+      "parameters": {
+        "content": "## ✅ STATUS POLLING & TRACKING",
+        "height": 336,
+        "width": 828,
+        "color": 3
+      },
+      "id": "16ad3c69-80d6-40cf-829f-3cb36452549d",
+      "name": "Stage 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ffmpeg-api.com/file",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"file_name\": \"input.mp4\"\n  }",
+        "options": {}
+      },
+      "id": "70683971-54af-46d7-9286-1577497352d8",
+      "name": "1️⃣3️⃣ Prepare FFmpeg Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1024,
+        912
+      ],
+      "notes": "Create upload URL for video processing"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('1️⃣ Fetch All Scripts').item.json['Heygen Video'] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "f725247e-8984-4ad8-8b4d-d99a9d6253bc",
+      "name": "1️⃣4️⃣ Download Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -800,
+        912
+      ],
+      "retryOnFail": true,
+      "notes": "Download the completed HeyGen video file"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $('1️⃣3️⃣ Prepare FFmpeg Upload').item.json.upload.url }}",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "144faaa3-ed5b-4da7-9827-515dde8d4224",
+      "name": "1️⃣5️⃣ Upload to FFmpeg",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        912
+      ],
+      "notes": "Upload video file to FFmpeg API for processing"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ffmpeg-api.com/ffmpeg/process",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task\": {\n    \"inputs\": [\n      {\n        \"file_path\": \"{{ $('1️⃣3️⃣ Prepare FFmpeg Upload').item.json.file.file_path }}\",\n        \"options\": []\n      }\n    ],\n    \"outputs\": [\n      {\n        \"file\": \"output_vertical.mp4\",\n        \"options\": [\"-vf\", \"crop=607:1080\"]\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "id": "c08aa681-174b-485b-ad6f-180475834d62",
+      "name": "1️⃣6️⃣ Crop to Vertical 9:16",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -352,
+        912
+      ],
+      "retryOnFail": true,
+      "notes": "Convert 16:9 video to vertical 9:16 format for social media"
+    },
+    {
+      "parameters": {
+        "content": "## 📱 VIDEO FORMATTING",
+        "height": 336,
+        "width": 836,
+        "color": 4
+      },
+      "id": "ff03da38-ba0e-4a7b-a051-f87fc037da48",
+      "name": "Stage 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.submagic.co/v1/projects",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"videoUrl\": \"{{ $json.result[0].download_url }}\",\n    \"language\": \"en\",\n    \"title\": \"{{ $('4️⃣ Prepare Avatar Data').item.json.topic }}\",\n    \"magicZooms\": false,\n    \"magicBrolls\": true,\n    \"hookTitle\": {\n      \"top\": 40\n    },\n    \"magicBrollsPercentage\": 62.5,\n    \"templateName\":\"Hormozi 2\"\n}",
+        "options": {}
+      },
+      "id": "ae0700c8-5abc-472d-a683-aa983981b64e",
+      "name": "1️⃣7️⃣ Add Captions & B-roll",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -128,
+        912
+      ],
+      "notes": "Auto-generate captions and add B-roll footage using Submagic"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "3f67c2aa-12b7-4f74-bc28-f8f89fe19833",
+      "name": "1️⃣8️⃣ Wait for Submagic",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        912
+      ],
+      "webhookId": "submagic-wait-webhook",
+      "notes": "Wait for Submagic processing to complete"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.submagic.co/v1/projects/{{ $('1️⃣7️⃣ Add Captions & B-roll').item.json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d6be6f99-f21f-44a9-b768-9aa1b7332e3f",
+      "name": "1️⃣9️⃣ Check Submagic Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        864
+      ],
+      "notes": "Poll Submagic API for completion status"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "submagic-completed",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cf618793-5532-489a-a96e-b39bde987f65",
+      "name": "2️⃣0️⃣ Is Editing Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        912
+      ],
+      "notes": "Verify Submagic processing is finished"
+    },
+    {
+      "parameters": {
+        "content": "## 🎨 AUTO EDITING & CAPTIONS",
+        "height": 336,
+        "width": 900,
+        "color": 4
+      },
+      "id": "e1a41923-16f7-47c5-a055-cc1e22a508bf",
+      "name": "Stage 6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v2/video/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_inputs\": [\n    {\n      \"character\": {\n        \"type\": \"avatar\",\n        \"avatar_id\": \"{{ $('4️⃣ Prepare Avatar Data').item.json.avatar_id }}\",\n        \"avatar_style\": \"normal\"\n      },\n      \"voice\": {\n        \"type\": \"audio\",\n        \"audio_url\": \"{{ $('7️⃣ Upload Audio to HeyGen').item.json.data.url }}\",\n        \"speed\": 1.15\n      }\n    }\n  ],\n  \"caption\": true,\n  \"dimension\": {\n    \"width\": 1920,\n    \"height\": 1080\n  }\n}",
+        "options": {}
+      },
+      "id": "78525051-4464-4d4b-b80f-fb8e784b6db7",
+      "name": "8️⃣ Create Avatar Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -768,
+        576
+      ],
+      "retryOnFail": false,
+      "maxTries": 2,
+      "notes": "Generate AI avatar video with the uploaded voice"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "1️⃣ Fetch All Scripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣ Fetch All Scripts": {
+      "main": [
+        [
+          {
+            "node": "2️⃣ Filter Unprocessed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2️⃣ Filter Unprocessed": {
+      "main": [
+        [
+          {
+            "node": "3️⃣ Loop Through Scripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3️⃣ Loop Through Scripts": {
+      "main": [
+        [],
+        [
+          {
+            "node": "4️⃣ Prepare Avatar Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4️⃣ Prepare Avatar Data": {
+      "main": [
+        [
+          {
+            "node": "5️⃣ Check If Video Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5️⃣ Check If Video Exists": {
+      "main": [
+        [
+          {
+            "node": "6️⃣ Generate AI Voice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "1️⃣3️⃣ Prepare FFmpeg Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6️⃣ Generate AI Voice": {
+      "main": [
+        [
+          {
+            "node": "7️⃣ Upload Audio to HeyGen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7️⃣ Upload Audio to HeyGen": {
+      "main": [
+        [
+          {
+            "node": "8️⃣ Create Avatar Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9️⃣ Wait for Processing": {
+      "main": [
+        [
+          {
+            "node": "🔟 Check Video Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔟 Check Video Status": {
+      "main": [
+        [
+          {
+            "node": "1️⃣1️⃣ Is Video Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣1️⃣ Is Video Complete?": {
+      "main": [
+        [
+          {
+            "node": "1️⃣2️⃣ Save HeyGen URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "9️⃣ Wait for Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣2️⃣ Save HeyGen URL": {
+      "main": [
+        [
+          {
+            "node": "1️⃣3️⃣ Prepare FFmpeg Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣3️⃣ Prepare FFmpeg Upload": {
+      "main": [
+        [
+          {
+            "node": "1️⃣4️⃣ Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣4️⃣ Download Video": {
+      "main": [
+        [
+          {
+            "node": "1️⃣5️⃣ Upload to FFmpeg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣5️⃣ Upload to FFmpeg": {
+      "main": [
+        [
+          {
+            "node": "1️⃣6️⃣ Crop to Vertical 9:16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣6️⃣ Crop to Vertical 9:16": {
+      "main": [
+        [
+          {
+            "node": "1️⃣7️⃣ Add Captions & B-roll",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣7️⃣ Add Captions & B-roll": {
+      "main": [
+        [
+          {
+            "node": "1️⃣8️⃣ Wait for Submagic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣8️⃣ Wait for Submagic": {
+      "main": [
+        [
+          {
+            "node": "1️⃣9️⃣ Check Submagic Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣9️⃣ Check Submagic Status": {
+      "main": [
+        [
+          {
+            "node": "2️⃣0️⃣ Is Editing Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2️⃣0️⃣ Is Editing Complete?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "1️⃣8️⃣ Wait for Submagic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8️⃣ Create Avatar Video": {
+      "main": [
+        [
+          {
+            "node": "9️⃣ Wait for Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "tags": []
+}

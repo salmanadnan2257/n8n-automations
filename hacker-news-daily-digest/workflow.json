@@ -1,0 +1,399 @@
+{
+  "createdAt": "2025-08-24T04:22:12.483Z",
+  "updatedAt": "2025-08-30T08:02:30.000Z",
+  "id": "OGv68zj4XgfqPjpP",
+  "name": "Hacker News -> Daily Digest",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a736b08b-29fd-449b-8fb4-fe76951a889e",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "10eaa933-c0d3-43f4-addd-08edff388388",
+      "name": "NEWS API",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "all",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hackerNews",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "cff42942-73b5-41a4-ba87-cb4c463b9d13",
+      "name": "Get many items"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "71ac4376-ee9c-4a2a-b2f0-72a2bd5e3026",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Limit').item.json._highlightResult.url.value }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "103d4bd9-6c4b-447c-91e9-7e99ed0e73bd",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        832,
+        0
+      ],
+      "id": "c146de01-c93b-4d8f-a8a3-0f43eb03bc50",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        0
+      ],
+      "id": "3ff5e879-abf6-4641-af3e-5e01b08b6f5e",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Markdown').item.json.data }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant. Summarize the article efficiently.\n\nThen, formulate it in a daily digest format for the email.\n\nOnly respond with the summary and summary ONLY.\n\nNO FORMATTING. NO ** NO * NO ***. ONLY \\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1584,
+        0
+      ],
+      "id": "8292e545-c189-4a51-bec6-8296e13a893b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        176
+      ],
+      "id": "afcf38e2-f8d9-41f5-b3c7-f8dbe81461e9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9uPBjgygdbPHMRit",
+          "name": "ammarowais70"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0fb11f6b-30fd-4d3d-ab01-8e3aabf603c2",
+              "name": "output",
+              "value": "={{ $('AI Agent').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1888,
+        0
+      ],
+      "id": "c611a964-58ed-4315-b08d-755dea7498eb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        -176
+      ],
+      "id": "59d26f78-314d-4ee6-a73a-9e5e2fce922f",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fromEmail": "user@example.com",
+        "toEmail": "user@example.com",
+        "subject": "Your daily digest",
+        "emailFormat": "text",
+        "text": "={{ $('Edit Fields1').item.json.final }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1520,
+        -176
+      ],
+      "id": "36488297-3756-4290-bd33-b3db7e4c80d1",
+      "name": "Send email",
+      "webhookId": "730d58bc-8baa-478d-b52c-28832fd2f722",
+      "credentials": {
+        "smtp": {
+          "id": "IQJhVnnyEPtO0BEg",
+          "name": "salman@digitalise.agency"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2017c4aa-da56-4fc6-9c2d-3e9977a6d5e3",
+              "name": "final",
+              "value": "=News Daily Digest:\n\n{{ $('Aggregate').item.json.data.map((item, index) => {return item.output;}).join('\\n\\n') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        -176
+      ],
+      "id": "252ddf3c-a496-4b7d-ab72-1a55ee8250b4",
+      "name": "Edit Fields1"
+    }
+  ],
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "NEWS API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NEWS API": {
+      "main": [
+        [
+          {
+            "node": "Get many items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many items": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "13351ce5-6d89-4a7f-90fb-5811acb9e8d9",
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "createdAt": "2025-08-30T07:55:44.875Z",
+      "updatedAt": "2025-08-30T07:55:44.875Z",
+      "role": "workflow:owner",
+      "workflowId": "OGv68zj4XgfqPjpP",
+      "projectId": "1E6nRnGi8VBThoy6",
+      "project": {
+        "createdAt": "2025-08-30T07:23:19.064Z",
+        "updatedAt": "2025-08-30T07:24:28.959Z",
+        "id": "1E6nRnGi8VBThoy6",
+        "name": "Portfolio Demo <user@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null
+      }
+    }
+  ]
+}
