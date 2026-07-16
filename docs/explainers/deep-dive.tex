@@ -1,0 +1,1557 @@
+% explainer-source-hash: 758aa0e1fc4aa54b67ece6e4982367fb6dc2c725dd0193a8e15921f8ec2b6aa1
+% explainer-source-commit: 208ef83ddf2d31892671bea435cbf0f1caa251fe
+% explainer-generated: 2026-07-16
+% Regenerate with /explain-all (see WIRING.md). Do not edit this stamp by hand:
+% it is how the toolchain knows whether this document still matches the code.
+\documentclass[11pt,a4paper]{article}
+\input{preamble}
+
+\title{\vspace{-1.5cm}\textbf{N8N Automations}\\[0.3em]
+\large A Deep Dive into 59 Workflow Automations\\[0.2em]
+\normalsize Exhaustive walkthrough, assuming no prior knowledge}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{keyidea}{What you are about to read}
+This project is not a program in the usual sense. There is no source file you can run,
+no test suite, no build. It is a collection of 59 \emph{automations}: business chores,
+each one wired together as a flowchart inside a tool called n8n, then exported to a
+file so it can be read, reviewed and re-imported.
+
+This document explains what n8n is, what an exported workflow actually contains, what
+each family of automations does and why, and where the collection is weak. Everything
+here was checked against the exported files themselves, not taken on trust from the
+project's own documentation.
+\end{keyidea}
+
+\tableofcontents
+\newpage
+
+\section{What this project is, and what it is not}
+
+\subsection{The one-sentence version}
+
+Fifty-nine business processes, each built as a flowchart that then runs itself, exported
+as text files and documented honestly, faults included.
+
+\subsection{What it is not}
+
+It is worth being precise about this early, because the shape of the project is unusual
+and it is easy to misjudge in both directions.
+
+\begin{itemize}
+  \item \textbf{It is not a codebase.} There is no application to compile. The only
+    executable-ish artifacts are JavaScript snippets embedded inside individual
+    workflow steps, and one small Python script used to draw pictures of the workflows
+    for the website.
+  \item \textbf{It is not a library or a product.} Nothing here is meant to be
+    imported by another program. Each automation is a self-contained job.
+  \item \textbf{It is not a live system.} These are \emph{exports}, snapshots taken out
+    of a running n8n instance. Importing one into a fresh n8n gives you the shape of
+    the automation but none of its account access, which has to be supplied again by
+    hand.
+  \item \textbf{It is not a set of toy examples.} Most of these ran, or were built to
+    run, against real business accounts at a real agency: a real payment processor, a
+    real customer database, real inboxes.
+\end{itemize}
+
+\begin{honest}{But the "runs itself" claim needs an immediate qualifier}
+Of the 80 exported workflow files in this repository, exactly \textbf{9} carry
+\code{active: true}. The other 71 are marked inactive. In n8n, an inactive workflow's
+automatic triggers do not fire; it only runs when a human presses the button in the
+editor.
+
+That does not mean 71 automations are broken. An export is a snapshot, and a workflow
+is routinely deactivated before export, or exported from a development copy. But it
+does mean this repository is \textbf{not evidence that 59 automations are running in
+production right now}, and nobody should describe it that way. It is evidence that 59
+automations were designed and built. Section~\ref{sec:honest} returns to this.
+\end{honest}
+
+\section{n8n, explained from zero}
+
+Nothing in this section assumes you have seen n8n, or any automation tool. If you
+already know n8n well, skip to Section~\ref{sec:datamodel}.
+
+\subsection{The problem automation tools solve}
+
+Consider a real chore: \emph{when a sales deal is marked "won" in our customer database,
+create a customer record in our payment processor and send them an invoice}.
+
+You could do that by hand, every time, in about four minutes. You could also write a
+program: talk to the database's API, talk to the payment processor's API, handle the
+errors, host it somewhere, keep it alive. That is maybe a day of work and a permanent
+maintenance burden, for four minutes of chore.
+
+\begin{jargon}{API}
+Short for Application Programming Interface. A door that a piece of software opens
+deliberately so that \emph{other} software can talk to it, as opposed to the screens it
+opens for humans. When this document says a workflow "calls Stripe's API", it means the
+workflow sends Stripe a structured message over the internet asking it to do something,
+and Stripe sends a structured answer back.
+\end{jargon}
+
+n8n sits between those two options. It is a \textbf{visual workflow automation tool}:
+you drag boxes onto a canvas, wire them together with lines, and the tool runs the
+resulting flowchart for you. It already knows how to talk to hundreds of services, so
+"talk to the payment processor's API" becomes "drag the Stripe box onto the canvas".
+
+\begin{keyidea}{The honest framing of what this skill is}
+Dragging boxes sounds like it is not engineering. Building one of these badly is easy
+and building one of these well is not, and the reason is that everything hard about
+software is still present: state, failure, retries, idempotency, data shape mismatches,
+rate limits, credentials, and the question of what happens on the run where the third
+API call times out after the first two already took effect.
+
+The visual editor removes the typing. It does not remove the thinking. Most of
+Section~\ref{sec:honest} is a catalogue of places in this very repository where the
+thinking was not done, and each one is a bug that would be equally possible in
+handwritten code.
+\end{keyidea}
+
+\subsection{The five words you need}
+
+\begin{jargon}{Node}
+One box on the canvas: a single step. "Send a Gmail message" is a node. "Ask an AI
+model for text" is a node. "If the amount is over 500, go left, otherwise go right" is a
+node. A node takes data in, does one thing, and passes data out. Across this repository
+there are \textbf{1{,}645} nodes.
+\end{jargon}
+
+\begin{jargon}{Connection}
+A line between two nodes, saying "when this one finishes, run that one next, and hand it
+your output". Connections are directional. The set of all connections is the flowchart.
+\end{jargon}
+
+\begin{jargon}{Trigger}
+The special node that \emph{starts} a workflow. Every other node runs because something
+before it ran; a trigger runs because something happened in the outside world. A
+schedule trigger fires at 8am. A webhook trigger fires when another system sends this
+workflow a message. A Telegram trigger fires when someone texts the bot. A manual
+trigger fires when a human clicks "Execute" in the editor.
+\end{jargon}
+
+\begin{jargon}{Credential}
+A stored login for an outside service, kept in n8n's own encrypted credential store and
+referenced by nodes rather than typed into them. This distinction matters enormously for
+this repository and Section~\ref{sec:security} is devoted to it.
+\end{jargon}
+
+\begin{jargon}{Expression}
+A small piece of live text inside a node's settings that gets computed at run time
+instead of being fixed. Written in double curly braces. If a node's "To" field contains
+an expression referring to the email address from an earlier step, then each run sends
+to a different person. A field without an expression is a hardcoded constant and sends
+to the same person forever, which, as Section~\ref{sec:honest} shows, is a mistake this
+repository makes more than once.
+\end{jargon}
+
+\subsection{The shape of a workflow}
+
+Figure~\ref{fig:concept} shows the whole idea in one picture, using the deal-won example.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[node distance=7mm]
+  \node[extbox] (world) {Outside world\\\scriptsize a deal is marked "won"};
+  \node[box, right=14mm of world, fill=warnred!12, draw=warnred] (trig) {\textbf{Trigger}\\\scriptsize Webhook};
+  \node[box, right=10mm of trig] (fetch) {Node\\\scriptsize fetch the deal};
+  \node[box, right=10mm of fetch] (cust) {Node\\\scriptsize create customer};
+  \node[box, right=10mm of cust] (inv) {Node\\\scriptsize send invoice};
+
+  \draw[flow] (world) -- (trig);
+  \draw[flow] (trig) -- node[lbl, above] {data} (fetch);
+  \draw[flow] (fetch) -- node[lbl, above] {data} (cust);
+  \draw[flow] (cust) -- node[lbl, above] {data} (inv);
+
+  \node[store, below=12mm of fetch] (cred) {credential\\store};
+  \draw[dflow] (cred) -- (fetch);
+  \draw[dflow] (cred) -- (cust);
+  \draw[dflow] (cred) -- (inv);
+  \node[lbl, below=1mm of cred] {logins live here, never in the flowchart};
+
+  \node[lbl, above=8mm of cust, text width=6cm] {each box is a \textbf{node}; each arrow is a
+    \textbf{connection}; the whole chain is a \textbf{workflow}};
+\end{tikzpicture}}
+\caption{The vocabulary in one picture. A trigger starts the run; nodes do one thing
+each; connections carry data forward; credentials are referenced from a separate store
+rather than embedded.}
+\label{fig:concept}
+\end{figure}
+
+\subsection{Four more terms this repository leans on heavily}
+
+\begin{jargon}{Sub-workflow}
+A workflow called by another workflow, the way a function is called by other code. The
+caller uses an \code{executeWorkflow} node; the callee starts with an
+\code{executeWorkflowTrigger} node instead of a normal trigger. This repository uses the
+pattern 17 times, and it is how the largest systems here are organized.
+\end{jargon}
+
+\begin{jargon}{AI Agent (and its tools)}
+A node that hands a question to a large language model \emph{along with a list of things
+the model is allowed to do}, and then lets the model decide which of them to do. Those
+"things" are called tools, and each is another node plugged into the agent. An agent
+with a calendar tool and an email tool can be asked "move my 3pm and tell Sam", and it
+will work out that this means two tool calls in a particular order. There are
+\textbf{109} agent nodes in this repository.
+\end{jargon}
+
+\begin{jargon}{LLM (Large Language Model)}
+The kind of AI model behind ChatGPT and its competitors: it takes text and produces
+plausible continuation text. Crucially for this document, an LLM's output is
+\emph{probabilistic}, not guaranteed. Ask for JSON and you usually get JSON. "Usually"
+is the entire source of a recurring class of bug in Section~\ref{sec:honest}.
+\end{jargon}
+
+\begin{jargon}{RAG (Retrieval-Augmented Generation)}
+A technique for making an LLM answer from \emph{your} documents instead of its general
+training. You chop the documents into chunks, convert each chunk into a list of numbers
+capturing its meaning (an \emph{embedding}), and store them in a vector database. At
+question time you embed the question, find the chunks whose numbers are nearest, and
+paste those chunks into the prompt. The model then answers from real text you supplied
+rather than from memory. Two systems here do this.
+\end{jargon}
+
+\section{The exported file: what is actually in it}
+\label{sec:datamodel}
+
+Every automation in this repository is, on disk, one or more \code{.json} files. This
+section explains exactly what is inside one, because everything else in this document is
+a reading of these files.
+
+\begin{jargon}{JSON}
+A plain-text format for structured data, made of nested lists and key/value pairs. It is
+what most web services speak, and it is human-readable, which is what makes reviewing
+these exports possible at all.
+\end{jargon}
+
+\subsection{The top level}
+
+The export is one JSON object. The two keys that matter are \code{nodes} (a flat list of
+every box on the canvas) and \code{connections} (a map describing every wire). The rest
+is metadata: identifiers, timestamps, the workflow's display name, and the
+\code{active} flag.
+
+\begin{lstlisting}[language=,caption={The whole of a small export, with values that
+identify a live endpoint replaced by placeholders. This is \file{youtube-transcript-fetcher},
+the smallest automation here at 3 nodes.}]
+{
+  "name": "YT Transcript",
+  "active": false,
+  "nodes": [ ... 3 node objects ... ],
+  "connections": {
+    "Webhook":      { "main": [ [ { "node": "HTTP Request",       "index": 0 } ] ] },
+    "HTTP Request": { "main": [ [ { "node": "Respond to Webhook", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": []
+}
+\end{lstlisting}
+
+\begin{keyidea}{Connections are keyed by node \emph{name}, not by ID}
+Look closely at the \code{connections} map: the wires refer to nodes by their
+human-readable display name (\code{"HTTP Request"}), even though every node also carries
+a unique ID. The same is true of expressions inside nodes, which reach back to earlier
+steps by writing \code{\$('Some Node Name')}.
+
+This is the single most important structural fact about n8n for understanding
+Section~\ref{sec:honest}, because it means \textbf{renaming a node in the editor can
+silently break any expression that referred to it}. n8n fixes up the wires when you
+rename, but an expression is just text inside a field, and text does not get fixed up.
+This repository contains a workflow where exactly this happened, three times, in one
+file.
+\end{keyidea}
+
+\subsection{One node, dissected}
+
+\begin{lstlisting}[language=,caption={A single node object. This is the webhook trigger
+from the same file; the real \code{path} and \code{webhookId} are the live URL of this
+endpoint, so they are shown here as placeholders rather than reproduced.}]
+{
+  "name": "Webhook",                    <-- what connections and expressions call it
+  "type": "n8n-nodes-base.webhook",     <-- which KIND of box this is
+  "typeVersion": 2,                     <-- which generation of that box
+  "position": [0, 0],                   <-- where it sits on the canvas (cosmetic)
+  "id": "<uuid>",                       <-- unique, but NOT what wires use
+  "webhookId": "<uuid>",
+  "parameters": {                       <-- everything the user configured
+    "httpMethod": "POST",
+    "path": "<uuid>",
+    "options": { "allowedOrigins": "*" }
+  }
+}
+\end{lstlisting}
+
+The \code{type} field is the interesting one. It is a namespaced string, and the
+namespace tells you where the node came from:
+
+\begin{center}
+\begin{tabular}{@{}llr@{}}
+\toprule
+\textbf{Namespace} & \textbf{Meaning} & \textbf{Count} \\
+\midrule
+\code{n8n-nodes-base.*}              & Ships with n8n itself      & 1{,}298 \\
+\code{@n8n/n8n-nodes-langchain.*}    & Official AI add-on pack    & 336 \\
+\code{n8n-nodes-scrapegraphai.*}     & Third-party community pack & 4 \\
+\code{n8n-nodes-fathom.*}            & Third-party community pack & 2 \\
+\code{@apify/n8n-nodes-apify.*}      & Third-party community pack & 1 \\
+\code{@devlikeapro/n8n-nodes-waha.*} & Third-party community pack & 1 \\
+\code{@elevenlabs/n8n-nodes-elevenlabs.*} & Third-party community pack & 1 \\
+\code{n8n-nodes-templated.*}         & Third-party community pack & 1 \\
+\code{n8n-nodes-guuid-generator.*}   & Third-party community pack & 1 \\
+\midrule
+& & \textbf{1{,}645} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{honest}{Seven community packages are an undocumented portability constraint}
+The bottom seven rows are not part of n8n. They are third-party packages that must be
+installed into the instance before the workflow using them will even \emph{open}, let
+alone run. Eleven nodes across seven separate packages, and each package is a separate
+install and a separate maintenance risk: a community node abandoned by its author is a
+workflow that stops opening after an n8n upgrade.
+
+Anyone importing \file{fathom-native-node-integration},
+\file{whatsapp-ai-sales-lead-system}, \file{uuid-generator-utility} or any of the four
+others into a stock n8n gets an unrecognized-node error. Neither the repository root
+README nor those folders' setup sections leads with that fact. It is a small thing that
+will cost a first-time importer twenty confused minutes, and the fix is one line in each
+affected \file{CREDENTIALS.md} or setup section.
+\end{honest}
+
+\subsection{How a wire is stored, and why the shape is weird}
+
+\begin{lstlisting}[language=,caption={The nesting of the connections map, explained.}]
+"connections": {
+  "Loop Over Items": {          // the SOURCE node's name
+    "main": [                   // which KIND of output (see below)
+      [ {"node": "Switch2", "index": 0} ],      // output slot 0 -> these targets
+      [ {"node": "Download File", "index": 0} ] // output slot 1 -> these targets
+    ]
+  }
+}
+\end{lstlisting}
+
+Three levels of nesting, each meaning something:
+
+\begin{enumerate}
+  \item \textbf{The connection kind} (\code{"main"}). Ordinary data flow is
+    \code{main}. AI nodes use other kinds: \code{ai\_languageModel},
+    \code{ai\_tool}, \code{ai\_memory}, \code{ai\_embedding}. These are how a
+    model, a tool or a memory gets attached to an agent.
+  \item \textbf{The output slot} (the outer array). A node with one output has one
+    slot. An \code{If} node has two: slot 0 is "true", slot 1 is "false". A
+    \code{Switch} can have many. A loop node uses slot 0 for "done" and slot 1 for
+    "next batch".
+  \item \textbf{The target list} (the inner array). One output slot can feed several
+    nodes at once, which is how the canvas fans out.
+\end{enumerate}
+
+\begin{keyidea}{The AI connections run \emph{backwards}, and this confuses everyone}
+For an agent, the \code{ai\_tool} and \code{ai\_languageModel} connections are stored on
+the \emph{tool}, pointing \emph{at} the agent. Reading the raw JSON, it looks like the
+Gmail tool feeds the agent, in the same direction as ordinary data flow. It does not:
+the agent calls the tool.
+
+The arrow in the file describes attachment ("I am equipment belonging to that agent"),
+not data flow. Anyone reading these exports for the first time, or writing a script to
+analyse them, will get the direction wrong once. Figure~\ref{fig:assistant} draws it the
+way it actually behaves rather than the way it is stored.
+\end{keyidea}
+
+\section{Repository anatomy}
+
+\subsection{The layout}
+
+\begin{figure}[H]
+\centering
+\begin{forest} dirtree
+[n8n-automations/
+  [README.md {\normalfont\itshape\quad the index, and the honest "what is missing" list}]
+  [.gitignore]
+  [crm-lead-to-stripe-invoice/ {\normalfont\itshape\quad one folder per automation, x59}
+    [README.md {\normalfont\itshape\quad what/why/architecture/challenges}]
+    [CREDENTIALS.md {\normalfont\itshape\quad which logins it needs, never their values}]
+    [LICENSE {\normalfont\itshape\quad PolyForm Strict 1.0.0}]
+    [workflow.json {\normalfont\itshape\quad the export itself}]
+  ]
+  [cold-email-outreach-sequence-system/ {\normalfont\itshape\quad some folders hold many}
+    [README.md] [CREDENTIALS.md] [LICENSE]
+    [Online\_Research.json]
+    [NEW\_\_\_Generate\_All\_Emails.json {\normalfont\itshape\quad + 8 more}]
+  ]
+  [docs/
+    [explainers/ {\normalfont\itshape\quad this document}]
+    [screenshots/
+      [render\_n8n.py {\normalfont\itshape\quad draws node graphs as PNGs}]
+      [*.png {\normalfont\itshape\quad 6 rendered graphs}]
+    ]
+  ]
+]
+\end{forest}
+\caption{The repository is one flat tier of automation folders plus a \file{docs/}
+directory. There is no shared code, no top-level manifest, and no build.}
+\label{fig:tree}
+\end{figure}
+
+\subsection{The four-file convention}
+
+Every one of the 59 folders holds the same four things, and the consistency is real, not
+aspirational. Verified by inspection:
+
+\begin{center}
+\begin{tabular}{@{}llp{7.4cm}@{}}
+\toprule
+\textbf{File} & \textbf{In all 59?} & \textbf{Role} \\
+\midrule
+\file{README.md}        & yes & The prose. Nine standard headings.\\
+\file{CREDENTIALS.md}   & yes & The external accounts needed, by name and purpose.\\
+\file{LICENSE}          & yes & PolyForm Strict 1.0.0, byte-identical in 58 of 59.\\
+\file{*.json}           & yes & One or more exports. 80 files across 59 folders.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The README headings are near-perfectly uniform across all 59 folders: \emph{What it is},
+\emph{Why it exists}, \emph{Features}, \emph{Architecture}, \emph{Setup}, \emph{Usage},
+\emph{Challenges}, \emph{What I learned}, \emph{What I'd do differently}. Two folders
+lack a \emph{What it is} heading and one lacks \emph{Why it exists} and \emph{Features},
+each having replaced it with something more specific such as \emph{Naming note (read
+this first)}.
+
+\begin{honest}{The 59th LICENSE differs, by one byte}
+\file{uuid-generator-utility/LICENSE} is identical to the other 58 except that it lacks
+a trailing newline. This is not a licensing problem and has no legal effect. It is worth
+a single sentence only because it is a tell: the files were placed by hand or by a
+script that did not normalize its output, rather than copied from one canonical source.
+\end{honest}
+
+\begin{jargon}{PolyForm Strict 1.0.0}
+A source-available, not open-source, licence. Anyone may read the code; nobody may use
+it, modify it or redistribute it without a separate agreement. The sensible choice for a
+portfolio: the work can be examined by an interviewer but not lifted into a competitor's
+product.
+\end{jargon}
+
+\section{The verified census}
+\label{sec:census}
+
+The project claims 59 automations. That claim is checkable and it was checked, by
+enumerating the tracked files and parsing every export rather than by counting the
+README's bullet points.
+
+\begin{center}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+\textbf{Measure} & \textbf{Count} & \textbf{How it was established} \\
+\midrule
+Automation folders          & \textbf{59} & Tracked top-level directories, minus \file{docs/} \\
+Exported workflow files     & 80          & Every tracked \file{*.json} \\
+Total nodes                 & 1{,}645     & Sum over every export's \code{nodes} array \\
+Distinct node types         & 93          & Unique \code{type} strings \\
+Sticky notes (documentation)& 186         & \code{stickyNote} nodes \\
+Functional nodes            & 1{,}459     & Total minus sticky notes \\
+Workflows marked active     & 9 of 80     & \code{active: true} \\
+Disabled nodes              & 45          & \code{disabled: true} \\
+Workflows with pinned test data & 9       & Non-empty \code{pinData} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{keyidea}{The headline number is honest, with a caveat worth stating out loud}
+\textbf{59 automations is correct}, if "automation" means "one documented folder solving
+one business problem". It is the count of folders, and there are exactly 59.
+
+The caveat is that 59 folders contain 80 workflow files, because six folders hold
+multi-workflow systems (the cold email system alone is 10 files and 275 nodes). So "59"
+undercounts the workflow files and overcounts the independent programs, depending on
+which you meant. It is a defensible number, not an inflated one, and the alternative
+counts are 80 files or 1{,}645 nodes.
+\end{keyidea}
+
+\begin{honest}{A different claim on the portfolio website is not about this project}
+The website's project grid shows the metric "33 automation hooks" on a card. That card
+belongs to \textbf{reelflow-studio}, a different project entirely, and the number has
+nothing to do with this repository. This repository's card correctly reads "59
+automations". Nothing here needs fixing; the number is noted only so it is not mistaken
+for a claim this project failed to substantiate.
+\end{honest}
+
+\subsection{What the collection is built out of}
+
+Node type frequency is a decent x-ray of a workflow collection's character.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=13.5cm, height=7.4cm,
+  xbar, xmin=0,
+  bar width=8pt,
+  y=10pt,
+  enlarge y limits=0.06,
+  xlabel={\small number of nodes across all 80 exports},
+  symbolic y coords={agent,gmail,wait,openAi,merge,code,if,lmChatGoogleGemini,googleSheets,httpRequest,set,stickyNote},
+  ytick=data,
+  nodes near coords, nodes near coords style={font=\tiny},
+  tick label style={font=\scriptsize},
+  label style={font=\small},
+  every axis plot/.append style={fill=accent!55, draw=inkblue},
+  axis lines*=left,
+  xmajorgrids, grid style={linegrey},
+]
+\addplot coordinates {
+  (186,stickyNote) (136,set) (128,httpRequest) (124,googleSheets)
+  (109,agent) (82,lmChatGoogleGemini) (80,if) (71,code)
+  (56,merge) (37,openAi) (33,wait) (32,gmail)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{The twelve most common node types. Read it as a portrait: this is a collection
+about \emph{moving data between web services and an LLM}, glued with spreadsheets.}
+\label{fig:nodefreq}
+\end{figure}
+
+Four things fall straight out of that chart:
+
+\begin{itemize}
+  \item \textbf{Sticky notes are the single most common node} (186). A sticky note does
+    nothing at run time; it is a comment on the canvas. Roughly one node in nine here
+    exists purely to explain the others. That is a genuinely good sign about how these
+    were built, and it is unusual.
+  \item \textbf{Google Sheets is the database} (124 nodes, plus 5 Sheets triggers).
+    Section~\ref{sec:patterns} argues this is both the collection's cleverest habit and
+    its biggest architectural weakness.
+  \item \textbf{\code{httpRequest} appears 128 times}, meaning that for a large fraction
+    of the services touched, no purpose-built n8n node existed and the author wrote the
+    raw API call by hand. This is the "when the visual tool runs out, drop to the API"
+    move, and it is used constantly.
+  \item \textbf{AI is not a garnish here.} 109 agent nodes plus 82 Gemini models plus
+    37 OpenAI nodes plus 17 OpenAI chat models. A fifth of all nodes are AI-related.
+\end{itemize}
+
+\subsection{How these automations start}
+
+\begin{center}
+\begin{tabular}{@{}lrp{8.1cm}@{}}
+\toprule
+\textbf{Trigger type} & \textbf{n} & \textbf{Meaning} \\
+\midrule
+\code{manualTrigger}          & 28 & A human clicks Execute \\
+\code{executeWorkflowTrigger} & 16 & Called by another workflow \\
+\code{scheduleTrigger}        & 14 & Fires on a clock \\
+\code{webhook}                & 14 & Another system posts to a URL \\
+\code{formTrigger}            & 11 & Someone submits an n8n-hosted form \\
+\code{chatTrigger}            & 7  & Someone types into a chat box \\
+\code{telegramTrigger}        & 5  & Someone messages a Telegram bot \\
+\code{googleSheetsTrigger}    & 5  & A spreadsheet row changed \\
+\code{googleDriveTrigger}     & 3  & A file appeared or changed \\
+\code{errorTrigger}           & 2  & Another workflow failed \\
+\code{fathomTrigger}          & 2  & A meeting recording finished \\
+\code{calTrigger}             & 1  & A booking was made \\
+\code{wahaTrigger}            & 1  & A WhatsApp message arrived \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{honest}{28 manual triggers is the most revealing number in this document}
+\code{manualTrigger} is the most common trigger in the collection. A manual trigger is
+what n8n gives you while you are \emph{building}: it exists so you can press Execute and
+watch data flow. A finished, deployed automation is normally started by a schedule, a
+webhook or an event, not by a person opening the editor.
+
+Combined with only 9 of 80 workflows marked active, the fair reading is that a
+substantial share of this collection is at \textbf{"built and demonstrated"} maturity
+rather than \textbf{"deployed and running unattended"} maturity. Several of the folder
+READMEs say as much. It should be said plainly and first, rather than discovered by an
+interviewer who thought to count.
+
+This is not a criticism of the work. It is a criticism of any description of the work
+that implies 59 live production systems.
+\end{honest}
+
+\section{A taxonomy of the 59}
+
+Fifty-nine is too many to walk through one at a time, and they are not 59 unrelated
+things. They fall into seven families, and once you know the family you can predict most
+of the architecture.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[node distance=5mm]
+  \node[box, fill=inkblue!12, minimum width=3.2cm] (root) {\textbf{59 automations}};
+
+  \node[box, below left=12mm and 34mm of root, text width=3.0cm] (a) {\textbf{Lead generation\\and outreach}\\\scriptsize 11 folders};
+  \node[box, right=6mm of a, text width=3.0cm] (b) {\textbf{Content\\generation}\\\scriptsize 14 folders};
+  \node[box, right=6mm of b, text width=3.0cm] (c) {\textbf{Video\\production}\\\scriptsize 7 folders};
+  \node[box, right=6mm of c, text width=3.0cm] (d) {\textbf{SEO}\\\scriptsize 5 folders};
+
+  \node[box, below=16mm of a, text width=3.0cm] (e) {\textbf{Assistants\\and chatbots}\\\scriptsize 9 folders};
+  \node[box, right=6mm of e, text width=3.0cm] (f) {\textbf{Business ops}\\\scriptsize 6 folders};
+  \node[box, right=6mm of f, text width=3.0cm] (g) {\textbf{Utilities}\\\scriptsize 7 folders};
+  \node[extbox, right=6mm of g, text width=3.0cm] (h) {\scriptsize dominant shape:\\\scriptsize trigger $\rightarrow$ fetch $\rightarrow$\\\scriptsize LLM $\rightarrow$ deliver\\\scriptsize $\rightarrow$ log to Sheets};
+
+  \foreach \x in {a,b,c,d} { \draw[flow] (root) -- (\x.north); }
+  \foreach \x in {e,f,g} { \draw[flow] (root) to[out=270,in=90] (\x.north); }
+\end{tikzpicture}}
+\caption{The seven families. Counts are of folders and sum to 59.}
+\label{fig:taxonomy}
+\end{figure}
+
+\subsection{Family 1: Lead generation and outreach (11)}
+
+Find businesses, get contact details, write to them, chase them.
+
+\begin{flushleft}
+\file{google-maps-to-email-scraper}, \file{linkedin-extractor-from-google-maps},
+\file{instagram-link-finder-outreach}, \file{cold-email-outreach-sequence-system},
+\file{deep-multiline-icebreaker-system}, \file{gmail-outreach-follow-ups},
+\file{subscriber-email-sequence}, \file{newsletter-automation},
+\file{whatsapp-ai-sales-lead-system}, \file{upwork-ai-agent-pipeline},
+\file{instagram-viral-reel-scraper}.
+\end{flushleft}
+
+The shared shape: a scraping API supplies raw businesses, a cleaning step normalizes
+them, an LLM writes something personal per lead, a sending platform delivers it, and a
+spreadsheet records who has been contacted. This family contains the largest system here
+and Section~\ref{sec:coldemail} walks it.
+
+\subsection{Family 2: Content generation (14)}
+
+\begin{flushleft}
+\file{social-media-content-generator} (190 nodes, the biggest single file),
+\file{ai-social-media-amplifier}, \file{social-media-poster},
+\file{social-media-trend-monitor}, \file{instagram-posting-workflow},
+\file{linkedin-publish-utility}, \file{real-estate-market-update-poster},
+\file{fb-ad-creative-generator}, \file{text-to-image-generator},
+\file{presentation-generator-tool}, \file{ai-proposal-generator-system},
+\file{daily-health-tip-bot}, \file{ai-motivational-quotes-bot},
+\file{ai-workout-generator}.
+\end{flushleft}
+
+Shape: gather a fact or a prompt, ask an LLM to write copy, optionally ask an image
+model for a picture, publish or return it.
+
+\subsection{Family 3: Video production (7)}
+
+\begin{flushleft}
+\file{auto-video-generator}, \file{faceless-shorts-system},
+\file{heygen-ai-video-production}, \file{submagic-video-clip-generator},
+\file{instagram-reel-analyzer}, \file{instagram-reel-scraper-transcriber},
+\file{youtube-agent-starter-template}.
+\end{flushleft}
+
+Shape: script $\rightarrow$ voice $\rightarrow$ render $\rightarrow$ poll $\rightarrow$
+publish. This family is defined by the polling problem: video rendering takes minutes,
+so these workflows must ask "is it done yet?" on a loop, which is why 33 \code{wait}
+nodes exist in this repository.
+
+\subsection{Family 4: SEO (5)}
+
+\begin{flushleft}
+\file{seo-ai-agent}, \file{seo-keyword-research-tool},
+\file{cluster-seo-post-generator}, \file{trend-seo-post-generator},
+\file{competitor-content-gap-analyzer}.
+\end{flushleft}
+
+Shape: a keyword data API supplies volumes, an LLM clusters and writes, WordPress
+receives a draft. Notably these publish as \emph{drafts}, never live, which is the right
+call and is stated as deliberate.
+
+\subsection{Family 5: Assistants and chatbots (9)}
+
+\begin{flushleft}
+\file{ultimate-personal-assistant-system}, \file{rag-ingestion-pipeline},
+\file{tutorial-rag-chat-agent}, \file{content-business-chat-agent},
+\file{telegram-joke-agent}, \file{telegram-translator-bot},
+\file{telegram-checklist-generator}, \file{telegram-to-vapi-trigger},
+\file{deep-research-report-generator}.
+\end{flushleft}
+
+Shape: a chat or messaging trigger, an agent node, a memory node, and a set of tools.
+Sections~\ref{sec:assistant} and~\ref{sec:rag} walk the two most interesting.
+
+\subsection{Family 6: Business operations (6)}
+
+\begin{flushleft}
+\file{crm-lead-to-stripe-invoice}, \file{calcom-trigger-workflow},
+\file{fathom-native-node-integration}, \file{expense-tracker-to-sheets},
+\file{daily-email-digest-ai-powered}, \file{birthday-greetings-automation}.
+\end{flushleft}
+
+Shape: a real business event happens, and something is recorded, billed or announced.
+This is the family where a bug costs actual money, and Section~\ref{sec:invoice} walks
+the one that bills people.
+
+\subsection{Family 7: Utilities (7)}
+
+\begin{flushleft}
+\file{uuid-generator-utility}, \file{website-screenshot-utility},
+\file{youtube-transcript-fetcher}, \file{handwriting-to-text-ocr},
+\file{booking-time-utility-set}, \file{vapi-call-trigger-utility},
+\file{hacker-news-daily-digest}.
+\end{flushleft}
+
+Small, single-purpose, mostly webhook-in / answer-out. These are the building blocks
+other workflows call, and the smallest is 3 nodes.
+
+\section{Walkthrough 1: CRM lead to Stripe invoice}
+\label{sec:invoice}
+
+This is the automation to understand first. It is only 6 nodes, it is the example from
+Section~2, and it touches real money, which makes its flaws the most instructive in the
+repository.
+
+\subsection{What it does}
+
+When a sales task in ClickUp (a project management tool used here as a CRM) is moved to
+the closed-won status, a ClickUp automation posts to this workflow's webhook. The
+workflow then fetches the full task, creates a Stripe customer, and issues a finalized
+invoice.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[node distance=6mm]
+  \node[extbox, text width=2.3cm] (cu) {ClickUp\\\scriptsize deal marked won};
+  \node[box, right=9mm of cu, fill=warnred!12, draw=warnred, text width=1.9cm] (wh) {Webhook\\\scriptsize trigger};
+  \node[box, right=9mm of wh, text width=2.1cm] (get) {ClickUp\\\scriptsize get task by id};
+  \node[box, right=9mm of get, text width=2.2cm] (st) {Stripe\\\scriptsize create customer};
+  \node[box, right=9mm of st, text width=2.2cm] (ii) {HTTP\\\scriptsize invoice item};
+  \node[box, right=9mm of ii, text width=2.1cm] (ci) {HTTP\\\scriptsize create invoice};
+  \node[box, right=9mm of ci, text width=2.1cm] (fi) {HTTP\\\scriptsize finalize};
+
+  \draw[flow] (cu) -- (wh);
+  \draw[flow] (wh) -- (get);
+  \draw[flow] (get) -- (st);
+  \draw[flow] (st) -- (ii);
+  \draw[flow] (ii) -- (ci);
+  \draw[flow] (ci) -- (fi);
+
+  \node[lbl, below=7mm of get, text width=3.2cm, draw=warnred, fill=warnred!8] (b1)
+    {\textbf{email} read as\\ \code{custom\_fields[19]}};
+  \draw[dflow, draw=warnred] (b1) -- (st);
+  \node[lbl, below=7mm of ii, text width=3.4cm, draw=warnred, fill=warnred!8] (b2)
+    {\textbf{amount} read as\\ \code{custom\_fields[5] * 100}\\ description hardcoded};
+  \draw[dflow, draw=warnred] (b2) -- (ii);
+
+  \node[lbl, above=6mm of ci, text width=5.2cm] {no branch, no retry, no idempotency check:\\ any repeat delivery bills the customer twice};
+\end{tikzpicture}}
+\caption{Six nodes, one straight line, no error path. The two red annotations are
+verified readings of the actual node parameters, not hypotheticals.}
+\label{fig:invoice}
+\end{figure}
+
+\subsection{Why three raw HTTP calls sit next to a native Stripe node}
+
+The workflow uses n8n's built-in Stripe node to create the customer, and then three
+hand-written HTTP calls to do the invoicing. That looks inconsistent, and it is worth
+explaining because it is the single most common shape in this repository.
+
+n8n's Stripe node supports creating customers. It does not support the three-step
+invoice dance Stripe requires (create an invoice \emph{item}, create the \emph{invoice},
+then \emph{finalize} it to actually send it). So the author used the native node where
+it fit, and dropped to raw API calls where it did not, reusing the same stored Stripe
+credential for both via n8n's \code{predefinedCredentialType} option so the API key
+still never appears in the workflow.
+
+\begin{keyidea}{This is the defining move of the whole collection}
+128 \code{httpRequest} nodes exist for this reason. The visual tool covers the common
+80\%; the remaining 20\% is done by reading the vendor's API docs and constructing the
+call by hand. Someone who can only drag boxes stops at the edge of what the boxes do.
+Being able to say why each of those 128 exists is what makes this a portfolio project
+rather than a folder of exports.
+\end{keyidea}
+
+\subsection{The flaws, verified}
+
+Every one of the following was confirmed by reading the node parameters directly, not
+inferred from the README.
+
+\begin{honest}{Custom fields are read by array position}
+The Stripe node's email is the expression \code{custom\_fields[19].value}. The amount is
+\code{custom\_fields[5].value * 100}.
+
+ClickUp returns custom fields as an ordered array. Position 19 is the email
+\emph{today}. Add a field to that ClickUp list, reorder the columns, or delete one, and
+19 silently becomes something else. There is no name lookup, no assertion, no guard. The
+workflow does not fail; it invoices the wrong data to the wrong address, quietly, and
+the first person to notice is the customer.
+
+Fixing it is a small code node that finds the field by its name or ID. The fact that the
+README identifies this flaw itself is genuinely to the author's credit; it is still
+present in the file.
+\end{honest}
+
+\begin{honest}{No idempotency, on a node that charges people}
+The chain has no check for an existing Stripe customer with that email, and no check for
+an existing invoice for that deal. Webhooks are retried by their senders as a matter of
+routine when a response is slow. Two deliveries of the same event produce two customers
+and two invoices.
+
+This is the highest-severity issue in the repository. Everything else here produces a
+bad tweet or a wasted API call; this one double-bills a real person. The standard fix is
+an idempotency key, which Stripe explicitly supports on exactly these endpoints.
+\end{honest}
+
+\begin{honest}{The invoice line always says the same thing}
+The invoice item's description is the literal string \code{"1st Deposit"}, not an
+expression. Every invoice this workflow has ever created carries that line, whatever the
+deal actually was.
+\end{honest}
+
+\section{Walkthrough 2: the Ultimate Personal Assistant}
+\label{sec:assistant}
+
+Five workflow files, 50 nodes. This is the collection's cleanest architecture and the
+best demonstration of the sub-workflow-as-tool pattern.
+
+\subsection{What it does}
+
+You text a Telegram bot, by typing or by voice. An orchestrating agent works out what
+you want and delegates to one of four specialist agents: email, calendar, contacts, or
+content creation. The answer comes back as a Telegram reply.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[x=1cm, y=1cm]
+  % --- input column ---
+  \node[box, fill=warnred!12, draw=warnred, text width=2.0cm] (tg) at (0,0) {Telegram\\Trigger};
+  \node[dec] (sw) at (3.1,0) {text or\\voice?};
+  \node[box, text width=2.0cm] (set) at (6.4,1.3) {Set 'Text'};
+  \node[box, text width=2.0cm] (dl)  at (6.4,-1.3) {Download\\File};
+  \node[box, text width=2.0cm] (tr)  at (9.2,-1.3) {Transcribe\\\scriptsize Whisper};
+
+  % --- the agent ---
+  \node[box, fill=accent!18, minimum height=15mm, text width=2.5cm] (ag) at (12.4,0)
+    {\textbf{Ultimate}\\\textbf{Assistant}\\\scriptsize agent};
+
+  \draw[flow] (tg) -- (sw);
+  \draw[flow] (sw.north) |- node[lbl,pos=0.72,above]{text} (set.west);
+  \draw[flow] (sw.south) |- node[lbl,pos=0.72,below]{voice} (dl.west);
+  \draw[flow] (dl) -- (tr);
+  \draw[flow] (set.east) to[out=0,in=160] (ag.160);
+  \draw[flow] (tr.east)  to[out=0,in=200] (ag.200);
+
+  % --- equipment, below the agent ---
+  \node[box, text width=2.1cm] (llm) at (11.1,-3.4) {OpenAI\\Chat Model};
+  \node[box, text width=2.1cm] (mem) at (13.9,-3.4) {Window Buffer\\Memory};
+  \draw[dflow] (llm.north) -- (ag.250);
+  \draw[dflow] (mem.north) -- (ag.290);
+  \node[lbl] at (12.5,-4.4) {equipment attached to the agent};
+
+  % --- tools, right column ---
+  \node[box, text width=2.4cm] (t1) at (17.0,2.7)  {Email Agent};
+  \node[box, text width=2.4cm] (t2) at (17.0,1.5)  {Calendar Agent};
+  \node[box, text width=2.4cm] (t3) at (17.0,0.3)  {Contact Agent};
+  \node[box, text width=2.4cm] (t4) at (17.0,-0.9) {Content Creator};
+  \node[extbox, text width=2.4cm] (t5) at (17.0,-2.1) {Tavily (web)};
+  \node[extbox, text width=2.4cm] (t6) at (17.0,-3.3) {Calculator};
+
+  \foreach \t in {t1,t2,t3,t4,t5,t6} { \draw[flow, draw=accent] (ag.east) -- (\t.west); }
+
+  \begin{scope}[on background layer]
+    \node[fit=(t1)(t4), draw=accent, dashed, rounded corners, inner sep=4pt] (grp) {};
+  \end{scope}
+  \node[lbl, text width=3.1cm, align=left, anchor=west] at (19.0,0.9)
+    {each of these four is a\\\textbf{separate workflow file},\\called as a tool};
+
+  % --- reply ---
+  \node[box, text width=2.0cm] (resp) at (12.4,4.4) {Telegram\\Response};
+  \draw[flow] (ag.north) to[out=100,in=270] (resp.south);
+  \node[lbl, anchor=west] at (13.6,4.4) {the agent's answer goes back to the chat};
+\end{tikzpicture}}
+\caption{The orchestrator. Solid blue arrows from the agent are tool \emph{calls} (the
+agent decides). Dashed arrows are equipment attachments. Note that the file stores the
+tool arrows pointing the other way; this diagram shows behaviour, not storage.}
+\label{fig:assistant}
+\end{figure}
+
+\subsection{Why this design is good}
+
+\begin{keyidea}{Sub-workflow as tool is the automation equivalent of a function call}
+Each specialist is its own file with its own \code{executeWorkflowTrigger}. That buys
+exactly what functions buy in code:
+
+\begin{itemize}
+  \item \textbf{Testability.} The Calendar Agent can be executed on its own with pinned
+    input, without going near Telegram.
+  \item \textbf{Isolation.} Changing how contacts are looked up cannot break email.
+  \item \textbf{Prompt size.} A single agent holding calendar, email, contacts and
+    content instructions would carry an enormous system prompt and choose badly. Four
+    focused agents each hold a small one.
+  \item \textbf{Reuse.} The Email Agent is callable by anything else.
+\end{itemize}
+
+The alternative, which several other workflows in this repository chose, is one giant
+canvas. Compare the 190-node single file in \file{social-media-content-generator}.
+\end{keyidea}
+
+The voice handling deserves a note: the Switch on the trigger's output distinguishes a
+text message from a voice note, and the voice branch downloads the audio and pushes it
+through a transcription node before rejoining the same agent. Both paths converge, so
+the agent never knows or cares which one it was. That is the correct place to put that
+seam.
+
+\begin{honest}{The orchestrator is 15 nodes; the intelligence is in prompts you cannot see}
+Structurally this file is nearly empty: a trigger, a switch, two branches, an agent, six
+tools, a reply. Everything that decides \emph{behaviour} lives in the agent's system
+prompt and in the four sub-agents' prompts.
+
+That is not a flaw in the design, but it is a limit on what this document can tell you.
+Reading the graph proves the wiring is sound. It cannot prove the assistant is any good,
+and no amount of static reading will. That would need execution logs, which are not in
+the repository.
+\end{honest}
+
+\section{Walkthrough 3: the RAG ingestion pipeline}
+\label{sec:rag}
+
+47 nodes. The most technically dense single automation here, and the one that best
+rewards a diagram.
+
+\subsection{What it does}
+
+Watch a Google Drive folder. When a document appears, work out its type, extract its
+text, chop it up, turn the chunks into embeddings, and store them in a Supabase vector
+table. Separately, a chat agent answers questions using that table as its source.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[x=1cm, y=1cm]
+  % ---------- ingestion lobe ----------
+  \node[box, fill=warnred!12, draw=warnred, text width=2.1cm] (fc) at (0,0.9) {File Created\\\scriptsize Drive trigger};
+  \node[box, dashed, text width=2.1cm] (fu) at (0,-0.9) {File Updated\\\scriptsize \textbf{DISABLED}};
+  \node[box, text width=1.8cm] (sid)  at (3.2,0.9) {Set\\File ID};
+  \node[box, text width=2.0cm] (loop) at (6.2,0.9) {Loop Over\\Items};
+  \node[box, text width=1.8cm] (dlf)  at (9.2,0.9) {Download\\File};
+  \node[dec] (swi) at (11.9,0.9) {Switch\\type?};
+
+  \node[box, text width=2.0cm] (pdf) at (15.2,3.3)  {Extract PDF};
+  \node[box, text width=2.0cm] (txt) at (15.2,1.9)  {Extract Text};
+  \node[box, text width=2.0cm] (xls) at (15.2,0.4)  {Extract Excel};
+  \node[box, text width=2.0cm] (gd)  at (15.2,-1.2) {Convert to\\Google Doc};
+
+  \node[box, text width=1.9cm] (agg) at (18.2,0.4) {Aggregate};
+  \node[box, text width=1.9cm] (sum) at (21.0,0.4) {Summarize};
+
+  \node[box, fill=accent!18, text width=2.2cm, minimum height=13mm] (vs) at (24.2,2.6)
+    {Insert into\\Supabase\\Vectorstore};
+  \node[store, text width=1.7cm] (sb) at (27.6,2.6) {Supabase\\vectors};
+
+  \draw[flow] (fc) -- (sid);
+  \draw[flow, dashed] (fu.east) -| (sid.south);
+  \draw[flow] (sid) -- (loop);
+  \draw[flow] (loop) -- node[lbl,above]{batch} (dlf);
+  \draw[flow] (dlf) -- (swi);
+  \draw[flow] (swi.east) to[out=0,in=180] (pdf.west);
+  \draw[flow] (swi.east) to[out=0,in=180] (txt.west);
+  \draw[flow] (swi.east) to[out=0,in=180] (xls.west);
+  \draw[flow] (swi.east) to[out=0,in=180] (gd.west);
+  \draw[flow] (xls) -- (agg);
+  \draw[flow] (agg) -- (sum);
+  \draw[flow] (pdf.east) to[out=0,in=180] (vs.west);
+  \draw[flow] (txt.east) to[out=0,in=190] (vs.210);
+  \draw[flow] (sum.east) to[out=0,in=250] (vs.250);
+  \draw[flow] (vs) -- (sb);
+
+  % equipment under the vector store
+  \node[box, text width=2.0cm] (spl) at (23.0,0.2) {Text\\Splitter};
+  \node[box, text width=2.0cm] (emb) at (25.8,0.2) {Embeddings\\OpenAI};
+  \draw[dflow] (spl.north) -- (vs.290);
+  \draw[dflow] (emb.north) -- (vs.330);
+
+  % ---------- query lobe ----------
+  \node[box, fill=warnred!12, draw=warnred, text width=2.2cm] (chat) at (14.0,-4.6) {Chat message\\received};
+  \node[box, fill=accent!18, text width=2.0cm, minimum height=12mm] (rag) at (18.0,-4.6) {New RAG\\Agent};
+  \node[box, text width=2.0cm] (pg) at (18.0,-6.4) {Postgres\\Memory};
+  \node[box, text width=2.0cm] (vst) at (22.0,-4.6) {Vector Store\\Tool};
+  \draw[flow] (chat) -- (rag);
+  \draw[dflow] (pg.north) -- (rag.south);
+  \draw[flow, draw=accent] (rag) -- (vst);
+  \draw[flow] (vst.east) to[out=0,in=270] (sb.south);
+
+  \begin{scope}[on background layer]
+    \node[fit=(fc)(fu)(gd)(sb)(spl)(emb), draw=linegrey, rounded corners,
+          inner sep=7pt, fill=softgrey!50] (ing) {};
+    \node[fit=(chat)(vst)(pg), draw=linegrey, rounded corners,
+          inner sep=7pt, fill=softgrey!50] (qry) {};
+  \end{scope}
+  \node[lbl, anchor=west, font=\small\itshape] at (ing.north west) {\textbf{INGESTION: get documents in}};
+  \node[lbl, anchor=west, font=\small\itshape] at (qry.south west) {\textbf{QUERY: answer from them}};
+\end{tikzpicture}}
+\caption{Two independent lobes sharing one vector table. The dashed "File Updated" path
+is a disabled trigger feeding a duplicate copy of the entire ingestion branch.}
+\label{fig:rag}
+\end{figure}
+
+\subsection{The interesting parts}
+
+\textbf{The type switch.} Documents arrive as PDFs, plain text, spreadsheets and Google
+Docs, and each needs different extraction. The Switch node routes six ways: three go to
+dedicated extractors, and the other three all converge on "convert to a Google Doc
+first, then handle it". That is a nice reduction: rather than write four more extractors,
+push the odd formats through a format you already handle.
+
+\textbf{The spreadsheet detour.} Excel files do not go straight to the vector store; they
+go through Aggregate and then Summarize first. This is correct and shows real
+understanding of RAG. Embedding a spreadsheet row by row produces chunks like
+\code{"Q3 \textbar{} 41 \textbar{} 12"}, which carry no retrievable meaning. Summarizing
+into prose first gives the embedding something to work with.
+
+\textbf{The delete-before-insert.} On the update path, \code{Delete Old Doc Rows} runs
+before re-inserting. Without it, editing a document would leave the old chunks in the
+table alongside the new ones, and the agent would answer from both, confidently citing
+a version that no longer exists. Someone thought about this.
+
+\begin{honest}{The entire ingestion branch exists twice, and the second copy is switched off}
+The graph contains two complete, parallel ingestion pipelines. The \code{File Created}
+trigger drives one (Set File ID1, Loop Over Items, Switch, Extract PDF Text1, Extract
+from Text File1, Extract from Excel1, Aggregate, Summarize, Insert into Supabase
+Vectorstore). The \code{File Updated} trigger drives a second, near-identical copy with
+different node names (Set File ID, Loop Over Items1, Switch2, Extract PDF Text, ...,
+Insert into Supabase Vectorstore1). The \code{File Updated} trigger is
+\textbf{disabled}.
+
+So: roughly half of this 47-node workflow is a duplicate of the other half, and it is
+currently dead. Every future change to the extraction logic has to be made twice, in two
+places, with confusingly similar node names, and a mistake in the disabled copy will not
+show up until someone re-enables it months later.
+
+The clean fix exists and is not exotic: both triggers feed a single shared branch, with
+the delete step gated behind a check for which trigger fired. This is copy-paste
+architecture, and it is the most expensive kind of debt in a visual tool, because the
+tool makes copying a canvas trivially easy and offers nothing that would make you factor
+it out.
+\end{honest}
+
+\section{Walkthrough 4: the cold email outreach system}
+\label{sec:coldemail}
+
+Ten files, 275 nodes. The largest system here by a wide margin, and the one that best
+shows both the ambition and the structural problems of building at this scale in a
+visual tool.
+
+\subsection{What it does}
+
+Take a raw lead (name, company, LinkedIn URL). Research them. Write a six-touch email
+sequence personalized to what the research found. Push the finished sequence into
+Instantly.ai, a cold-email sending platform.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[node distance=5mm]
+  \node[box, fill=warnred!12, draw=warnred, text width=2.2cm] (res) {\textbf{Online Research}\\\scriptsize manual trigger};
+  \node[extbox, right=8mm of res, text width=2.2cm] (tav) {Tavily API\\\scriptsize x4 lookups};
+  \draw[flow] (res) -- (tav);
+  \node[store, right=8mm of tav, text width=2.0cm] (sheet) {Google\\Sheet};
+  \draw[flow] (tav) -- node[lbl, above, align=center]{4 fields} (sheet);
+
+  \node[lbl, below=2mm of tav, text width=4.6cm, draw=warnred, fill=warnred!8]
+    {\textbf{no wire to the orchestrator.}\\the handoff is the sheet, and it is \emph{inferred} from matching field names};
+
+  \node[box, fill=warnred!12, draw=warnred, below=24mm of res, text width=2.4cm] (orch)
+    {\textbf{Generate All Emails}\\\scriptsize manual trigger, loops leads};
+  \draw[dflow, draw=warnred] (sheet) to[out=270,in=0] (orch);
+
+  \node[box, right=30mm of orch, text width=2.3cm] (s1) {First Email};
+  \node[box, above=2mm of s1, text width=2.3cm] (s0) {Subject Line};
+  \node[box, below=2mm of s1, text width=2.3cm] (s2) {Follow Up 1};
+  \node[box, below=2mm of s2, text width=2.3cm] (s3) {Follow Up 2};
+  \node[box, below=2mm of s3, text width=2.3cm] (s4) {Follow Up 3};
+  \node[box, below=2mm of s4, text width=2.3cm] (s5) {Follow Up 4};
+  \node[box, below=2mm of s5, text width=2.3cm] (s6) {Follow Up 5};
+  \node[box, below=2mm of s6, text width=2.3cm] (s7) {Add to Instantly};
+
+  \foreach \s in {s0,s1,s2,s3,s4,s5,s6,s7} { \draw[flow] (orch) -- (\s.west); }
+
+  \node[extbox, right=9mm of s3, text width=2.2cm, minimum height=20mm] (inst) {Instantly.ai\\\scriptsize 5 campaigns\\\scriptsize routed by type};
+  \draw[flow] (s7) -| (inst);
+
+  \node[lbl, above left=1mm and 1mm of s1.west, text width=2.6cm, align=right]
+    {8 sub-workflow\\calls per lead};
+
+  \begin{scope}[on background layer]
+    \node[fit=(s0)(s6), draw=accent, dashed, rounded corners, inner sep=5pt] (grp) {};
+  \end{scope}
+  \node[lbl, right=3mm of grp.north east, anchor=north west, text width=5.2cm, align=left]
+    {each of these 6 runs \textbf{5 parallel LLM attempts} internally, then picks one};
+\end{tikzpicture}}
+\caption{The cold email system. Up to 30 Gemini calls per lead before a single sequence
+is finished.}
+\label{fig:coldemail}
+\end{figure}
+
+\subsection{The five-attempt pattern}
+
+Each of the six copywriting workflows generates the same email five times in parallel
+(\code{generate\_v1} through \code{generate\_v5}), each with its own model node, then
+uses a switch/if gate to pick the first non-empty result.
+
+\begin{keyidea}{Why generate the same thing five times?}
+Because an LLM call can come back empty, refuse, or return unusable formatting, and it
+does so unpredictably. Running one attempt and retrying on failure costs you the
+latency of a second round trip. Running five in parallel and taking the first good one
+costs you five times the money and none of the time.
+
+It is a legitimate engineering trade, and it is the right one when a human is waiting.
+It is the wrong one when nobody is waiting, which is this case: this is a batch job
+over a lead list. The five-way fan-out buys latency that nobody is spending, at 5x the
+token cost. A single call with a retry-on-empty would be materially cheaper for the
+same result.
+\end{keyidea}
+
+\begin{honest}{Six copies of the same logic, kept in sync by hand}
+The five-attempt block and its output-cleaning code node are duplicated across all six
+copywriting workflows. There is no shared sub-workflow for the common part, even though
+this system \emph{already uses} sub-workflows and therefore had the mechanism sitting
+right there.
+
+A fix to the cleaning regex has to be made six times. The consequences of that are
+already visible in the repository: \file{NEW\_\_\_Generate\_All\_Emails.json} still
+contains \textbf{nine orphaned \code{executeWorkflow} nodes} from an earlier version,
+disconnected from everything, left behind when the workflow was restructured. Verified:
+they have no incoming and no outgoing connections.
+\end{honest}
+
+\begin{honest}{The research step is not actually connected to anything}
+\file{Online\_Research.json} has a manual trigger and is called by no
+\code{executeWorkflow} node in any of the other nine files. Its four output fields
+(\code{general\_search}, \code{news\_search}, \code{person\_linkedin\_scrape},
+\code{company\_linkedin\_scrape}) are read by name inside the prompts of every email
+workflow.
+
+So the handoff is: run research by hand, let it write to the sheet, then run the
+orchestrator by hand, which reads the sheet. Two manual steps and an undocumented
+ordering constraint, with nothing in the system enforcing that research ran first. If
+someone runs the orchestrator on a fresh lead, the prompts get empty research fields and
+the LLM writes generic copy, with no error anywhere.
+
+\textbf{This handoff is inferred}, from the matching field names, not confirmed by any
+node connection. There is no wire. The project's own README states this inference
+explicitly and honestly, and this reading independently confirms it.
+\end{honest}
+
+\begin{honest}{No deduplication of leads, anywhere}
+Nothing in the ten files checks whether a lead was already researched, already written
+to, or already pushed to Instantly. Running the orchestrator twice on the same list
+generates and uploads the sequence twice. For a cold email system, whose entire premise
+is not annoying strangers, that is a consequential gap.
+\end{honest}
+
+\section{Cross-cutting patterns}
+\label{sec:patterns}
+
+Having read all 80 files, these are the habits that recur. They are more useful than any
+single walkthrough, because they are what the author would actually be asked to defend.
+
+\subsection{Google Sheets as the database}
+
+124 Google Sheets nodes and 5 Sheets triggers. Sheets is used here as: the lead
+database, the job queue, the state store, the log, and the human review interface.
+
+\begin{keyidea}{This is smarter than it first looks}
+The instinct is to call this amateurish. Resist it for a moment, because a spreadsheet
+buys four things a real database does not:
+
+\begin{itemize}
+  \item \textbf{The client can see it.} No admin panel to build.
+  \item \textbf{The client can edit it.} Human-in-the-loop review, for free.
+  \item \textbf{Zero provisioning.} No migrations, no hosting, no connection strings.
+  \item \textbf{It is already the incumbent.} The work was in a spreadsheet before the
+    automation existed. Meeting the business where it is beats a migration.
+\end{itemize}
+
+For a small agency automating its own chores, this is a defensible engineering decision,
+not a shortcut. Saying so, and then saying where it breaks, is a much stronger answer
+than either defending it blindly or apologizing for it.
+\end{keyidea}
+
+\begin{honest}{Where Sheets-as-database breaks, concretely}
+\begin{itemize}
+  \item \textbf{No transactions.} A workflow that reads a row, decides, and writes back
+    has a race window. Two concurrent runs can both read "not yet emailed" and both
+    email.
+  \item \textbf{No unique constraint.} This is \emph{why} the dedup problems in
+    Section~\ref{sec:coldemail} exist. A database would have refused the duplicate.
+  \item \textbf{Rate limits.} The Sheets API caps requests per minute per user. A batch
+    job hits it.
+  \item \textbf{It does not scale.} \file{cluster-seo-post-generator} reads the entire
+    post history on every run to do internal linking. Fine at 50 rows. At 5{,}000, that
+    is a very large prompt and a very slow run.
+\end{itemize}
+The honest position: right call at this size, with a known and stated ceiling.
+\end{honest}
+
+\subsection{Polling for slow jobs}
+
+33 \code{wait} nodes exist because image and video generation take minutes, and the APIs
+are asynchronous: you submit a job, get a ticket, and must ask later whether it is done.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=8mm]
+  \node[box, text width=1.9cm] (sub) {POST job};
+  \node[box, right=of sub, text width=1.9cm] (w) {Wait\\\scriptsize n seconds};
+  \node[box, right=of w, text width=1.9cm] (chk) {GET status};
+  \node[dec, right=9mm of chk] (d) {done?};
+  \node[box, right=9mm of d, text width=1.9cm] (use) {use result};
+  \draw[flow] (sub) -- (w);
+  \draw[flow] (w) -- (chk);
+  \draw[flow] (chk) -- (d);
+  \draw[flow] (d) -- node[lbl,above]{yes} (use);
+  \draw[flow] (d.south) |- ++(0,-8mm) -| node[lbl,below,pos=0.25]{no, wait again} (w.south);
+\end{tikzpicture}
+\caption{The polling loop, used across the video family.}
+\label{fig:poll}
+\end{figure}
+
+\begin{honest}{None of these loops has a maximum attempt count}
+The polling loops here check "is it done?" and, if not, wait and check again. What none
+of them do is count. If a render job fails in a way that leaves it permanently
+not-done, the loop spins until n8n's own execution timeout kills it, burning API calls
+the whole way. A bounded loop with a failure branch is the standard shape, and it is
+absent.
+\end{honest}
+
+\subsection{Trusting the LLM's output shape}
+
+The single most common bug class in this repository. The pattern is always the same: a
+prompt says "return only JSON" or "return only the quote", and nothing downstream checks
+that it did.
+
+n8n \emph{has} a structured output parser node, which forces the model's response into a
+declared schema and fails loudly when it does not fit. It appears \textbf{3 times in
+1{,}645 nodes}, in just 2 of the 80 files (twice in
+\file{deep-research-report-generator}, once in \file{youtube-agent-starter-template}).
+In the other 78 files, output shape is a matter of hoping.
+
+\begin{honest}{The verified worst case}
+\file{competitor-content-gap-analyzer}'s \code{Clean Content} node has this as its
+stored JavaScript source. Read the letters carefully:
+
+\begin{lstlisting}[language=]
+if ($input.item.json.body){nnnn$input.item.json.content =
+  $input.item.json.body.replaceAll('/^s+|s+$/g', '')...
+\end{lstlisting}
+
+The newlines that should separate the statements have been collapsed into literal letter
+\code{n} characters, glued onto the next token. So the parser sees a variable called
+\code{nnnn\$input}, which does not exist, and throws a \code{ReferenceError} the instant
+the \code{if} branch is taken. Separately, the two regular expressions are passed as
+\emph{quoted strings} (\code{'/\^{}s+|s+\$/g'}) rather than as regex literals, so even
+with the newlines restored they would match nothing.
+
+The node is dead. It has never cleaned anything.
+
+And here is the part that matters: the node is configured with
+\code{continueOnFail: true} and \code{alwaysOutputData: true}. So the error is swallowed
+whole. The item passes through unmodified, \code{content} and \code{contentShort} are
+never set, the downstream InfraNodus call receives effectively nothing, and \emph{the
+workflow reports success}. Every run of this automation has produced a content gap
+analysis based on no content.
+
+The lesson is not "someone mangled a code node". It is that
+\code{continueOnFail: true} turned a loud crash into a silent wrong answer.
+Error-tolerance flags are set on 27 nodes in this repository, and each one is a place
+where a failure becomes invisible.
+\end{honest}
+
+\subsection{Sticky notes as documentation}
+
+186 sticky notes, more than any other node type. Someone genuinely documented these
+canvases as they built them.
+
+\begin{honest}{Documentation drifts, and here it demonstrably has}
+In \file{calcom-trigger-workflow}, the sticky notes label two reminder stages
+"5-Minute Alert" and "Call Started Notification". The actual \code{If} conditions and
+the email copy in those same nodes put one at roughly one hour before the call and the
+other in the final ten minutes.
+
+A reader who trusts the sticky notes gets the timing wrong. Canvas comments rot exactly
+like code comments, and there is nothing to check them.
+\end{honest}
+
+\subsection{Orphaned nodes: the visual tool's characteristic debt}
+
+An orphan is a node with no path from any trigger. It cannot ever run. In text code an
+unreachable function is at least invisible; on a canvas, an orphan sits there looking
+exactly like a working step.
+
+Twelve of the 80 files contain orphans. Verified by computing reachability from every
+trigger:
+
+\begin{center}
+\begin{tabular}{@{}lrp{6.3cm}@{}}
+\toprule
+\textbf{File} & \textbf{Orphans} & \textbf{What is stranded} \\
+\midrule
+\file{whatsapp-ai-sales-lead-system}      & 13 & An entire agent, model, memory and vector store \\
+\file{cold-email...Generate\_All\_Emails} & 9  & Old copies of the sub-workflow calls \\
+\file{social-media-trend-monitor}         & 8  & Four scraper agents and their merge \\
+\file{vapi-call-trigger-utility}          & 8  & An agent, a model, a loop \\
+\file{ai-proposal-generator-system}       & 4  & The whole Google Slides output path \\
+\file{faceless-shorts-system}             & 4  & An alternative video provider branch \\
+\file{booking-time-utility-set} (x3)      & 3--4 & A Calendly path, in all three files \\
+\file{presentation-generator-tool}        & 2  & Two of the three slide generators \\
+\file{social-media-poster}                & 2  & The YouTube Shorts path \\
+\file{fb-ad-creative-generator}           & 1  & A folder-creation step \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{honest}{The proposal generator is the clearest case}
+\file{ai-proposal-generator-system} has two form triggers. One is wired to the PandaDoc
+path and works. The other, feeding the Google Slides path, has this in the connections
+map:
+
+\begin{lstlisting}[language=]
+"On form submission": { "main": [ [ ] ] }
+\end{lstlisting}
+
+An empty target list. The key exists, the wire does not. Four nodes (Replace Text,
+OpenAI, Google Drive, Gmail) are unreachable from any trigger.
+
+That is worth dwelling on, because it is a trap for anyone auditing these files: a naive
+check of "is this trigger in the connections map?" answers \emph{yes} and is
+\emph{wrong}. You have to look at whether the list is empty. This document's reachability
+analysis was corrected after making exactly that mistake.
+
+And in that stranded path sits a node that always writes the literal cost \code{\$1,850}
+into the deck, regardless of what the form said, plus two Gmail nodes whose subject and
+body are hardcoded for one specific past client ("Re: Proposal for LeftClick", "Hey
+Nick"). If that trigger were ever reconnected without reading the nodes, it would send
+every client the same price and the same name.
+\end{honest}
+
+\section{Security posture}
+\label{sec:security}
+
+An n8n export is a notorious place to leak a secret. This repository was audited for
+that specifically, and the result is good enough to state precisely.
+
+\subsection{How n8n stores credentials, and why that saves this project}
+
+A node does not contain its API key. It contains a \emph{pointer} to an entry in n8n's
+encrypted credential store:
+
+\begin{lstlisting}[language=,caption={The credential reference on a node. This is the
+whole of it. There is no field here that could hold a secret.}]
+"credentials": {
+  "stripeApi": {
+    "id":   "hR3xK9...",     <-- which entry in the credential store
+    "name": "Stripe account"  <-- its display label
+  }
+}
+\end{lstlisting}
+
+Verified across all 80 files: there are \textbf{373 credential references}, spanning
+\textbf{27 distinct credential types}, and every single one contains exactly two keys,
+\code{id} and \code{name}. Not one carries a value.
+
+\begin{keyidea}{Why this matters more than it sounds}
+This is a property of n8n's design, not of the author's diligence, and it is the reason
+exporting workflows is safe at all. The secrets never enter the JSON, so they cannot
+leak through it.
+
+What the author \emph{is} responsible for is everything n8n does not protect: keys typed
+into an HTTP node's header field by hand, endpoints, chat IDs, spreadsheet IDs, email
+addresses. That is where an export normally leaks, and that is what the audit below
+checked.
+\end{keyidea}
+
+\subsection{The audit, and its result}
+
+\begin{center}
+\begin{tabular}{@{}lp{9.0cm}@{}}
+\toprule
+\textbf{Checked for} & \textbf{Result} \\
+\midrule
+Provider key formats & Scanned all 268 tracked files for OpenAI, Google, Slack, GitHub, Telegram, Apify and JWT key shapes. \textbf{Three hits, all placeholders} (\code{Bearer YOUR\_API\_KEY\_HERE} and similar). No live key. \\
+Credential values    & 373 references, all \code{id}/\code{name} only. \textbf{Clean.} \\
+Bearer tokens        & Six distinct literals, every one a placeholder. \textbf{Clean.} \\
+Private endpoints    & Every host referenced is a public vendor API (Google, Stripe, Tavily, Apify, Runware, Novita, Cal.com, ...). No Supabase project URL, no n8n instance hostname. \textbf{Clean.} \\
+Email addresses      & All placeholders (\code{@example.com}) except the owner's own business address. \textbf{Clean.} \\
+Owner identity       & The \code{shared} block, which normally carries the n8n account name and email, is scrubbed in all 30 files that have one. \textbf{Clean.} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Conclusion: no live credential is committed to this repository.} That is a real
+result, and it was not free: n8n protects the credential store, but the author had to
+find and scrub the hardcoded keys, the account names and the emails by hand. The project
+README states that live keys were found and stripped, and this audit finds no survivor.
+
+\begin{honest}{The scrub was done by hand, and it shows}
+The same field, the n8n account name inside the \code{shared} block, has been replaced
+with \textbf{sixteen different placeholder spellings} across the files:
+\code{YOUR\_EMAIL\_HERE}, \code{owner@example.com}, \code{Portfolio Owner},
+\code{It Expert}, \code{YOUR\_N8N\_PROJECT\_NAME}, \code{REDACTED\_USER},
+\code{Project Owner}, and ten more variants.
+
+The security outcome is correct: nothing leaked. But sixteen spellings of one
+substitution is the signature of a manual pass, and a manual pass is one that can miss a
+file. A scripted scrub with a single canonical placeholder would be both tidier and
+genuinely safer, because it could be re-run over the repository to prove nothing was
+missed. As it stands, the proof is this audit, which is a snapshot.
+\end{honest}
+
+\begin{honest}{Webhook paths are in the files, and that is a judgment call, not a bug}
+Each webhook node carries its \code{path}, a UUID. Combined with the n8n instance's
+hostname, that is the live URL of the endpoint. The hostname is not in these files, so
+the UUID alone opens nothing, and several of these webhooks have no authentication on
+them (\file{birthday-greetings-automation}'s README says so plainly).
+
+The risk is therefore low but not zero, and it rests entirely on the instance hostname
+staying private. Regenerating the paths on import would cost nothing and remove the
+question. This document does not reproduce any of them.
+\end{honest}
+
+\section{The honest summary}
+\label{sec:honest}
+
+Everything in this section was verified against the exports. Nothing here is taken from
+the READMEs on trust, although the READMEs deserve real credit: they found most of it
+first.
+
+\subsection{What is genuinely good}
+
+\begin{itemize}
+  \item \textbf{The documentation discipline is exceptional.} 59 folders, 59 READMEs, 59
+    credential manifests, nine consistent headings, 9{,}304 lines of prose. Plus 186
+    sticky notes inside the canvases. This is far above the norm for automation work.
+  \item \textbf{The self-criticism is real, and it is specific.} The \emph{Challenges}
+    sections are not marketing. They say "the content-cleaning code is broken", "the
+    workflow always writes \$1,850", "custom fields are read by array index". Spot-checks
+    against the JSON confirmed these claims exactly, including the subtle ones. A README
+    that tells you where the body is buried is worth ten that do not.
+  \item \textbf{No credentials leaked.} Section~\ref{sec:security}.
+  \item \textbf{The sub-workflow architecture, where it is used, is correct.} The
+    personal assistant and the Upwork pipeline are properly factored.
+  \item \textbf{The hard parts were not dodged.} 128 hand-written API calls, an async
+    polling pattern, a RAG pipeline with a considered chunking strategy and a
+    delete-before-insert. This is not drag-and-drop work.
+\end{itemize}
+
+\subsection{What is weak, ordered by what it would actually cost}
+
+\begin{enumerate}
+  \item \textbf{No idempotency on the invoicing workflow.} A retried webhook
+    double-bills a real customer. Highest severity in the repository, and the only one
+    that costs money on the first occurrence.
+  \item \textbf{Silent failures via \code{continueOnFail}.} 27 nodes. The
+    \file{competitor-content-gap-analyzer} case proves the failure mode is not
+    theoretical: a broken node produced wrong answers and reported success, indefinitely.
+  \item \textbf{Copy-paste architecture.} The duplicated RAG ingestion branch, the six
+    duplicated copywriting blocks, the nine orphaned call nodes. This is the
+    characteristic debt of visual tools and it is present throughout.
+  \item \textbf{Orphaned nodes in 12 of 80 files.} 55-plus nodes that cannot run,
+    indistinguishable on the canvas from ones that can.
+  \item \textbf{Index-based field access.} \code{custom\_fields[19]} is a silent
+    time bomb tied to someone else's column order.
+  \item \textbf{Unbounded polling loops.} No attempt cap anywhere in the video family.
+  \item \textbf{Hardcoded values where expressions belong.} \code{\$1,850}, "1st
+    Deposit", "Hey Nick", a Telegram chat ID, the literal caption \code{"hello"} in
+    \file{auto-video-generator}.
+  \item \textbf{No output validation on LLM responses.} The structured output parser
+    node appears 3 times in 1{,}645 nodes, across just 2 of the 80 files.
+  \item \textbf{Documentation drift.} Sticky notes disagreeing with the nodes they label.
+\end{enumerate}
+
+\subsection{The maturity question, stated plainly}
+
+\begin{honest}{The one thing to get straight before any interview}
+28 manual triggers. 9 of 80 workflows active. 12 files with orphaned nodes. 45 disabled
+nodes.
+
+This is a portfolio of \textbf{59 designed and built automations}, a meaningful fraction
+of which are at demonstration maturity rather than unattended-production maturity. The
+repository does not contain the evidence needed to claim otherwise, because execution
+logs are not in it, and the \code{active} flags say what they say.
+
+That is still a strong claim. "I designed and built 59 automations across seven problem
+domains, documented every one including its faults, and can tell you exactly which are
+production-hardened and which are not" is a better answer than "59 automations run my
+client's business", and it has the advantage of being defensible against someone who
+opens the files.
+
+The failure mode to avoid is being caught claiming the stronger version.
+\end{honest}
+
+\subsection{What was inferred rather than confirmed}
+
+In keeping with the rule that inference must be labelled:
+
+\begin{itemize}
+  \item \textbf{The taxonomy in Figure~\ref{fig:taxonomy} is this document's own
+    invention.} The repository does not group its folders. The seven families are a
+    reading of what the automations do; the counts of folders are exact, the boundaries
+    are a judgment call.
+  \item \textbf{The research-to-orchestrator handoff in the cold email system is
+    inferred} from matching field names. There is no connection in the JSON. The
+    project's own README says the same and is equally explicit about it.
+  \item \textbf{"Built and demonstrated rather than deployed" is an inference} from
+    trigger types and active flags. It is a strong inference, but the alternative
+    explanation, that workflows were routinely deactivated before export, cannot be
+    ruled out from the files alone. The owner knows which is true; this document cannot.
+  \item \textbf{Whether the disabled \code{File Updated} trigger in the RAG pipeline was
+    switched off deliberately or abandoned mid-refactor cannot be determined} from the
+    export. Both readings fit.
+  \item \textbf{Whether the assistants actually work well is untestable here.} The
+    graphs are sound; the behaviour lives in prompts, and prompts cannot be evaluated by
+    reading them.
+\end{itemize}
+
+\section{What an interviewer will ask}
+
+Five questions this repository invites, and the honest answer to each.
+
+\textbf{"Is this really engineering, or did you drag boxes?"} 128 hand-written API calls
+where no node existed. An async polling pattern. A RAG pipeline that summarizes
+spreadsheets before embedding them, because embedding rows produces meaningless chunks.
+A sub-workflow architecture with a transcription seam. The boxes cover the easy 80\%; the
+interesting part is the rest. And the failures in Section~\ref{sec:honest} are ordinary
+software failures, not tool failures, which is itself the argument.
+
+\textbf{"Why is a spreadsheet your database?"} Because the client can see it and edit it,
+it needed no provisioning, and the work was already there. It breaks on concurrency,
+uniqueness and scale, and the duplicate-lead problem in the cold email system is exactly
+that bill coming due. Right call at that size, known ceiling.
+
+\textbf{"Your own README says a node is broken. Why is it still broken?"} The honest
+answer is that finding it and fixing it are different jobs, and the repository's purpose
+was to document what exists rather than to repair it. The stronger version of the answer
+is that \code{continueOnFail} is what made it survivable long enough to become a
+documentation problem instead of an outage.
+
+\textbf{"Which of these actually run?"} Nine are marked active. Say the number, then say
+which ones, then say why the rest are not. Do not let this one be discovered.
+
+\textbf{"What would you change first?"} Idempotency on the invoice workflow, because it
+is the only one that costs money on the first mistake. Then delete
+\code{continueOnFail} from anything whose silent failure produces a wrong answer rather
+than a skipped item. Then factor the duplicated RAG branch, because it is the change
+that gets more expensive every week it is not made.
+
+\vfill
+\begin{center}
+\rule{0.4\textwidth}{0.4pt}\\[0.3em]
+{\small All counts in this document were produced by parsing the 80 exported workflow
+files directly. Where the project's own documentation and the exports disagreed, the
+exports were treated as authoritative; no such disagreement was found on any claim
+spot-checked.}
+\end{center}
+
+\end{document}

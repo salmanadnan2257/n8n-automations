@@ -1,0 +1,446 @@
+% explainer-source-hash: 758aa0e1fc4aa54b67ece6e4982367fb6dc2c725dd0193a8e15921f8ec2b6aa1
+% explainer-source-commit: 208ef83ddf2d31892671bea435cbf0f1caa251fe
+% explainer-generated: 2026-07-16
+% Regenerate with /explain-all (see WIRING.md). Do not edit this stamp by hand:
+% it is how the toolchain knows whether this document still matches the code.
+\documentclass[11pt,a4paper]{article}
+\input{preamble}
+
+\title{\vspace{-1.5cm}\textbf{N8N Automations}\\[0.3em]
+\large The Brief\\[0.2em]
+\normalsize 59 business chores, each built as a flowchart that then runs itself}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section{The project in one page}
+
+Fifty-nine business processes, each built as a flowchart inside a tool called n8n,
+exported to text files, and documented one folder at a time. Scraping leads, chasing
+enquiries, sending invoices, writing posts, rendering videos, answering questions from a
+company's own documents.
+
+There is no program here to compile and no test suite to run. The unit of work is a
+\emph{workflow}: a chain of steps wired together on a canvas, started by an event, that
+moves data between web services and, more often than not, hands something to an AI model
+along the way.
+
+\begin{keyidea}{The three numbers that describe this repository}
+\begin{center}
+\begin{tabular}{@{}rp{10.4cm}@{}}
+\textbf{59}      & automation folders, each with a README, a credential manifest, a licence and an export \\[2pt]
+\textbf{80}      & exported workflow files (six folders hold multi-workflow systems) \\[2pt]
+\textbf{1{,}645} & nodes, of which 186 are sticky notes documenting the other 1{,}459 \\
+\end{tabular}
+\end{center}
+All three were verified by parsing the files, not by counting the README's bullets. The
+headline claim of \textbf{59 automations is accurate}.
+\end{keyidea}
+
+\section{What n8n is, for a reader who has never seen it}
+
+Take a real chore: \emph{when a deal is marked won in our customer database, create a
+customer in our payment processor and invoice them}. You can do it by hand in four
+minutes, or write and host a program for a day. n8n is the third option: drag a box for
+each step, wire the boxes together, and it runs the flowchart for you. It already knows
+how to talk to hundreds of services.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[node distance=7mm]
+  \node[extbox] (world) {Outside world\\\scriptsize a deal is marked "won"};
+  \node[box, right=13mm of world, fill=warnred!12, draw=warnred] (trig) {\textbf{Trigger}\\\scriptsize webhook};
+  \node[box, right=10mm of trig] (fetch) {Node\\\scriptsize fetch the deal};
+  \node[box, right=10mm of fetch] (cust) {Node\\\scriptsize create customer};
+  \node[box, right=10mm of cust] (inv) {Node\\\scriptsize send invoice};
+  \draw[flow] (world) -- (trig);
+  \draw[flow] (trig) -- node[lbl,above]{data} (fetch);
+  \draw[flow] (fetch) -- node[lbl,above]{data} (cust);
+  \draw[flow] (cust) -- node[lbl,above]{data} (inv);
+  \node[store, below=11mm of fetch] (cred) {credential\\store};
+  \draw[dflow] (cred) -- (fetch);
+  \draw[dflow] (cred) -- (cust);
+  \draw[dflow] (cred) -- (inv);
+  \node[lbl, below=1mm of cred] {logins live here, never in the flowchart};
+\end{tikzpicture}}
+\caption{The whole vocabulary. Each box is a \textbf{node}. Each arrow is a
+\textbf{connection}. The box that starts it is the \textbf{trigger}. The logins are
+\textbf{credentials}, referenced from a separate store. The chain is a
+\textbf{workflow}.}
+\end{figure}
+
+\begin{keyidea}{Dragging boxes removes the typing, not the thinking}
+Everything hard about software survives the move to a canvas: state, failure, retries,
+duplicate events, data shape mismatches, rate limits. Section~\ref{sec:weak} is a list of
+places in this repository where that bill came due, and every item on it is an ordinary
+software bug that would have been equally possible in handwritten code.
+\end{keyidea}
+
+\section{What the collection is made of}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=13cm, height=5.6cm,
+  xbar, xmin=0,
+  bar width=8pt, y=11pt,
+  enlarge y limits=0.08,
+  xlabel={\small nodes across all 80 exports},
+  symbolic y coords={code,if,lmChatGoogleGemini,agent,googleSheets,httpRequest,set,stickyNote},
+  ytick=data,
+  nodes near coords, nodes near coords style={font=\tiny},
+  tick label style={font=\scriptsize}, label style={font=\small},
+  every axis plot/.append style={fill=accent!55, draw=inkblue},
+  axis lines*=left, xmajorgrids, grid style={linegrey},
+]
+\addplot coordinates {
+  (186,stickyNote) (136,set) (128,httpRequest) (124,googleSheets)
+  (109,agent) (82,lmChatGoogleGemini) (80,if) (71,code)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{The eight most common node types, and a fair portrait of the whole collection:
+moving data between web services and an LLM, glued together with spreadsheets, and
+unusually well commented.}
+\end{figure}
+
+Four readings fall straight out of that chart, and each is worth a sentence.
+
+\textbf{Sticky notes are the most common node.} A sticky note does nothing at run time; it
+is a comment on the canvas. One node in nine here exists only to explain the others. That
+is a genuinely unusual signal of care.
+
+\textbf{Google Sheets is the database} (124 nodes). It is the lead list, the job queue, the
+state store, the log, and the client's review screen, all at once.
+
+\textbf{128 hand-written API calls.} Wherever n8n had no purpose-built node, the author read
+the vendor's docs and constructed the raw call. This is the single most important thing to
+notice about the collection: it is where the drag-and-drop tool runs out and the
+engineering starts.
+
+\textbf{AI is structural, not decorative.} 109 agent nodes, 82 Gemini models, 37 OpenAI
+nodes. About a fifth of the repository.
+
+\section{The seven families}
+
+Fifty-nine is too many to list, and they are not 59 unrelated things. Grouping them by
+what they do (this grouping is this document's own reading; the repository does not group
+its folders) gives seven families whose architecture is largely predictable from the
+family alone.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[node distance=5mm]
+  \node[box, fill=inkblue!12, minimum width=3.4cm] (root) {\textbf{59 automations}};
+  \node[box, below left=11mm and 33mm of root, text width=3.0cm] (a) {\textbf{Lead gen \&\\outreach}\\\scriptsize 11};
+  \node[box, right=6mm of a, text width=3.0cm] (b) {\textbf{Content\\generation}\\\scriptsize 14};
+  \node[box, right=6mm of b, text width=3.0cm] (c) {\textbf{Video\\production}\\\scriptsize 7};
+  \node[box, right=6mm of c, text width=3.0cm] (d) {\textbf{SEO}\\\scriptsize 5};
+  \node[box, below=14mm of a, text width=3.0cm] (e) {\textbf{Assistants \&\\chatbots}\\\scriptsize 9};
+  \node[box, right=6mm of e, text width=3.0cm] (f) {\textbf{Business ops}\\\scriptsize 6};
+  \node[box, right=6mm of f, text width=3.0cm] (g) {\textbf{Utilities}\\\scriptsize 7};
+  \node[extbox, right=6mm of g, text width=3.2cm] (h) {\scriptsize the dominant shape:\\\scriptsize trigger $\rightarrow$ fetch $\rightarrow$ LLM\\\scriptsize $\rightarrow$ deliver $\rightarrow$ log to Sheets};
+  \foreach \x in {a,b,c,d} { \draw[flow] (root) -- (\x.north); }
+  \foreach \x in {e,f,g} { \draw[flow] (root) to[out=270,in=90] (\x.north); }
+\end{tikzpicture}}
+\caption{Counts are of folders and sum to 59.}
+\end{figure}
+
+The extremes are worth knowing:
+
+\begin{flushleft}
+\begin{itemize}
+  \item \textbf{Smallest automation:} 3 nodes, \file{youtube-transcript-fetcher}
+    (a webhook, an API call, a reply).
+  \item \textbf{Largest single file:} 190 nodes, \file{social-media-content-generator}.
+  \item \textbf{Largest system:} 10 files and 275 nodes,
+    \file{cold-email-outreach-sequence-system}.
+\end{itemize}
+\end{flushleft}
+
+\section{Three automations worth understanding}
+
+\subsection{The one that bills people}
+
+\file{crm-lead-to-stripe-invoice} is 6 nodes and the best single example in the
+repository, because it is small enough to hold in your head and its flaws cost real
+money.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[node distance=6mm]
+  \node[extbox, text width=2.2cm] (cu) {ClickUp\\\scriptsize deal won};
+  \node[box, right=8mm of cu, fill=warnred!12, draw=warnred, text width=1.8cm] (wh) {Webhook};
+  \node[box, right=8mm of wh, text width=2.0cm] (get) {ClickUp\\\scriptsize get task};
+  \node[box, right=8mm of get, text width=2.1cm] (st) {Stripe\\\scriptsize customer};
+  \node[box, right=8mm of st, text width=2.0cm] (ii) {HTTP\\\scriptsize inv. item};
+  \node[box, right=8mm of ii, text width=2.0cm] (ci) {HTTP\\\scriptsize invoice};
+  \node[box, right=8mm of ci, text width=2.0cm] (fi) {HTTP\\\scriptsize finalize};
+  \draw[flow] (cu) -- (wh); \draw[flow] (wh) -- (get); \draw[flow] (get) -- (st);
+  \draw[flow] (st) -- (ii); \draw[flow] (ii) -- (ci); \draw[flow] (ci) -- (fi);
+  \node[lbl, below=8mm of st, text width=8.6cm, draw=warnred, fill=warnred!8]
+    {\textbf{verified in the node parameters:} the email is read as \code{custom\_fields[19]},
+     the amount as \code{custom\_fields[5] * 100}, and the invoice line is the fixed
+     string "1st Deposit". No error branch, no retry, no duplicate check anywhere in the chain.};
+  \draw[dflow, draw=warnred] (get.south) -- ++(0,-4mm);
+\end{tikzpicture}}
+\caption{Six nodes, one straight line, no error path.}
+\end{figure}
+
+Note the shape: a native Stripe node creates the customer, then three hand-written HTTP
+calls do the invoicing, because n8n's Stripe node does not implement Stripe's three-step
+invoice dance. Native node where it fits, raw API where it does not, same stored
+credential reused for both. That move is the defining habit of the whole collection.
+
+\begin{honest}{Two real defects, both verified against the file}
+\textbf{Fields are read by array position.} \code{custom\_fields[19]} is the email
+\emph{today}. Reorder a column in ClickUp and it silently becomes something else. The
+workflow does not fail; it invoices the wrong data to the wrong address, and the first
+person to notice is the customer.
+
+\textbf{No idempotency, on a node that charges people.} No check for an existing customer,
+no check for an existing invoice. Webhook senders retry as a matter of routine. Two
+deliveries produce two invoices. This is the highest-severity issue in the repository and
+the only one that costs money on its first occurrence.
+\end{honest}
+
+\subsection{The one with the best architecture}
+
+\file{ultimate-personal-assistant-system}: five files, 50 nodes. You text a Telegram bot,
+by typing or by voice. An orchestrating agent works out what you want and delegates to one
+of four specialist agents.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.93\textwidth}{!}{
+\begin{tikzpicture}[node distance=6mm]
+  \node[box, fill=warnred!12, draw=warnred, text width=2.0cm] (tg) {Telegram\\Trigger};
+  \node[dec, right=8mm of tg] (sw) {text or\\voice?};
+  \node[box, above right=3mm and 8mm of sw, text width=1.8cm] (set) {Set 'Text'};
+  \node[box, below right=3mm and 8mm of sw, text width=1.8cm] (dl) {Download};
+  \node[box, right=6mm of dl, text width=1.9cm] (tr) {Transcribe};
+  \node[box, right=20mm of set, fill=accent!18, minimum height=14mm, text width=2.3cm] (ag) {\textbf{Ultimate}\\\textbf{Assistant}};
+  \draw[flow] (tg) -- (sw);
+  \draw[flow] (sw) -- node[lbl,above,pos=.4]{voice} (dl);
+  \draw[flow] (sw) -- node[lbl,above,pos=.4]{text} (set);
+  \draw[flow] (dl) -- (tr);
+  \draw[flow] (set) -| (ag);
+  \draw[flow] (tr) -| (ag);
+  \node[box, below=12mm of ag, text width=2.0cm] (mem) {Memory};
+  \node[box, left=4mm of mem, text width=2.0cm] (llm) {Chat Model};
+  \draw[dflow] (llm) -- (ag); \draw[dflow] (mem) -- (ag);
+  \node[box, above right=9mm and 12mm of ag, text width=2.2cm] (t1) {Email Agent};
+  \node[box, below=2mm of t1, text width=2.2cm] (t2) {Calendar Agent};
+  \node[box, below=2mm of t2, text width=2.2cm] (t3) {Contact Agent};
+  \node[box, below=2mm of t3, text width=2.2cm] (t4) {Content Creator};
+  \node[extbox, below=2mm of t4, text width=2.2cm] (t5) {Tavily / Calculator};
+  \foreach \t in {t1,t2,t3,t4,t5} { \draw[flow, draw=accent] (ag) -- (\t); }
+  \node[lbl, right=2mm of t2, text width=3.0cm, align=left] {each of these four is a\\\textbf{separate workflow file},\\called as a tool};
+\end{tikzpicture}}
+\caption{Solid blue arrows out of the agent are tool calls the model chooses to make.
+Dashed arrows are equipment attached to it.}
+\end{figure}
+
+\begin{keyidea}{Sub-workflow as tool is the automation equivalent of a function call}
+Each specialist is its own file with its own entry point, which buys what functions buy in
+code: each can be tested alone, a change to contacts cannot break email, and each agent
+carries a small focused prompt instead of one enormous one. The voice branch converges
+back before the agent, so the agent never knows which input path it came from. That is the
+right place for that seam.
+
+The contrast is instructive: \file{social-media-content-generator} solves a comparable
+problem on a single 190-node canvas.
+\end{keyidea}
+
+\subsection{The one with the most interesting internals}
+
+\file{rag-ingestion-pipeline}, 47 nodes. It watches a Google Drive folder, and when a
+document appears it works out the type, extracts the text, chops it up, converts the
+chunks to embeddings and stores them in a Supabase vector table. A separate chat agent
+answers questions from that table.
+
+\begin{jargon}{RAG (Retrieval-Augmented Generation)}
+A way to make an AI model answer from \emph{your} documents rather than its general
+training. Chop the documents into chunks, convert each into a list of numbers capturing
+its meaning (an \emph{embedding}), and store them. At question time, embed the question,
+find the nearest chunks, and paste them into the prompt. The model then answers from real
+text you supplied.
+\end{jargon}
+
+Two details show genuine understanding. Spreadsheets are summarized into prose
+\emph{before} embedding, because embedding a spreadsheet row by row produces chunks like
+\code{"Q3 | 41 | 12"} that carry no retrievable meaning. And on the update path, old rows
+are deleted before new ones are inserted, because otherwise an edited document leaves its
+old chunks behind and the agent answers from a version that no longer exists.
+
+\begin{honest}{Half of it is a copy of the other half, and that half is switched off}
+The file contains two complete, near-identical ingestion pipelines: one driven by a
+\code{File Created} trigger, one by a \code{File Updated} trigger that is
+\textbf{disabled}. Same nodes, different names (\code{Switch} and \code{Switch2},
+\code{Aggregate} and \code{Aggregate1}).
+
+Every future change to the extraction logic must be made twice, in two places, with
+confusingly similar names, and a mistake in the dead copy stays invisible until someone
+re-enables it. This is copy-paste architecture, and it is the characteristic debt of
+visual tools: the canvas makes duplicating a branch trivially easy and offers nothing that
+would encourage factoring it out.
+\end{honest}
+
+\section{The habits worth defending}
+
+\subsection{Google Sheets as the database}
+
+\begin{keyidea}{Defensible, with a known ceiling}
+The instinct is to call it amateurish. A spreadsheet buys four things a real database does
+not: the client can see it, the client can edit it (human review, for free), it needs no
+provisioning, and it was already the incumbent tool. For a small agency automating its own
+chores, that is an engineering decision, not a shortcut.
+
+It breaks on \textbf{concurrency} (no transactions, so two runs can both read "not yet
+emailed" and both email), on \textbf{uniqueness} (no constraint, which is precisely why the
+cold email system can push a lead twice), and on \textbf{scale} (one SEO workflow reads its
+entire post history on every run). Right call at this size; the ceiling is real and stated.
+\end{keyidea}
+
+\subsection{Trusting the AI's output shape}
+
+The most common bug class here. A prompt says "return only JSON", and nothing downstream
+checks that it did. n8n has a structured output parser node, which forces the response
+into a declared schema and fails loudly when it does not fit. It appears \textbf{3 times
+in 1{,}645 nodes}, in just 2 of the 80 files. In the other 78, output shape is a matter
+of hoping.
+
+\begin{honest}{The verified worst case, and the lesson in it}
+In \file{competitor-content-gap-analyzer}, the \code{Clean Content} node's stored
+JavaScript has had its newlines collapsed into literal letter \code{n} characters, so the
+code reads \code{\{nnnn\$input.item.json.content = ...\}}. That throws a
+\code{ReferenceError} the instant it runs. Its regular expressions are also passed as
+quoted strings rather than regex literals, so they would match nothing even if the syntax
+were fixed. The node has never cleaned anything.
+
+The part that matters is what happens next: the node is set to
+\code{continueOnFail: true}, so the error is swallowed, the item passes through
+untouched, and \textbf{the workflow reports success}. Every run has produced a content gap
+analysis based on no content.
+
+The lesson is not that someone mangled a code node. It is that an error-tolerance flag
+turned a loud crash into a silent wrong answer. That flag is set on 27 nodes here.
+\end{honest}
+
+\section{The honest assessment}
+\label{sec:weak}
+
+\subsection{Genuinely good}
+
+\begin{itemize}
+  \item \textbf{Documentation discipline is exceptional}: 59 READMEs on nine consistent
+    headings, 59 credential manifests, 9{,}304 lines of prose, plus 186 sticky notes
+    inside the canvases.
+  \item \textbf{The self-criticism is real and specific.} The READMEs say "the
+    content-cleaning code is broken" and "custom fields are read by array index".
+    Spot-checks against the raw JSON confirmed these claims exactly, including the subtle
+    ones. This is rarer than it should be.
+  \item \textbf{No credentials leaked.} See below.
+  \item \textbf{The hard parts were not dodged}: 128 hand-written API calls, async
+    polling, a considered RAG chunking strategy, a properly factored sub-workflow
+    architecture where it is used.
+\end{itemize}
+
+\subsection{Weak, ordered by what it would cost}
+
+\begin{enumerate}
+  \item \textbf{No idempotency on the invoicing workflow.} A retried webhook double-bills
+    a real customer.
+  \item \textbf{Silent failures via \code{continueOnFail}} (27 nodes). Proven, not
+    theoretical.
+  \item \textbf{Copy-paste architecture}: the duplicated RAG branch; six duplicated
+    copywriting blocks in the cold email system; nine orphaned call nodes left from an
+    old version.
+  \item \textbf{Orphaned nodes in 12 of the 80 files}, 55-plus nodes with no path from any
+    trigger. On a canvas they look exactly like working steps.
+  \item \textbf{Unbounded polling loops.} No attempt cap anywhere in the video family.
+  \item \textbf{Hardcoded values where expressions belong}: a fixed \code{\$1,850} cost,
+    "Hey Nick" in a client email, the literal caption \code{"hello"} on every post in one
+    video workflow.
+  \item \textbf{Documentation drift}: sticky notes labelling reminder stages "5-Minute
+    Alert" when the node conditions say one hour.
+\end{enumerate}
+
+\subsection{Security}
+
+\begin{keyidea}{No live credential is committed, and this was checked properly}
+n8n stores logins in an encrypted credential store; a node holds only a pointer to one.
+Verified across all 80 files: \textbf{373 credential references}, 27 distinct credential
+types, every one containing exactly \code{id} and \code{name}. Not one carries a value.
+
+That is n8n's design doing the work. What the author was responsible for is everything
+n8n does not protect, and that was audited too: all provider-key formats scanned across
+all 268 tracked files (three hits, all placeholders such as
+\code{Bearer YOUR\_API\_KEY\_HERE}); every referenced host is a public vendor API, with no
+instance hostname and no Supabase project URL; every email is a placeholder; the
+\code{shared} block that normally carries the account owner's name and email is scrubbed
+in all 30 files that have one.
+
+The project README says live keys were found and stripped. This audit found no survivor.
+\end{keyidea}
+
+\begin{honest}{The scrub was manual, and that is the residual risk}
+One field, the n8n account name, appears with \textbf{sixteen different placeholder
+spellings} across the files (\code{YOUR\_EMAIL\_HERE}, \code{owner@example.com},
+\code{Portfolio Owner}, \code{REDACTED\_USER}, and twelve more). The outcome is correct,
+but sixteen spellings of one substitution is the signature of a hand pass, and a hand pass
+is one that can miss a file. A scripted scrub with a single canonical placeholder would be
+safer, because it could be re-run to \emph{prove} nothing was missed. Today the proof is
+an audit, which is only a snapshot.
+\end{honest}
+
+\subsection{The maturity question}
+
+\begin{honest}{The one thing to get straight before any interview}
+\textbf{28 manual triggers} (the most common trigger type here). \textbf{9 of 80}
+workflows marked active. \textbf{45} disabled nodes. \textbf{12} files with orphans.
+
+A manual trigger is what n8n gives you while you are \emph{building}, so you can press
+Execute and watch data flow. A deployed automation is normally started by a schedule, a
+webhook or an event.
+
+The defensible claim is: \emph{59 automations designed and built across seven problem
+domains, every one documented including its faults, with a clear account of which are
+production-hardened and which are at demonstration maturity.} That is a strong claim and
+it survives someone opening the files.
+
+The claim to avoid is "59 automations run my client's business". The repository does not
+contain the evidence for it: execution logs are not here, and the active flags say what
+they say.
+\end{honest}
+
+\subsection{What is inferred rather than confirmed}
+
+The seven-family taxonomy is this document's own reading; the repository does not group
+its folders, and while the folder counts are exact the boundaries are a judgment call. The
+claim that the collection is "built and demonstrated rather than deployed" is a strong
+inference from trigger types and active flags, but the alternative (that workflows were
+routinely deactivated before export) cannot be ruled out from the files alone. In the cold
+email system, the handoff from the research workflow to the orchestrator is inferred from
+matching field names; there is no connection in the JSON, and the project's own README is
+equally explicit about that. Whether the disabled trigger in the RAG pipeline was switched
+off deliberately or abandoned mid-refactor cannot be determined from the export. And
+whether the assistants behave \emph{well} is untestable from the files: the graphs are
+sound, but the behaviour lives in prompts, and prompts cannot be evaluated by reading them.
+
+\vfill
+\begin{center}
+\rule{0.4\textwidth}{0.4pt}\\[0.3em]
+{\small All counts were produced by parsing the 80 exported workflow files directly. The
+full treatment, including the data model of an export, walkthroughs of the largest
+systems, and the complete audit, is in the companion Deep Dive.}
+\end{center}
+
+\end{document}

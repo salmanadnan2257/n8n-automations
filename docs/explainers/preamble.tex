@@ -1,0 +1,202 @@
+% preamble.tex - shared preamble for this project's explainer documents.
+%
+% This file is generated: it is copied in beside the documents on every build, so a
+% clone of this repo can rebuild the PDFs, but local edits to it are overwritten.
+%
+% Usage from a document:
+%   \documentclass[11pt,a4paper]{article}
+%   \input{preamble}
+%   \begin{document} ... \end{document}
+%
+% Build:  pdflatex -interaction=nonstopmode deep-dive.tex   (run it three times, so the
+%         table of contents and the TikZ positioning settle)
+%
+% PACKAGE NOTES. Every package used here was checked present on the machine these
+% documents were built on (Debian TeX Live 2023). If you rebuild elsewhere and a build
+% fails, these are the likely gaps. Do not add a package without checking first:
+%   kpsewhich <pkg>.sty
+%
+% Deliberately NOT used, because they were absent and the build dies without them:
+%   algorithm2e, algorithm, algorithmic, algpseudocode  (texlive-science not installed)
+%     -> the \begin{pseudocode} environment defined below stands in for them.
+%   lmodern, charter, mathptmx, times, mathpazo, courier, newtx*, tgtermes
+%     -> their .sty files RESOLVE but the font files themselves are absent, so the
+%        build dies with "I can't find file `bchr8t'" or similar. Verified by
+%        test-compiling each one. Only Computer Modern (the default) and helvet
+%        actually render. kpsewhich reporting a font it cannot render is the trap:
+%        do not "upgrade" the font stack without test-compiling it first.
+%   amsmath, amssymb -> not loaded, so \text{} and \blacksquare are unavailable.
+%
+% A fuller font stack and algorithm2e would come from:
+%   sudo apt install texlive-fonts-recommended texlive-science cm-super
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+% Font: Computer Modern (default). See the note above before changing this.
+\usepackage[a4paper,margin=2.4cm,headheight=14pt]{geometry}
+% microtype WITHOUT font expansion. This is load-bearing, do not "restore" it:
+% cm-super is not installed, so T1 Computer Modern resolves to BITMAP fonts, and
+% pdfTeX's auto-expansion needs scalable ones. With expansion on, any document
+% long enough to reach a second page dies with
+%   "pdfTeX error (font expansion): auto expansion is only possible with scalable fonts"
+% Protrusion (the bigger visual win) still works and stays on.
+% `sudo apt install cm-super` would lift this; until then, leave expansion off.
+\usepackage[protrusion=true,expansion=false]{microtype}
+% Kill hyphen ligatures in TYPEWRITER text. This is load-bearing, not cosmetic. Under T1,
+% \texttt{--verbose} silently renders as "-verbose", and \texttt{---} as "--", so a
+% document can print a command-line flag as the WRONG flag and look perfectly fine doing
+% it. Verified by rendering the page and reading the glyphs. lstlisting and \verb were
+% always safe; this makes \code, \file and \texttt safe too, which is what prose uses.
+% Ordinary prose is unaffected and still ligates, which is what you want there.
+\DisableLigatures[-]{family=tt*}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{tikz}
+\usepackage{forest}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds,calc,decorations.pathreplacing}
+\tcbuselibrary{skins,breakable}
+\usepackage[hidelinks,bookmarks=true,bookmarksnumbered=true]{hyperref}
+
+% ===== palette ===========================================================
+\definecolor{inkblue}{HTML}{1F3A5F}
+\definecolor{accent}{HTML}{2E7DAF}
+\definecolor{softgrey}{HTML}{F4F6F8}
+\definecolor{linegrey}{HTML}{C8D0D8}
+\definecolor{codebg}{HTML}{F7F7F4}
+\definecolor{warnred}{HTML}{A33B3B}
+\definecolor{okgreen}{HTML}{2E7D53}
+
+% ===== headings ==========================================================
+\titleformat{\section}{\Large\bfseries\color{inkblue}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries\color{inkblue}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{accent}}{\thesubsubsection}{0.5em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{inkblue}\nouppercase{\leftmark}}
+\fancyhead[R]{\small\color{inkblue}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{linegrey}\leaders\hrule height \headrulewidth\hfill}}
+
+% ===== code ==============================================================
+\lstdefinestyle{house}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{inkblue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{okgreen},
+  numbers=left, numberstyle=\tiny\color{gray}, numbersep=8pt,
+  frame=single, rulecolor=\color{linegrey},
+  breaklines=true, breakatwhitespace=false,
+  showstringspaces=false, tabsize=2,
+  captionpos=b, xleftmargin=14pt, framexleftmargin=14pt,
+  columns=fullflexible, keepspaces=true,
+  upquote=true,  % render ' and " as straight quotes, not curly
+  % NON-ASCII INSIDE A LISTING IS A HARD BUILD FAILURE, not a cosmetic issue: listings
+  % reads raw bytes, so inputenc dies on the first multi-byte character ("Invalid UTF-8
+  % byte sequence") and the whole document fails to build. These mappings cover what
+  % realistically turns up in source code: Latin-1 accents, Spanish punctuation, smart
+  % quotes picked up from a word processor, the degree and section signs.
+  % NOT COVERED, and it cannot be here: Urdu, Arabic and Balochi script. pdflatex has no
+  % font for them. Describe or transliterate such text; never paste it into a listing.
+  literate=%
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+    {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+    {Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1 {ß}{{\ss}}1
+    {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ç}{{\c c}}1 {Ç}{{\c C}}1
+    {¿}{{\textquestiondown}}1 {¡}{{\textexclamdown}}1
+    {°}{{\textdegree}}1 {§}{{\S}}1 {£}{{\pounds}}1 {€}{{EUR}}1
+    {“}{{\textquotedblleft}}1 {”}{{\textquotedblright}}1
+    {‘}{{\textquoteleft}}1 {’}{{\textquoteright}}1
+    {–}{{-}}1 {—}{{-}}1 {…}{{...}}1 {→}{{$\rightarrow$}}1 {✓}{{x}}1
+}
+\lstset{style=house}
+
+% ===== callout boxes =====================================================
+% \begin{keyidea}{Title} ... \end{keyidea}   - a concept a beginner must grasp
+\newtcolorbox{keyidea}[1]{
+  enhanced, breakable, colback=softgrey, colframe=accent,
+  boxrule=0.4pt, arc=2pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\bfseries #1}, coltitle=white, colbacktitle=accent, fonttitle=\small
+}
+
+% \begin{jargon}{Term} definition \end{jargon}  - define a term at first use
+\newtcolorbox{jargon}[1]{
+  enhanced, breakable, colback=white, colframe=linegrey,
+  boxrule=0.4pt, arc=2pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\bfseries Jargon: #1}, coltitle=inkblue, colbacktitle=softgrey, fonttitle=\small
+}
+
+% \begin{honest}{Title} ... \end{honest}  - brutally honest finding (rule 18)
+\newtcolorbox{honest}[1]{
+  enhanced, breakable, colback=white, colframe=warnred,
+  boxrule=0.6pt, arc=2pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\bfseries #1}, coltitle=white, colbacktitle=warnred, fonttitle=\small
+}
+
+% \begin{pseudocode}{Caption} ... \end{pseudocode}
+% Stands in for algorithm2e, which is NOT installed. Use \Step / \Indent inside.
+\newtcolorbox{pseudocode}[1]{
+  enhanced, breakable, colback=codebg, colframe=inkblue,
+  boxrule=0.4pt, arc=2pt, left=10pt, right=8pt, top=6pt, bottom=6pt,
+  fontupper=\ttfamily\small,
+  title={\bfseries\rmfamily #1}, coltitle=white, colbacktitle=inkblue, fonttitle=\small
+}
+\newcommand{\Step}[1]{\par\noindent #1}
+\newcommand{\Indent}[1]{\par\noindent\hspace*{2em}#1}
+
+% ===== tikz house styles =================================================
+\tikzset{
+  box/.style   = {rectangle, rounded corners=2pt, draw=inkblue, fill=softgrey,
+                  text=inkblue, align=center, inner sep=6pt, minimum height=9mm,
+                  font=\small},
+  extbox/.style= {rectangle, rounded corners=2pt, draw=linegrey, fill=white,
+                  text=black!70, align=center, inner sep=6pt, minimum height=9mm,
+                  font=\small, dashed},
+  store/.style = {cylinder, shape border rotate=90, aspect=0.25, draw=accent,
+                  fill=white, text=inkblue, align=center, inner sep=5pt,
+                  font=\small},
+  dec/.style   = {diamond, aspect=1.6, draw=accent, fill=white, text=inkblue,
+                  align=center, inner sep=2pt, font=\scriptsize},
+  flow/.style  = {-{Stealth[length=2.4mm]}, draw=inkblue, thick},
+  dflow/.style = {-{Stealth[length=2.4mm]}, draw=accent, thick, dashed},
+  % align=center is load-bearing: without it, a \\ inside an edge label throws
+  % the misleading "perhaps a missing \item" error.
+  lbl/.style   = {font=\scriptsize\itshape, text=black!65, fill=white,
+                  inner sep=2pt, align=center}
+}
+
+% forest default for directory trees
+\forestset{
+  dirtree/.style={
+    for tree={
+      font=\ttfamily\small, grow'=0, child anchor=west, parent anchor=south,
+      anchor=west, calign=first, inner sep=2pt,
+      edge path={\noexpand\path [draw, \forestoption{edge}]
+        (!u.south west) +(9pt,0) |- (.child anchor) \forestoption{edge label};},
+      before typesetting nodes={if n=1{insert before={[,phantom]}}{}},
+      fit=band, before computing xy={l=15pt}
+    }
+  }
+}
+
+% ===== misc ==============================================================
+\captionsetup{font=small, labelfont={bf,color=inkblue}}
+\setlist[itemize]{leftmargin=1.2em, itemsep=2pt, topsep=3pt}
+\setlist[enumerate]{leftmargin=1.4em, itemsep=2pt, topsep=3pt}
+\newcommand{\file}[1]{\texttt{\small #1}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
