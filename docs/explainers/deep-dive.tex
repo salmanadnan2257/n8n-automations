@@ -1,5 +1,5 @@
 % explainer-source-hash: 758aa0e1fc4aa54b67ece6e4982367fb6dc2c725dd0193a8e15921f8ec2b6aa1
-% explainer-source-commit: 208ef83ddf2d31892671bea435cbf0f1caa251fe
+% explainer-source-commit: a16d032e0874aa3ffd34322c529bf16d461e5936
 % explainer-generated: 2026-07-16
 % Regenerate with /explain-all (see WIRING.md). Do not edit this stamp by hand:
 % it is how the toolchain knows whether this document still matches the code.
@@ -967,10 +967,11 @@ table. Separately, a chat agent answers questions using that table as its source
   \draw[flow] (vs) -- (sb);
 
   % equipment under the vector store
-  \node[box, text width=2.0cm] (spl) at (23.0,0.2) {Text\\Splitter};
-  \node[box, text width=2.0cm] (emb) at (25.8,0.2) {Embeddings\\OpenAI};
-  \draw[dflow] (spl.north) -- (vs.290);
-  \draw[dflow] (emb.north) -- (vs.330);
+  \node[box, text width=2.0cm] (spl) at (23.0,-1.7) {Text\\Splitter};
+  \node[box, text width=2.0cm] (emb) at (25.9,-1.7) {Embeddings\\OpenAI};
+  \draw[dflow] (spl.north) -- (vs.280);
+  \draw[dflow] (emb.north) -- (vs.320);
+  \node[lbl, anchor=north] at (24.5,-2.5) {equipment attached to the vector store};
 
   % ---------- query lobe ----------
   \node[box, fill=warnred!12, draw=warnred, text width=2.2cm] (chat) at (14.0,-4.6) {Chat message\\received};
